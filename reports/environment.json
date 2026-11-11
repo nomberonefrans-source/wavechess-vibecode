@@ -1,0 +1,10 @@
+{
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+  "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+  "wave_field_bytes": {
+    "2.1": 4808,
+    "2.2": 1184
+  },
+  "date": "2026-11-09",
+  "binary_sha256": "77495d6379d9144f67353b08545a6e2e21b4372b1d14fa2d294ff0b707bffbd1"
+}

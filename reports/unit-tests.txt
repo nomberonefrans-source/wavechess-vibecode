@@ -1,0 +1,30 @@
+   Compiling wavechess v2.2.0 (/workspace/work/wavechess)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.17s
+     Running unittests src/main.rs (work/wavechess/target/debug/deps/wavechess-6d4c2914a1f8bd03)
+
+running 22 tests
+test board::tests::malformed_en_passant_cannot_capture_an_absent_pawn ... ok
+test board::tests::legal_en_passant_changes_repetition_hash ... ok
+test board::tests::move_counters_saturate ... ok
+test board::tests::same_colour_bishops_are_dead_material ... ok
+test board::tests::unavailable_en_passant_does_not_change_repetition_hash ... ok
+test cache::tests::concurrent_collisions_never_return_another_positions_score ... ok
+test cache::tests::four_colliding_positions_coexist ... ok
+test cache::tests::full_keys_signed_scores_and_clear ... ok
+test params::tests::parameter_domains_reject_nonfinite_and_unbounded_values ... ok
+test search::tests::completed_draw_cannot_be_escaped_by_resetting_clock ... ok
+test search::tests::immediate_stop_returns_legal_fallback_without_evaluations ... ok
+test search::tests::mate_on_fifty_move_boundary_takes_precedence ... ok
+test cache::tests::disabled_and_memory_budget ... ok
+test search::tests::speculative_draw_does_not_erase_a_near_queen_loss ... ok
+test wave::tests::en_passant_removes_the_actual_victim ... ok
+test wave::tests::king_cannot_absorb_a_protected_wave ... ok
+test wave::tests::pinned_defender_does_not_protect_pawn ... ok
+test wave::tests::poisoned_pawn_does_not_attract_queen ... ok
+test wave::tests::promotion_flux_includes_created_mass ... ok
+test wave::tests::rear_rook_waits_for_front_queen ... ok
+test wave::tests::undefended_piece_has_full_mass_flux ... ok
+test search::tests::multipv_threads_and_cache_do_not_change_complete_trajectory ... ok
+
+test result: ok. 22 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.22s
+
