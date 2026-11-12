@@ -77,7 +77,7 @@ class Protocol(unittest.TestCase):
 
     def test_removed_recursive_solver_options(self):
         text = "\n".join(self.engine.handshake)
-        self.assertIn("WaveChess 3.0", text)
+        self.assertIn("WaveChess 3.1", text)
         self.assertNotIn("Mate Defense", text)
         self.assertNotIn("Mate Attack", text)
 
@@ -153,6 +153,7 @@ class Protocol(unittest.TestCase):
     def test_analysis_is_deterministic_and_all_weights_are_advertised(self):
         text = "\n".join(self.engine.handshake)
         self.assertIn("option name W:ReplyK", text)
+        self.assertIn("option name W:Spectral type string default 16", text)
         self.engine.send("setoption name UCI_AnalyseMode value true")
         choices = []
         for _ in range(3):

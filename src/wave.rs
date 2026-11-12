@@ -183,9 +183,9 @@ impl WaveField {
                     let nf = f + df;
                     if inside(nf, nr) {
                         let to = sq_of(nf, nr);
-                        w.amp[c][to] += a;
                         w.raw_hits[c][to] += 1;
                         if pn == 0 || line_id(df, sg) == pn {
+                            w.amp[c][to] += a;
                             w.hits[c][to] += 1;
                         }
                     }
@@ -198,11 +198,11 @@ impl WaveField {
                         continue;
                     }
                     let to = sq_of(nf, nr);
-                    w.amp[c][to] += a;
                     w.raw_hits[c][to] += 1;
                     if t == KNIGHT && pn != 0 {
                         continue; // связанный конь не излучает
                     }
+                    w.amp[c][to] += a;
                     w.hits[c][to] += 1;
                     if t == KNIGHT && b.sq[to].signum() != sg {
                         w.mobility[c] += 4.0;
@@ -225,7 +225,9 @@ impl WaveField {
                         let to = sq_of(nf, nr);
                         let q = b.sq[to];
                         let dd = if d > 7 { 7 } else { d };
-                        w.amp[c][to] += a * atten * DAMP[dd];
+                        if allowed {
+                            w.amp[c][to] += a * atten * DAMP[dd];
+                        }
                         if direct {
                             w.raw_hits[c][to] += 1;
                         }
@@ -418,8 +420,8 @@ pub fn exchange(w: &WaveField, att: usize, def: usize, s: usize, m: f32) -> f32 
     flow(w.board, s, m, side, side, 0.0)
 }
 
-/// Поток для конкретного допустимого взятия. В отличие от угрозы по клетке,
-/// учитывает снятие пешки при взятии на проходе и фактическое превращение.
+/// Поток для допустимого взятия или превращения, включая тихое превращение.
+/// Учитывает снятие пешки при взятии на проходе и фактическую новую массу.
 /// Вызывающий передаёт только ход из Board::legal_moves().
 pub fn exchange_capture(b: &Board, mv: Move) -> f32 {
     let victim = if mv.flag == FLAG_EP {
@@ -428,7 +430,7 @@ pub fn exchange_capture(b: &Board, mv: Move) -> f32 {
         mv.to as usize
     };
     let p = b.sq[victim].abs();
-    if p == 0 || p == KING {
+    if (p == 0 && mv.promo == 0) || p == KING {
         return 0.0;
     }
     let next = b.make(mv);
@@ -449,7 +451,7 @@ pub fn exchange_capture(b: &Board, mv: Move) -> f32 {
         target,
         -b.side,
         b.side,
-        MASS[(p - 1) as usize] + promotion,
+        if p == 0 { promotion } else { MASS[(p - 1) as usize] + promotion },
     )
 }
 
@@ -462,6 +464,7 @@ pub struct Energy {
     pub placement: f32,
     pub structure: f32,
     pub mobility: f32,
+    pub spectral: f32,
     pub total: f32,
 }
 
@@ -666,7 +669,11 @@ pub fn analyze_with(b: &Board, ps: &Ps) -> (WaveField, Energy) {
     }
 
     e.mobility = ps.k_mob * (w.mobility[0] - w.mobility[1]);
-    e.total = e.mass + e.control + e.king + e.placement + e.structure + e.mobility;
+    if ps.spectral > 0.0 {
+        let control = std::array::from_fn(|s| sat(w.amp[0][s]) - sat(w.amp[1][s]));
+        e.spectral = ps.spectral * crate::spectral::support(control, &w.charge);
+    }
+    e.total = e.mass + e.control + e.king + e.placement + e.structure + e.mobility + e.spectral;
     (w, e)
 }
 
@@ -707,13 +714,14 @@ pub fn verdict(cp: i32) -> String {
 impl Energy {
     pub fn describe(&self) -> String {
         format!(
-            "  масса (материал)          {:+7.2}\n  контроль пространства     {:+7.2}\n  давление у королей        {:+7.2}\n  фигуры в рельефе доски    {:+7.2}\n  поток к превращению       {:+7.2}\n  охват (подвижность волн)  {:+7.2}\n  ---------------------------------\n  суммарная энергия поля    {:+7.2}",
+            "  масса (материал)          {:+7.2}\n  контроль пространства     {:+7.2}\n  давление у королей        {:+7.2}\n  фигуры в рельефе доски    {:+7.2}\n  поток к превращению       {:+7.2}\n  охват (подвижность волн)  {:+7.2}\n  поддержка поля (FWHT)    {:+7.2}\n  ---------------------------------\n  суммарная энергия поля    {:+7.2}",
             self.mass / 100.0,
             self.control / 100.0,
             self.king / 100.0,
             self.placement / 100.0,
             self.structure / 100.0,
             self.mobility / 100.0,
+            self.spectral / 100.0,
             self.total / 100.0
         )
     }
@@ -741,6 +749,59 @@ pub fn wave_map(b: &Board) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn pinned_knight_has_no_effective_field_but_still_attacks_for_king_rules() {
+        let b = Board::from_fen("4r2k/8/8/8/8/8/4N3/4K3 w - - 0 1").unwrap();
+        let w = WaveField::compute(&b);
+        let f4 = 29;
+        assert_eq!(w.amp[0][f4], 0.0);
+        assert_eq!(w.hits[0][f4], 0);
+        assert_eq!(w.raw_hits[0][f4], 1);
+        assert!(b.attacked(f4, 1));
+        let mirrored = WaveField::compute(&b.mirrored());
+        assert_eq!(mirrored.amp[1][f4 ^ 56], 0.0);
+    }
+
+    #[test]
+    fn pinned_pawns_and_sliders_only_emit_along_the_pin() {
+        for fen in [
+            "4r2k/8/8/8/8/8/4P3/4K3 w - - 0 1",
+            "4r2k/8/8/8/8/8/4B3/4K3 w - - 0 1",
+        ] {
+            let w = WaveField::compute(&Board::from_fen(fen).unwrap());
+            assert_eq!(w.amp[0][21], 0.0); // f3
+            assert_eq!(w.raw_hits[0][21], 1);
+        }
+        let b = Board::from_fen("4r2k/8/8/8/4R3/8/8/4K3 w - - 0 1").unwrap();
+        let w = WaveField::compute(&b);
+        assert_eq!(w.amp[0][31], 0.0); // h4, across the pin
+        assert_eq!(w.raw_hits[0][31], 1);
+        assert!(w.amp[0][36] > 0.0); // e5, along the pin
+        assert_eq!(w.hits[0][36], 1);
+    }
+
+    #[test]
+    fn quiet_promotion_counts_created_mass_and_legal_recapture() {
+        assert_eq!(capture("7k/8/8/8/8/8/p7/7K b - - 0 1", "a2a1q"), 800.0);
+        assert_eq!(capture("7k/8/8/8/8/8/p7/7K b - - 0 1", "a2a1n"), 220.0);
+        assert_eq!(capture("7k/8/8/8/8/8/p7/3R3K b - - 0 1", "a2a1q"), 0.0);
+    }
+
+    #[test]
+    fn spectral_energy_is_bounded_optional_and_colour_symmetric() {
+        let b = Board::from_fen("r3k2r/ppp2ppp/2npbn2/8/2B1P3/2N2N2/PPP2PPP/R2Q1RK1 w kq - 0 1").unwrap();
+        let mut ps = Ps::load();
+        ps.spectral = 16.0;
+        let (_, on) = analyze_with(&b, &ps);
+        let (_, mirror) = analyze_with(&b.mirrored(), &ps);
+        assert!(on.spectral.abs() <= 16.0);
+        assert!((on.total + mirror.total).abs() < 0.01);
+        ps.spectral = 0.0;
+        let (_, off) = analyze_with(&b, &ps);
+        assert_eq!(off.spectral, 0.0);
+        assert!((on.total - off.total - on.spectral).abs() < 0.001);
+    }
 
     fn threat(fen: &str, side: usize, square: &str) -> f32 {
         let b = Board::from_fen(fen).unwrap();

@@ -66,6 +66,7 @@ params! {
     transport:     "Transport"    => 1.0,
     king_shelter:  "KingShelter"  => 80.0,
     king_activity: "KingActivity" => 32.0,
+    spectral:      "Spectral"     => 16.0, // bounded auxiliary FWHT support; 0 disables it
 }
 
 /// Диапазоны защищают вычисления от NaN, бесконечностей и огромных амплитуд.
@@ -79,6 +80,7 @@ fn valid_value(name: &str, v: f32) -> bool {
         "XrayOwn" | "XrayEnemy" | "Counter1" | "Counter2" => v <= 1.0,
         "MateBonus" => v <= 10000.0,
         "Crush" => v <= 20.0,
+        "Spectral" => v <= 50.0,
         _ => v <= 1000.0,
     }
 }

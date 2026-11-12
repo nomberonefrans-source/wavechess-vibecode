@@ -84,7 +84,7 @@ pub fn settle_value(b: &Board, threat_pct: i32) -> i32 {
         if nb.in_check() && !has_legal(&nb) {
             return MATED_NEXT;
         }
-        if b.sq[mv.to as usize] != 0 || mv.flag == FLAG_EP {
+        if b.sq[mv.to as usize] != 0 || mv.flag == FLAG_EP || mv.promo != 0 {
             loss = loss.max(wave::exchange_capture(b, mv));
         }
     }
@@ -833,6 +833,15 @@ impl Searcher {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn immediate_quiet_promotion_is_a_local_threat() {
+        let b = Board::from_fen("7k/8/8/3R4/8/8/p7/7K b - - 0 1").unwrap();
+        let without_threat = settle_value(&b, 0);
+        let with_threat = settle_value(&b, 100);
+        assert!(without_threat - with_threat >= 790);
+        assert_eq!(with_threat, settle_value(&b.mirrored(), 100));
+    }
 
     fn run(
         b: &Board,

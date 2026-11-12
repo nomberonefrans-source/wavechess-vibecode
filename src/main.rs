@@ -11,6 +11,7 @@ mod params;
 mod search;
 mod selftest;
 mod settings;
+mod spectral;
 mod uci;
 mod wave;
 
@@ -36,7 +37,7 @@ fn setup_console() {
 fn setup_console() {}
 
 fn print_usage() {
-    println!("WaveChess 3.0 — шахматный движок на волновой математике");
+    println!("WaveChess 3.1 — шахматный движок на волновой математике");
     println!();
     println!("Использование:");
     println!("  wavechess            игра в консоли (если запущен из терминала)");
