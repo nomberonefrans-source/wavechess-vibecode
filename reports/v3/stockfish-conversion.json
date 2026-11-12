@@ -1,0 +1,199 @@
+{
+  "suite": "conversion",
+  "opening_offset": 0,
+  "movetime_ms": 150,
+  "nodes": 0,
+  "depth_limit": 64,
+  "max_plies": 300,
+  "draw_claims": true,
+  "engines": {
+    "baseline": {
+      "name": {
+        "name": "Stockfish 19",
+        "author": "the Stockfish developers (see AUTHORS file)"
+      },
+      "executable_sha256": "0f83d24cc46d2c66c60f16001af5444873bc112b7d028594513426894c12da19",
+      "options": {
+        "Threads": 1,
+        "Hash": 16,
+        "Move Overhead": 0,
+        "Skill Level": 20,
+        "UCI_LimitStrength": false
+      }
+    },
+    "revised": {
+      "name": {
+        "name": "WaveChess 3.0 (wave mathematics)",
+        "author": "WaveChess"
+      },
+      "executable_sha256": "5a3d591bf745ff5fe99e13c2478e4374583e520394e888ad95c5d934d2d426c3",
+      "options": {
+        "Threads": 1,
+        "Hash": 16,
+        "Move Overhead": 0,
+        "Opening Variety": 0,
+        "Random Seed": 42
+      }
+    }
+  },
+  "games": [
+    {
+      "game": 1,
+      "pair": 0,
+      "revised_white": true,
+      "initial_fen": "8/8/8/8/3k4/8/8/1Q2K3 w - - 0 1",
+      "final_fen": "8/8/8/8/8/3K4/8/1Q1k4 b - - 13 7",
+      "result": "1-0",
+      "winner": "revised",
+      "termination": "CHECKMATE",
+      "played_plies": 13,
+      "wall_seconds": {
+        "baseline": 0.3997683859997778,
+        "revised": 0.15322172499963926
+      },
+      "mean_reported_depth": {
+        "baseline": 57.333333333333336,
+        "revised": 7
+      }
+    },
+    {
+      "game": 2,
+      "pair": 0,
+      "revised_white": false,
+      "initial_fen": "1q2k3/8/8/3K4/8/8/8/8 b - - 0 1",
+      "final_fen": "3K4/3q4/3k4/8/8/8/8/8 w - - 13 8",
+      "result": "0-1",
+      "winner": "revised",
+      "termination": "CHECKMATE",
+      "played_plies": 13,
+      "wall_seconds": {
+        "baseline": 0.411566453000205,
+        "revised": 0.12663123400034237
+      },
+      "mean_reported_depth": {
+        "baseline": 54.666666666666664,
+        "revised": 7
+      }
+    },
+    {
+      "game": 3,
+      "pair": 1,
+      "revised_white": true,
+      "initial_fen": "8/8/8/8/3k4/8/8/R3K3 w - - 0 1",
+      "final_fen": "k1R5/8/1K6/8/8/8/8/8 b - - 29 15",
+      "result": "1-0",
+      "winner": "revised",
+      "termination": "CHECKMATE",
+      "played_plies": 29,
+      "wall_seconds": {
+        "baseline": 1.3604915730002176,
+        "revised": 0.28266402799999923
+      },
+      "mean_reported_depth": {
+        "baseline": 54,
+        "revised": 10.066666666666666
+      }
+    },
+    {
+      "game": 4,
+      "pair": 1,
+      "revised_white": false,
+      "initial_fen": "r3k3/8/8/3K4/8/8/8/8 b - - 0 1",
+      "final_fen": "8/8/8/8/8/1k6/8/K1r5 w - - 33 18",
+      "result": "0-1",
+      "winner": "revised",
+      "termination": "CHECKMATE",
+      "played_plies": 33,
+      "wall_seconds": {
+        "baseline": 1.6945573940004124,
+        "revised": 0.2383733300005133
+      },
+      "mean_reported_depth": {
+        "baseline": 50.5625,
+        "revised": 11.117647058823529
+      }
+    },
+    {
+      "game": 5,
+      "pair": 2,
+      "revised_white": true,
+      "initial_fen": "6k1/5ppp/8/8/8/8/5PPP/3Q2K1 w - - 0 1",
+      "final_fen": "3Q2k1/5ppp/8/8/8/8/5PPP/6K1 b - - 1 1",
+      "result": "1-0",
+      "winner": "revised",
+      "termination": "CHECKMATE",
+      "played_plies": 1,
+      "wall_seconds": {
+        "baseline": 0.0,
+        "revised": 0.036156600999902366
+      },
+      "mean_reported_depth": {
+        "baseline": 0,
+        "revised": 1
+      }
+    },
+    {
+      "game": 6,
+      "pair": 2,
+      "revised_white": false,
+      "initial_fen": "3q2k1/5ppp/8/8/8/8/5PPP/6K1 b - - 0 1",
+      "final_fen": "6k1/5ppp/8/8/8/8/5PPP/3q2K1 w - - 1 2",
+      "result": "0-1",
+      "winner": "revised",
+      "termination": "CHECKMATE",
+      "played_plies": 1,
+      "wall_seconds": {
+        "baseline": 0.0,
+        "revised": 0.006839065999884042
+      },
+      "mean_reported_depth": {
+        "baseline": 0,
+        "revised": 1
+      }
+    },
+    {
+      "game": 7,
+      "pair": 3,
+      "revised_white": true,
+      "initial_fen": "6k1/5ppp/8/8/8/8/5PPP/R4RK1 w - - 0 1",
+      "final_fen": "R5k1/5ppp/8/8/8/8/5PPP/5RK1 b - - 1 1",
+      "result": "1-0",
+      "winner": "revised",
+      "termination": "CHECKMATE",
+      "played_plies": 1,
+      "wall_seconds": {
+        "baseline": 0.0,
+        "revised": 0.00665993100005835
+      },
+      "mean_reported_depth": {
+        "baseline": 0,
+        "revised": 1
+      }
+    },
+    {
+      "game": 8,
+      "pair": 3,
+      "revised_white": false,
+      "initial_fen": "r4rk1/5ppp/8/8/8/8/5PPP/6K1 b - - 0 1",
+      "final_fen": "5rk1/5ppp/8/8/8/8/5PPP/r5K1 w - - 1 2",
+      "result": "0-1",
+      "winner": "revised",
+      "termination": "CHECKMATE",
+      "played_plies": 1,
+      "wall_seconds": {
+        "baseline": 0.0,
+        "revised": 0.0068382849999579776
+      },
+      "mean_reported_depth": {
+        "baseline": 0,
+        "revised": 1
+      }
+    }
+  ],
+  "summary": {
+    "revised_wins": 8,
+    "baseline_wins": 0,
+    "draws": 0,
+    "unfinished": 0
+  }
+}

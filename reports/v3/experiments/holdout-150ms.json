@@ -1,0 +1,348 @@
+{
+  "suite": "holdout",
+  "movetime_ms": 150,
+  "nodes": 0,
+  "depth_limit": 64,
+  "max_plies": 300,
+  "draw_claims": true,
+  "engines": {
+    "baseline": {
+      "name": {
+        "name": "WaveChess 2.2 (wave mathematics)",
+        "author": "WaveChess"
+      },
+      "executable_sha256": "77495d6379d9144f67353b08545a6e2e21b4372b1d14fa2d294ff0b707bffbd1",
+      "options": {
+        "Threads": 1,
+        "Hash": 16,
+        "Move Overhead": 0
+      }
+    },
+    "revised": {
+      "name": {
+        "name": "WaveChess 3.0 (wave mathematics)",
+        "author": "WaveChess"
+      },
+      "executable_sha256": "8c9711c9027590195151f37b0be97cc848ee6f0bc2ad135b54539ff04a827749",
+      "options": {
+        "Threads": 1,
+        "Hash": 16,
+        "Move Overhead": 0,
+        "Opening Variety": 0,
+        "Random Seed": 42
+      }
+    }
+  },
+  "games": [
+    {
+      "game": 1,
+      "pair": 0,
+      "revised_white": true,
+      "initial_fen": "r1bqkbnr/1ppp1ppp/p1n5/1B2p3/4P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 0 4",
+      "final_fen": "4N1k1/6Q1/8/8/4K3/5P2/8/8 b - - 12 58",
+      "result": "1-0",
+      "winner": "revised",
+      "termination": "CHECKMATE",
+      "played_plies": 109,
+      "wall_seconds": {
+        "baseline": 4.222471778999534,
+        "revised": 4.730249295000135
+      },
+      "mean_reported_depth": {
+        "baseline": 24.48148148148148,
+        "revised": 37.163636363636364
+      }
+    },
+    {
+      "game": 2,
+      "pair": 0,
+      "revised_white": false,
+      "initial_fen": "r1bqkbnr/1ppp1ppp/p1n5/1B2p3/4P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 0 4",
+      "final_fen": "2k1R3/2B3p1/p1P5/2bN1p1p/8/2P5/P1P2PPP/6K1 b - - 2 29",
+      "result": "1-0",
+      "winner": "baseline",
+      "termination": "CHECKMATE",
+      "played_plies": 51,
+      "wall_seconds": {
+        "baseline": 3.363715726999999,
+        "revised": 3.007719775999476
+      },
+      "mean_reported_depth": {
+        "baseline": 18.846153846153847,
+        "revised": 28.92
+      }
+    },
+    {
+      "game": 3,
+      "pair": 1,
+      "revised_white": true,
+      "initial_fen": "rnbqk2r/ppppppbp/5np1/8/2PP4/2N5/PP2PPPP/R1BQKBNR w KQkq - 2 4",
+      "final_fen": "8/8/1P6/5p1p/1p2k2P/6q1/7K/4q3 w - - 0 60",
+      "result": "0-1",
+      "winner": "baseline",
+      "termination": "CHECKMATE",
+      "played_plies": 112,
+      "wall_seconds": {
+        "baseline": 5.280684732999362,
+        "revised": 6.01719196699969
+      },
+      "mean_reported_depth": {
+        "baseline": 17.946428571428573,
+        "revised": 31.821428571428573
+      }
+    },
+    {
+      "game": 4,
+      "pair": 1,
+      "revised_white": false,
+      "initial_fen": "rnbqk2r/ppppppbp/5np1/8/2PP4/2N5/PP2PPPP/R1BQKBNR w KQkq - 2 4",
+      "final_fen": "5Q2/8/6k1/5Q1p/8/4K3/6p1/8 b - - 3 56",
+      "result": "1-0",
+      "winner": "baseline",
+      "termination": "CHECKMATE",
+      "played_plies": 105,
+      "wall_seconds": {
+        "baseline": 5.246793354999909,
+        "revised": 5.243811261999667
+      },
+      "mean_reported_depth": {
+        "baseline": 22.452830188679247,
+        "revised": 37.82692307692308
+      }
+    },
+    {
+      "game": 5,
+      "pair": 2,
+      "revised_white": true,
+      "initial_fen": "rnbqkb1r/ppp2ppp/4pn2/3p4/3PP3/2N5/PPP2PPP/R1BQKBNR w KQkq - 2 4",
+      "final_fen": "8/2k5/7p/K2p2p1/3P2P1/7P/8/8 b - - 10 55",
+      "result": "1/2-1/2",
+      "winner": null,
+      "termination": "THREEFOLD_REPETITION",
+      "played_plies": 103,
+      "wall_seconds": {
+        "baseline": 4.200585224000179,
+        "revised": 4.552058551000641
+      },
+      "mean_reported_depth": {
+        "baseline": 22.784313725490197,
+        "revised": 37.67307692307692
+      }
+    },
+    {
+      "game": 6,
+      "pair": 2,
+      "revised_white": false,
+      "initial_fen": "rnbqkb1r/ppp2ppp/4pn2/3p4/3PP3/2N5/PPP2PPP/R1BQKBNR w KQkq - 2 4",
+      "final_fen": "4Q3/k4R2/3Q4/8/8/8/8/6K1 b - - 2 52",
+      "result": "1-0",
+      "winner": "baseline",
+      "termination": "CHECKMATE",
+      "played_plies": 97,
+      "wall_seconds": {
+        "baseline": 4.968443741000328,
+        "revised": 4.517628896000588
+      },
+      "mean_reported_depth": {
+        "baseline": 16.551020408163264,
+        "revised": 32.708333333333336
+      }
+    },
+    {
+      "game": 7,
+      "pair": 3,
+      "revised_white": true,
+      "initial_fen": "rnbqkbnr/pp2pppp/2p5/8/3Pp3/2N5/PPP2PPP/R1BQKBNR w KQkq - 0 4",
+      "final_fen": "8/8/1pk5/2r1r3/P2p2p1/R4pP1/3K1P2/R7 b - - 9 41",
+      "result": "1/2-1/2",
+      "winner": null,
+      "termination": "THREEFOLD_REPETITION",
+      "played_plies": 75,
+      "wall_seconds": {
+        "baseline": 4.001188406000551,
+        "revised": 4.511891177999587
+      },
+      "mean_reported_depth": {
+        "baseline": 27.243243243243242,
+        "revised": 43.18421052631579
+      }
+    },
+    {
+      "game": 8,
+      "pair": 3,
+      "revised_white": false,
+      "initial_fen": "rnbqkbnr/pp2pppp/2p5/8/3Pp3/2N5/PPP2PPP/R1BQKBNR w KQkq - 0 4",
+      "final_fen": "6r1/5k2/7p/7P/8/7K/8/7q w - - 2 70",
+      "result": "0-1",
+      "winner": "revised",
+      "termination": "CHECKMATE",
+      "played_plies": 132,
+      "wall_seconds": {
+        "baseline": 5.47597303200007,
+        "revised": 6.465514369000061
+      },
+      "mean_reported_depth": {
+        "baseline": 21.454545454545453,
+        "revised": 34.22727272727273
+      }
+    },
+    {
+      "game": 9,
+      "pair": 4,
+      "revised_white": true,
+      "initial_fen": "rnbqkb1r/ppp2ppp/5n2/3pp3/2P5/2N3P1/PP1PPP1P/R1BQKBNR w KQkq - 0 4",
+      "final_fen": "r1k5/1p1n1pp1/p2p4/Q6p/2Pp3N/3P2P1/Pr3q1P/R4K1R w - - 8 29",
+      "result": "0-1",
+      "winner": "baseline",
+      "termination": "CHECKMATE",
+      "played_plies": 50,
+      "wall_seconds": {
+        "baseline": 3.337628864000294,
+        "revised": 3.4334539139999833
+      },
+      "mean_reported_depth": {
+        "baseline": 14.32,
+        "revised": 34.12
+      }
+    },
+    {
+      "game": 10,
+      "pair": 4,
+      "revised_white": false,
+      "initial_fen": "rnbqkb1r/ppp2ppp/5n2/3pp3/2P5/2N3P1/PP1PPP1P/R1BQKBNR w KQkq - 0 4",
+      "final_fen": "8/4r3/3k2P1/7p/1P1K2PP/8/3q4/5b2 w - - 1 50",
+      "result": "0-1",
+      "winner": "revised",
+      "termination": "CHECKMATE",
+      "played_plies": 92,
+      "wall_seconds": {
+        "baseline": 4.921565071999339,
+        "revised": 5.393012487999499
+      },
+      "mean_reported_depth": {
+        "baseline": 19.73913043478261,
+        "revised": 34.26086956521739
+      }
+    },
+    {
+      "game": 11,
+      "pair": 5,
+      "revised_white": true,
+      "initial_fen": "rnbqkb1r/pp2pppp/5n2/2pp4/8/5NP1/PPPPPPBP/RNBQK2R w KQkq - 0 4",
+      "final_fen": "5b1r/p3kp1p/2p5/5q2/6q1/7K/4P2P/8 w - - 0 39",
+      "result": "0-1",
+      "winner": "baseline",
+      "termination": "CHECKMATE",
+      "played_plies": 70,
+      "wall_seconds": {
+        "baseline": 4.20383141900038,
+        "revised": 3.85442568100018
+      },
+      "mean_reported_depth": {
+        "baseline": 17.914285714285715,
+        "revised": 26.714285714285715
+      }
+    },
+    {
+      "game": 12,
+      "pair": 5,
+      "revised_white": false,
+      "initial_fen": "rnbqkb1r/pp2pppp/5n2/2pp4/8/5NP1/PPPPPPBP/RNBQK2R w KQkq - 0 4",
+      "final_fen": "8/6k1/p7/P6p/2p1bB1P/2P3P1/8/5K2 w - - 11 49",
+      "result": "1/2-1/2",
+      "winner": null,
+      "termination": "THREEFOLD_REPETITION",
+      "played_plies": 90,
+      "wall_seconds": {
+        "baseline": 4.765224212000021,
+        "revised": 4.82376754400002
+      },
+      "mean_reported_depth": {
+        "baseline": 17.822222222222223,
+        "revised": 37.022222222222226
+      }
+    },
+    {
+      "game": 13,
+      "pair": 6,
+      "revised_white": true,
+      "initial_fen": "rnbqkb1r/pp2pppp/2p2n2/3p4/2PP4/5N2/PP2PPPP/RNBQKB1R w KQkq - 2 4",
+      "final_fen": "r2k2r1/p2Q1Rpp/8/8/1p6/1B2q2P/PP5P/R6K b - - 4 25",
+      "result": "1-0",
+      "winner": "revised",
+      "termination": "CHECKMATE",
+      "played_plies": 43,
+      "wall_seconds": {
+        "baseline": 2.8560308590002705,
+        "revised": 2.859932482999966
+      },
+      "mean_reported_depth": {
+        "baseline": 12.666666666666666,
+        "revised": 19.954545454545453
+      }
+    },
+    {
+      "game": 14,
+      "pair": 6,
+      "revised_white": false,
+      "initial_fen": "rnbqkb1r/pp2pppp/2p2n2/3p4/2PP4/5N2/PP2PPPP/RNBQKB1R w KQkq - 2 4",
+      "final_fen": "8/2R5/2B3kR/5p2/1P3B2/6P1/6P1/4K3 b - - 4 34",
+      "result": "1-0",
+      "winner": "baseline",
+      "termination": "CHECKMATE",
+      "played_plies": 61,
+      "wall_seconds": {
+        "baseline": 3.660344579999901,
+        "revised": 3.210393975999864
+      },
+      "mean_reported_depth": {
+        "baseline": 17.387096774193548,
+        "revised": 24.366666666666667
+      }
+    },
+    {
+      "game": 15,
+      "pair": 7,
+      "revised_white": true,
+      "initial_fen": "r1bqkb1r/pppp1ppp/2n2n2/4p3/2B1P3/2N5/PPPP1PPP/R1BQK1NR w KQkq - 4 4",
+      "final_fen": "8/8/2p2p1p/4pP1P/k1p1P3/2K5/8/8 b - - 13 69",
+      "result": "1/2-1/2",
+      "winner": null,
+      "termination": "THREEFOLD_REPETITION",
+      "played_plies": 131,
+      "wall_seconds": {
+        "baseline": 3.9796264539996855,
+        "revised": 4.202074248000258
+      },
+      "mean_reported_depth": {
+        "baseline": 21.246153846153845,
+        "revised": 49.43939393939394
+      }
+    },
+    {
+      "game": 16,
+      "pair": 7,
+      "revised_white": false,
+      "initial_fen": "r1bqkb1r/pppp1ppp/2n2n2/4p3/2B1P3/2N5/PPPP1PPP/R1BQK1NR w KQkq - 4 4",
+      "final_fen": "8/8/8/7p/kQ5P/2P3K1/3R4/8 b - - 1 59",
+      "result": "1-0",
+      "winner": "baseline",
+      "termination": "CHECKMATE",
+      "played_plies": 111,
+      "wall_seconds": {
+        "baseline": 6.548621945000264,
+        "revised": 6.504374936000204
+      },
+      "mean_reported_depth": {
+        "baseline": 18.589285714285715,
+        "revised": 30.490909090909092
+      }
+    }
+  ],
+  "summary": {
+    "revised_wins": 4,
+    "baseline_wins": 8,
+    "draws": 4,
+    "unfinished": 0
+  }
+}

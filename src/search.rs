@@ -20,9 +20,9 @@ pub const MATE_BOUND: i32 = MATE - 300;
 
 /// Небольшой перевес хода, продолжающего прежний план (устойчивость плана).
 const PLAN_BONUS: i32 = 5;
-pub const MAX_DEPTH: i32 = 128;
+pub const MAX_DEPTH: i32 = 256;
 /// Дальние фазы учитываются с накопленной достоверностью траектории.
-pub const DEFAULT_DEPTH: i32 = 16;
+pub const DEFAULT_DEPTH: i32 = 48;
 
 #[derive(Clone, Copy, PartialEq, Eq)]
 pub enum Report {
@@ -35,6 +35,9 @@ pub struct Line {
     pub score: i32,
     pub depth: i32,
     pub pv: Vec<Move>,
+    pub local_energy: i32,
+    pub confidence: f32,
+    pub replies: usize,
 }
 
 pub struct SearchLimits {
@@ -52,6 +55,8 @@ pub struct SearchResult {
     pub nodes: u64,
     pub elapsed_ms: u64,
     pub lines: Vec<Line>,
+    /// Полные передние траектории, включая альтернативные ответы соперника.
+    pub continuations: Vec<Vec<Move>>,
 }
 
 /// Оценка позиции, в которой сходившему тут же ставят мат.
@@ -67,11 +72,15 @@ pub fn settle_value(b: &Board, threat_pct: i32) -> i32 {
     let oi = 1 - mi;
     let base = e.total * mover as f32;
     let mut loss = 0.0f32;
-    let legal = b.legal_moves();
+    let mut legal = MoveList::new();
+    b.gen_pseudo(&mut legal, false);
     // Только осуществимые захваты: при шахе возможны и взятие шахующей фигуры,
     // и перекрытие луча с захватом другой фигуры. Псевдоударов недостаточно.
     for &mv in legal.m[..legal.n].iter() {
         let nb = b.make(mv);
+        if nb.attacked(nb.ksq[b.side_idx()] as usize, -b.side) {
+            continue;
+        }
         if nb.in_check() && !has_legal(&nb) {
             return MATED_NEXT;
         }
@@ -180,6 +189,7 @@ struct Chain {
     board: Board,
     hashes: Vec<u64>,
     vals: Vec<i32>,
+    phase_confidence: Vec<f32>,
     done: Option<End>,
     grp: usize,
     w: f32,
@@ -198,6 +208,7 @@ pub struct Searcher {
     stop: Arc<AtomicBool>,
     pub node_limit: u64, // 0 — без ограничения по числу осевших позиций
     report: Report,
+    pub report_variants: usize,
     parameter_revision: u64,
 }
 
@@ -212,6 +223,7 @@ impl Searcher {
             stop,
             node_limit: 0,
             report: Report::Quiet,
+            report_variants: usize::MAX,
             parameter_revision: crate::params::revision(),
         }
     }
@@ -332,11 +344,21 @@ impl Searcher {
                     val: v,
                     term: true,
                 },
-                None => Cand {
-                    mv,
-                    val: self.settle(&nb),
-                    term: false,
-                },
+                None => {
+                    let mut val = self.settle(&nb);
+                    // Повторный визит уменьшает положительный поток энергии:
+                    // движение по замкнутому контуру не приближает выигрыш.
+                    // Это не объявление ничьей до третьего повторения.
+                    let visits = game.iter().chain(chain).filter(|&&h| h == nb.hash).count();
+                    if val > 0 && val < MATE_BOUND && visits > 0 {
+                        val = (val as f32 / (1.0 + 0.65 * visits as f32)).round() as i32;
+                    }
+                    Cand {
+                        mv,
+                        val,
+                        term: false,
+                    }
+                }
             })
         })
     }
@@ -347,10 +369,9 @@ impl Searcher {
         let sign = if ply % 2 == 1 { 1 } else { -1 };
         n.board = c.board.make(cand.mv);
         n.moves.push(cand.mv);
-        // Повторный обход уже изученного цикла не даёт новой информации.
-        // Это остановка прогноза, а не объявление ничьей по двум повторениям.
-        let cycle = n.hashes.contains(&n.board.hash);
         n.hashes.push(n.board.hash);
+        // Доверие затухает при неоднозначных продолжениях. Это вес
+        // наблюдаемой фазы, а не условие преждевременного обрыва расчёта.
         n.confidence *= 0.94 + 0.06 * certainty;
         if cand.term {
             n.done = Some(if cand.val >= MATE_BOUND {
@@ -370,8 +391,9 @@ impl Searcher {
             }
         } else {
             n.vals.push(sign * cand.val);
+            n.phase_confidence.push(n.confidence);
         }
-        n.active = n.done.is_none() && !cycle && n.confidence >= 0.20;
+        n.active = n.done.is_none();
         n
     }
 
@@ -400,13 +422,10 @@ impl Searcher {
         if scored.iter().any(|x| x.is_none()) {
             return None;
         }
-        let cs: Vec<Cand> = scored.into_iter().flatten().collect();
-        let best = cs
-            .iter()
-            .enumerate()
-            .max_by(|(ai, a), (bi, b)| a.val.cmp(&b.val).then(bi.cmp(ai)))
-            .map(|(i, _)| i)?;
-        Some(self.apply_pick(c, &cs[best], Self::concentration(&cs, tau)))
+        let mut cs: Vec<Cand> = scored.into_iter().flatten().collect();
+        cs.sort_by(|a, b| b.val.cmp(&a.val));
+        let best = cs.first()?;
+        Some(self.apply_pick(c, best, Self::concentration(&cs, tau)))
     }
 
     /// Первые ответы — ограниченная суперпозиция локальных волн. Амплитуды
@@ -450,26 +469,35 @@ impl Searcher {
         // Низкочастотная часть всех наблюдённых фаз. Один далёкий скачок
         // не заменяет собой всё предшествующее развитие поля.
         let mut smooth = c.s0 as f32;
-        for pair in c.vals[1..].chunks(2) {
+        let mut drawdown = 0.0f32;
+        let mut phase_mass = 0.0f32;
+        for (pair, confidence) in c.vals[1..].chunks(2).zip(c.phase_confidence[1..].chunks(2)) {
+            let reliability = confidence.iter().sum::<f32>() / confidence.len() as f32;
             let phase = pair.iter().map(|&v| v as f32).sum::<f32>() / pair.len() as f32;
-            smooth += 0.35 * (phase - smooth);
+            drawdown += reliability * (c.s0 as f32 - phase).max(0.0).powi(2);
+            phase_mass += reliability;
+            smooth += 0.35 * reliability * (phase - smooth);
         }
         if matches!(c.done, Some(End::Draw)) {
             // Ничья в дальнем прогнозе не отменяет близкую потерю материала.
             smooth *= 1.0 - c.confidence;
         }
         let delta = smooth - c.s0 as f32;
-        // Благоприятное дальнее событие требует достоверной траектории.
-        // Наблюдаемая потеря учитывается без скидки за неопределённость.
-        let forecast = if delta > 0.0 {
-            delta * c.confidence
-        } else {
-            delta
-        };
+        // Каждая фаза уже взвешена своей достоверностью. Это сохраняет
+        // раннюю информацию и ослабляет как далёкие выигрыши, так и потери.
+        let forecast = delta;
         let mut score = c.s0 as f32 + weight * forecast;
+        if phase_mass > 0.0 {
+            // Среднеквадратичный провал энергии: позднее восстановление
+            // в одной предположительной линии не стирает ранний риск.
+            score -= weight * 0.35 * (drawdown / phase_mass).sqrt();
+        }
         if let Some(End::Mate { sign, ply }) = c.done {
-            let bonus = Ps::load().mate_bonus * c.confidence / (1.0 + 0.15 * ply as f32);
-            score += weight * sign as f32 * bonus;
+            let bonus =
+                Ps::load().mate_bonus * c.confidence / (1.0 + 0.15 * (ply as f32).powf(1.3));
+            // Терминальное событие несёт больше информации, чем колебание
+            // статического поля. Нулевая настройка по-прежнему выключает прогноз.
+            score += weight.sqrt() * sign as f32 * bonus;
         }
         if c.mv == hint {
             score += PLAN_BONUS as f32;
@@ -513,20 +541,28 @@ impl Searcher {
                 score,
                 depth: chains[i].moves.len() as i32,
                 pv: chains[i].moves.clone(),
+                local_energy: chains[i].s0,
+                confidence: chains
+                    .iter()
+                    .filter(|c| c.grp == chains[i].grp)
+                    .map(|c| c.confidence * c.w)
+                    .sum::<f32>()
+                    / weights[chains[i].grp] as f32,
+                replies: chains.iter().filter(|c| c.grp == chains[i].grp).count(),
             })
             .collect()
     }
 
     /// Слабые по энергии корневые траектории сохраняют оценку, но не тратят
-    /// время на далёкие фазы. Восемь лучших ходов сохраняются независимо
+    /// время на далёкие фазы. Основные корневые волны сохраняются независимо
     /// от количества запрошенных строк MultiPV.
     fn focus(&self, chains: &mut [Chain], hint: Move) {
         let ranked = self.make_lines(chains, usize::MAX, 0, hint);
-        if ranked.len() <= 8 {
+        if ranked.len() <= self.cfg.wave_width {
             return;
         }
         let peak = ranked[0].score;
-        let keep = 8;
+        let keep = self.cfg.wave_width;
         for c in chains {
             let rank = ranked
                 .iter()
@@ -542,7 +578,7 @@ impl Searcher {
         let nodes = self.counter.load(Ordering::Relaxed);
         let el = self.start.elapsed().as_millis() as u64;
         let nps = if el > 0 { nodes * 1000 / el } else { 0 };
-        for (i, l) in lines.iter().enumerate() {
+        for (i, l) in lines.iter().take(self.report_variants).enumerate() {
             let sc = if l.score > MATE_BOUND || l.score < -MATE_BOUND {
                 let n = (MATE - l.score.abs() + 1) / 2;
                 format!("mate {}", if l.score > 0 { n } else { -n })
@@ -594,6 +630,7 @@ impl Searcher {
             nodes: 0,
             elapsed_ms: 0,
             lines: Vec::new(),
+            continuations: Vec::new(),
         };
         let legal = root.legal_moves();
         if legal.n == 0 {
@@ -610,6 +647,9 @@ impl Searcher {
                 score: 0,
                 depth: 0,
                 pv: vec![result.best],
+                local_energy: 0,
+                confidence: 1.0,
+                replies: 0,
             });
             if self.report == Report::Uci {
                 self.emit_uci(0, &result.lines);
@@ -671,6 +711,7 @@ impl Searcher {
                 board: nb,
                 hashes: vec![nb.hash],
                 vals: vec![s0],
+                phase_confidence: vec![1.0],
                 done,
                 grp: chains.len(),
                 w: 1.0,
@@ -693,7 +734,7 @@ impl Searcher {
                     || c.mv.promo != 0
                     || root.sq[c.mv.to as usize] != 0
                     || c.mv.flag == FLAG_EP;
-                if !forcing && rank >= 8 && c.s0 < peak - 250 {
+                if !forcing && rank >= self.cfg.wave_width && c.s0 < peak - 250 {
                     c.active = false;
                 }
             }
@@ -704,7 +745,7 @@ impl Searcher {
             self.emit_uci(depth, &best_lines);
         }
 
-        // Дальше цепочки растут по полуходу за итерацию. Прерванная итерация отбрасывается целиком.
+        // Дальше цепочки растут по полуходу за итерацию. Прерванная группа корня сохраняет последнюю полную фазу.
         loop {
             let top = best_lines[0].score;
             if top > MATE_BOUND || top < -MATE_BOUND {
@@ -726,18 +767,44 @@ impl Searcher {
                 let br: Vec<Option<Vec<Chain>>> = par_map(chains.len(), threads, |i| {
                     self.branch(&chains[i], &game, rk, tau)
                 });
-                if br.iter().any(|x| x.is_none()) {
+                let complete = br.iter().all(|x| x.is_some());
+                // Завершённые ответы одного корня публикуются вместе.
+                // Дедлайн другой группы больше не уничтожает готовую работу.
+                chains = br
+                    .into_iter()
+                    .enumerate()
+                    .flat_map(|(i, bundle)| bundle.unwrap_or_else(|| vec![chains[i].clone()]))
+                    .collect();
+                if !complete {
+                    best_lines = self.make_lines(&chains, nvar, depth + 1, hint);
                     break;
                 }
-                chains = br.into_iter().flatten().flatten().collect();
             } else {
                 let ext: Vec<Option<Chain>> = par_map(chains.len(), threads, |i| {
                     self.extend(&chains[i], &game, tau)
                 });
-                if ext.iter().any(|x| x.is_none()) {
+                let complete = ext.iter().all(|x| x.is_some());
+                let mut ready = vec![true; legal.n];
+                for (i, next) in ext.iter().enumerate() {
+                    if next.is_none() {
+                        ready[chains[i].grp] = false;
+                    }
+                }
+                chains = ext
+                    .into_iter()
+                    .enumerate()
+                    .map(|(i, next)| {
+                        if ready[chains[i].grp] {
+                            next.unwrap()
+                        } else {
+                            chains[i].clone()
+                        }
+                    })
+                    .collect();
+                if !complete {
+                    best_lines = self.make_lines(&chains, nvar, depth + 1, hint);
                     break;
                 }
-                chains = ext.into_iter().flatten().collect();
             }
             depth += 1;
             if depth == 3 {
@@ -753,8 +820,12 @@ impl Searcher {
         result.score = best_lines[0].score;
         result.depth = best_lines[0].depth;
         result.lines = best_lines;
+        result.continuations = chains.iter().map(|c| c.moves.clone()).collect();
         result.nodes = self.counter.load(Ordering::Relaxed);
         result.elapsed_ms = self.start.elapsed().as_millis() as u64;
+        if self.report == Report::Uci {
+            self.emit_uci(result.depth, &result.lines);
+        }
         result
     }
 }
@@ -832,6 +903,7 @@ mod tests {
             board: b,
             hashes: vec![],
             vals: vec![-900, -900, -900, -900],
+            phase_confidence: vec![1.0; 4],
             done: Some(End::Draw),
             grp: 0,
             w: 1.0,

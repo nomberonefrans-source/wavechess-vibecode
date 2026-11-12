@@ -34,8 +34,8 @@ fn print_banner() {
     println!("  Без битбордов. Без обучения. Только поле волн и математика.");
     println!("==============================================================");
     println!("Каждая фигура излучает волну по своим векторам; сумма волн —");
-    println!("поле, из которого движок знает всё о доске: кто давит, кто");
-    println!("выигрывает, куда вести цепочку ходов. Введите help для команд.");
+    println!("поле давления и энергии. Продолжения — прогнозы модели,");
+    println!("а не доказательство выигрыша. Введите help для команд.");
     println!();
 }
 
@@ -50,6 +50,11 @@ fn print_help() {
     println!("  undo            взять ход назад (вместе с ответом движка)");
     println!("  wave            карта волнового поля и разложение энергии");
     println!("  memory          память движка: партия, баланс по ходам, план");
+    println!("  save FILE       сохранить партию и планы в файл");
+    println!("  load FILE       восстановить сохранённую партию и планы");
+    println!("  variety N       окно разнообразия дебюта, сотые пешки (0..100)");
+    println!("  seed N          воспроизводимое разнообразие (0 — новый seed при запуске)");
+    println!("  width N         число основных корневых волн (1..32)");
     println!("  time N          предел времени на ход, секунд (например: time 5)");
     println!(
         "  depth N         максимальная длина волновой цепочки, полуходов (1..{})",
@@ -60,8 +65,8 @@ fn print_help() {
     println!("  threads N       число ядер (потоков) для расчёта");
     println!("  cache N         размер кэша волновых оценок, МБ (0 — выключить)");
     println!("  clearcache      очистить кэш");
-    println!("  threat N        вес волны угрозы, % (0..300, по умолчанию 100)");
-    println!("  chain N         вес конца цепочки, % (0..100, по умолчанию 40)");
+    println!("  threat N        вес волны угрозы, % (0..300, по умолчанию 130)");
+    println!("  chain N         вес прогноза, % (0..100, по умолчанию 40)");
     println!("  fen             показать позицию в FEN");
     println!("  setfen FEN      загрузить позицию");
     println!("  perft N         проверка правил: подсчёт узлов на глубину N");
@@ -168,6 +173,12 @@ fn print_analysis(before: &Board, res: &SearchResult) {
             "             волна в конце цепочки: белые {:.0}% / чёрные {:.0}%",
             sh * 100.0,
             (1.0 - sh) * 100.0
+        );
+        println!(
+            "             ближайшая энергия {:+.2}, уверенность модели {:.1}%, траекторий {}",
+            l.local_energy as f32 / 100.0,
+            l.confidence * 100.0,
+            l.replies
         );
     }
 }
@@ -409,6 +420,49 @@ pub fn run() {
                 }
                 "memory" | "память" | "history" => {
                     println!("{}", eng.memory_report());
+                }
+                "save" => {
+                    let path = line.split_once(char::is_whitespace).map(|(_, p)| p.trim());
+                    match path.filter(|p| !p.is_empty()) {
+                        Some(p) => match std::fs::write(p, eng.save_game()) {
+                            Ok(()) => println!("Партия и планы сохранены: {}", p),
+                            Err(e) => println!("Не удалось сохранить: {}", e),
+                        },
+                        None => println!("Пример: save game.wave"),
+                    }
+                }
+                "load" => {
+                    let path = line.split_once(char::is_whitespace).map(|(_, p)| p.trim());
+                    match path.filter(|p| !p.is_empty()) {
+                        Some(p) => match std::fs::read_to_string(p)
+                            .map_err(|e| e.to_string())
+                            .and_then(|text| eng.load_game(&text))
+                        {
+                            Ok(()) => {
+                                println!("Партия восстановлена: {}", p);
+                                state_changed = true;
+                            }
+                            Err(e) => println!("Не удалось восстановить: {}", e),
+                        },
+                        None => println!("Пример: load game.wave"),
+                    }
+                }
+                "variety" | "seed" | "width" => {
+                    if let Some(v) = words.get(1).and_then(|x| x.parse::<i64>().ok()) {
+                        let mut c = eng.config();
+                        match cmd.as_str() {
+                            "variety" => c.opening_variety = v.clamp(0, 100) as i32,
+                            "width" => c.wave_width = v.clamp(1, 32) as usize,
+                            _ => c.random_seed = v.clamp(0, 2147483647) as u64,
+                        }
+                        eng.set_config(&c);
+                        println!(
+                            "Ширина волн: {}, разнообразие: {}, seed: {}",
+                            c.wave_width, c.opening_variety, c.random_seed
+                        );
+                    } else {
+                        println!("Примеры: variety 20, seed 42, width 6");
+                    }
                 }
                 "fen" => {
                     println!("{}", eng.board.to_fen());

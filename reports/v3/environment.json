@@ -1,0 +1,15 @@
+{
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+  "machine": "x86_64",
+  "cpu_quota": "2 logical CPUs (cpu.max: 200000 100000)",
+  "rust": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+  "stockfish": {
+    "version": "Stockfish 19",
+    "url": "https://github.com/official-stockfish/Stockfish/releases/download/sf_19/stockfish-linux-x86-64-universal.tar.gz",
+    "sha256": "0f83d24cc46d2c66c60f16001af5444873bc112b7d028594513426894c12da19"
+  },
+  "binaries": {
+    "baseline": "77495d6379d9144f67353b08545a6e2e21b4372b1d14fa2d294ff0b707bffbd1",
+    "revised": "5a3d591bf745ff5fe99e13c2478e4374583e520394e888ad95c5d934d2d426c3"
+  }
+}

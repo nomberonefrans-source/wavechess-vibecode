@@ -1,0 +1,47 @@
+[Event "WaveChess start"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "revised"]
+[Black "baseline"]
+[Result "0-1"]
+[Termination "CHECKMATE"]
+[TimeControl "150ms/move"]
+
+1. Nc3 d5 2. d4 Nf6 3. Nf3 e6 4. Ne5 c5 5. Be3 Nc6 6. h4 cxd4 7. Bxd4 Qc7 8. Nxc6 bxc6 9. Qd3 e5 10. Be3 d4 11. Bxd4 exd4 12. Qxd4 Be7 13. e3 Be6 14. Qf4 Bd6 15. Qd4 Be5 16. Qa4 O-O 17. Bd3 Rfb8 18. O-O-O Rxb2 19. Kxb2 Rb8+ 20. Bb5 cxb5 21. Qb4 a5 22. Qa3 b4 23. Qa4 Qxc3+ 24. Kc1 Ne4 25. Rd8+ Rxd8 26. Qb3 Bxb3 27. Kb1 Qxc2# 0-1
+
+[Event "WaveChess start"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "baseline"]
+[Black "revised"]
+[Result "1-0"]
+[Termination "CHECKMATE"]
+[TimeControl "150ms/move"]
+
+1. e4 d5 2. exd5 Qxd5 3. Nc3 Qe5+ 4. Be2 Nc6 5. Nf3 Qf4 6. d4 Qd6 7. d5 Ne5 8. Nb5 Qf6 9. Nxc7+ Kd8 10. Nxa8 Bd7 11. Ng5 h6 12. Ne4 Qh4 13. Qd4 f6 14. Qxa7 Qxe4 15. Qb8+ Bc8 16. Qc7+ Ke8 17. Qxc8+ Kf7 18. Nc7 Qb4+ 19. Kf1 g6 20. Qe8+ Kg7 21. Ne6+ Kh7 22. Qxf8 Qe1+ 23. Kxe1 Nf3+ 24. gxf3 f5 25. Qg7# 1-0
+
+[Event "WaveChess start"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "revised"]
+[Black "baseline"]
+[Result "0-1"]
+[Termination "CHECKMATE"]
+[TimeControl "150ms/move"]
+
+1. d3 Nf6 2. Bf4 g6 3. Nc3 d5 4. Nb5 Na6 5. c4 c6 6. Nc3 d4 7. Nb1 e5 8. Bxe5 Qa5+ 9. Qd2 Qxe5 10. Nf3 Qd6 11. Qg5 h5 12. Qe5+ Qxe5 13. Nxe5 h4 14. Nf3 c5 15. Na3 Nb4 16. e3 dxe3 17. fxe3 Bh6 18. Kd2 O-O 19. Nb5 Rd8 20. Nc7 Rb8 21. Nxh4 b5 22. Nxb5 Ne4+ 23. Kd1 Nf2+ 24. Ke1 Nxh1 25. Nxa7 Nc2+ 26. Kd2 Nxa1 27. Nb5 Re8 28. Kc1 Rxe3 29. b4 Re1+ 30. Kb2 Bc1+ 31. Kc3 Nf2 32. bxc5 Nd1+ 33. Kd4 Nc2+ 34. Kd5 Nb4+ 35. Kd4 Bb2+ 36. Nc3 Bxc3# 0-1
+
+[Event "WaveChess start"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "baseline"]
+[Black "revised"]
+[Result "1-0"]
+[Termination "CHECKMATE"]
+[TimeControl "150ms/move"]
+
+1. e4 d5 2. exd5 Qxd5 3. Nc3 Qe5+ 4. Be2 Nc6 5. Nf3 Qf4 6. Nb5 Kd8 7. d4 Qg4 8. d5 Nb4 9. O-O a5 10. Ng5 Qd7 11. Nxf7+ Ke8 12. Nxh8 Nxd5 13. Qxd5 Qxd5 14. Nxc7+ Kd8 15. Nxd5 e6 16. Nb6 Ra7 17. Rd1+ Kc7 18. Nc4 Bb4 19. Bf4+ Kc6 20. Nf7 g6 21. Nd8+ Kc5 22. Be3+ Kb5 23. Nb6# 1-0

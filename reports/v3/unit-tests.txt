@@ -1,0 +1,35 @@
+   Compiling wavechess v3.0.0 (/workspace/work/project)
+    Finished `release` profile [optimized] target(s) in 10.52s
+     Running unittests src/main.rs (target/release/deps/wavechess-f1dd44fa2614cf6a)
+
+running 27 tests
+test board::tests::malformed_en_passant_cannot_capture_an_absent_pawn ... ok
+test board::tests::legal_en_passant_changes_repetition_hash ... ok
+test board::tests::move_counters_saturate ... ok
+test board::tests::same_colour_bishops_are_dead_material ... ok
+test board::tests::unavailable_en_passant_does_not_change_repetition_hash ... ok
+test cache::tests::disabled_and_memory_budget ... ok
+test cache::tests::four_colliding_positions_coexist ... ok
+test cache::tests::full_keys_signed_scores_and_clear ... ok
+test engine::tests::alternative_reply_keeps_its_continuation ... ok
+test engine::tests::fen_refresh_preserves_history_repetition_and_same_position_plan ... ok
+test engine::tests::fen_refresh_recovers_two_moves_and_resets_unrelated_position ... ok
+test cache::tests::concurrent_collisions_never_return_another_positions_score ... ok
+test engine::tests::seeded_openings_are_repeatable_varied_and_bounded ... ok
+test params::tests::parameter_domains_reject_nonfinite_and_unbounded_values ... ok
+test search::tests::completed_draw_cannot_be_escaped_by_resetting_clock ... ok
+test search::tests::immediate_stop_returns_legal_fallback_without_evaluations ... ok
+test search::tests::mate_on_fifty_move_boundary_takes_precedence ... ok
+test engine::tests::journal_round_trip_and_invalid_journal_are_atomic ... ok
+test search::tests::speculative_draw_does_not_erase_a_near_queen_loss ... ok
+test wave::tests::en_passant_removes_the_actual_victim ... ok
+test wave::tests::king_cannot_absorb_a_protected_wave ... ok
+test wave::tests::pinned_defender_does_not_protect_pawn ... ok
+test wave::tests::poisoned_pawn_does_not_attract_queen ... ok
+test wave::tests::promotion_flux_includes_created_mass ... ok
+test wave::tests::rear_rook_waits_for_front_queen ... ok
+test wave::tests::undefended_piece_has_full_mass_flux ... ok
+test search::tests::multipv_threads_and_cache_do_not_change_complete_trajectory ... ok
+
+test result: ok. 27 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.07s
+

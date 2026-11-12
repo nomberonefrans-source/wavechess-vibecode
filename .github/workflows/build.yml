@@ -1,23 +1,46 @@
 name: build
 on:
   push:
+    paths:
+      - 'src/**'
+      - 'Cargo.*'
+      - 'tests/**'
+      - '.github/workflows/build.yml'
+  pull_request:
+    paths:
+      - "src/**"
+      - "Cargo.*"
+      - "tests/**"
+      - ".github/workflows/build.yml"
   workflow_dispatch:
+permissions:
+  contents: read
 jobs:
   build:
     strategy:
+      fail-fast: false
       matrix:
-        os: [windows-latest, ubuntu-latest]
+        include:
+          - os: windows-latest
+            binary: target/release/wavechess.exe
+          - os: ubuntu-latest
+            binary: target/release/wavechess
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
-      - run: cargo test
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: cargo test --release
       - run: cargo build --release
       - run: cargo run --release -- selftest
+      - run: python tests/uci_protocol.py ${{ matrix.binary }}
       - uses: actions/upload-artifact@v4
         with:
-          name: wavechess-${{ matrix.os }}
+          name: wavechess-3.0-${{ matrix.os }}
           path: |
-            target/release/wavechess.exe
-            target/release/wavechess
-          if-no-files-found: ignore
+            ${{ matrix.binary }}
+            README.md
+            CHANGES_RU.md
+          if-no-files-found: error

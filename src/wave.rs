@@ -51,6 +51,9 @@ struct Tables {
     zone: Vec<[f32; 64]>,
     /// Расстояние от центра доски (0.7 в центре, 4.95 в углу).
     cdist: [f32; 64],
+    inverse_mass: [f32; 5],
+    support_mass: [f32; 5],
+    transport_decay: [f32; 8],
 }
 
 static TABLES: OnceLock<Tables> = OnceLock::new();
@@ -79,6 +82,9 @@ fn tables() -> &'static Tables {
             centre,
             zone,
             cdist,
+            inverse_mass: std::array::from_fn(|i| (100.0 / MASS[i]).sqrt()),
+            support_mass: std::array::from_fn(|i| (1.0 + MASS[i] / 100.0).ln()),
+            transport_decay: std::array::from_fn(|i| 0.55f32.powi(i as i32)),
         }
     })
 }
@@ -589,11 +595,10 @@ pub fn analyze_with(b: &Board, ps: &Ps) -> (WaveField, Energy) {
                 sign * t.centre[s] * (ps.king_activity * (1.0 - phase) - ps.king_shelter * phase);
             continue;
         }
-        let mass = MASS[(p.abs() - 1) as usize];
         let support = sat(w.amp[c][s]);
         e.placement += sign
-            * (ps.relief * (100.0 / mass).sqrt() * t.centre[s]
-                + ps.cohesion * (1.0 + mass / 100.0).ln() * support);
+            * (ps.relief * t.inverse_mass[(p.abs() - 1) as usize] * t.centre[s]
+                + ps.cohesion * t.support_mass[(p.abs() - 1) as usize] * support);
         if w.pin[s] != 0 {
             e.placement -= sign * ps.k_pin;
         }
@@ -627,8 +632,11 @@ pub fn analyze_with(b: &Board, ps: &Ps) -> (WaveField, Energy) {
         let intercept = (distance as i32 - cheb(b.ksq[1 - c] as usize, boundary)).max(0) as f32;
         let escort = 1.0 / (1.0 + cheb(b.ksq[c] as usize, s) as f32);
         let arrival = transmission / (1.0 + intercept * (1.0 - escort));
-        e.structure +=
-            sign * ps.transport * (MASS[4] - MASS[0]) * 0.55f32.powi(distance as i32) * arrival;
+        e.structure += sign
+            * ps.transport
+            * (MASS[4] - MASS[0])
+            * t.transport_decay[distance as usize]
+            * arrival;
     }
 
     // 4) эндшпиль: сильнейший гонит короля слабейшего к краю и подтягивает своего

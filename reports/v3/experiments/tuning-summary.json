@@ -1,0 +1,185 @@
+{
+  "note": "Development trials, not independent strength evidence. Includes failed settings; selected using these results. Different binaries and concurrent machine load.",
+  "trials": [
+    {
+      "trial": "spectral",
+      "conditions": {
+        "new": "/workspace/work/bin/wavechess-spectral",
+        "old": "/workspace/work/bin/wavechess-2.2",
+        "options": "{}",
+        "old_options": "{}",
+        "ms": 100,
+        "games": 8,
+        "out": "/workspace/work/experiments/spectral.json",
+        "nodes": null
+      },
+      "wins": 4,
+      "losses": 3,
+      "draws": 1,
+      "unfinished": 0
+    },
+    {
+      "trial": "field-balanced",
+      "conditions": {
+        "new": "/workspace/work/bin/wavechess-tuning",
+        "old": "/workspace/work/bin/wavechess-2.2",
+        "options": "{\"Chain Weight\":25,\"Wave Width\":10,\"W:KingShelter\":160,\"W:Flight\":50,\"W:Mob\":2,\"W:Relief\":32}",
+        "old_options": "{}",
+        "ms": 100,
+        "games": 8,
+        "out": "/workspace/work/experiments/field-balanced.json",
+        "nodes": null
+      },
+      "wins": 0,
+      "losses": 6,
+      "draws": 2,
+      "unfinished": 0
+    },
+    {
+      "trial": "initial-match",
+      "conditions": {
+        "movetime_ms": 80
+      },
+      "wins": 2,
+      "losses": 6,
+      "draws": 0,
+      "unfinished": 0
+    },
+    {
+      "trial": "c25w10",
+      "conditions": {
+        "new": "/workspace/work/project/target/release/wavechess",
+        "old": "/workspace/work/bin/wavechess-2.2",
+        "options": "{\"Chain Weight\":25,\"Wave Width\":10}",
+        "old_options": "{}",
+        "ms": 80,
+        "games": 8,
+        "out": "/workspace/work/experiments/c25w10.json",
+        "nodes": null
+      },
+      "wins": 5,
+      "losses": 1,
+      "draws": 2,
+      "unfinished": 0
+    },
+    {
+      "trial": "risk25",
+      "conditions": {
+        "new": "/workspace/work/bin/wavechess-risk",
+        "old": "/workspace/work/bin/wavechess-2.2",
+        "options": "{}",
+        "old_options": "{}",
+        "ms": 100,
+        "games": 8,
+        "out": "/workspace/work/experiments/risk25.json",
+        "nodes": null
+      },
+      "wins": 1,
+      "losses": 5,
+      "draws": 2,
+      "unfinished": 0
+    },
+    {
+      "trial": "reply5",
+      "conditions": {
+        "new": "/workspace/work/bin/wavechess-tuning",
+        "old": "/workspace/work/bin/wavechess-2.2",
+        "options": "{\"Chain Weight\":25,\"Wave Width\":10,\"W:ReplyK\":5,\"W:ReplyTau\":25}",
+        "old_options": "{}",
+        "ms": 100,
+        "games": 8,
+        "out": "/workspace/work/experiments/reply5.json",
+        "nodes": null
+      },
+      "wins": 2,
+      "losses": 5,
+      "draws": 1,
+      "unfinished": 0
+    },
+    {
+      "trial": "c40w10",
+      "conditions": {
+        "new": "/workspace/work/project/target/release/wavechess",
+        "old": "/workspace/work/bin/wavechess-2.2",
+        "options": "{\"Chain Weight\":40,\"Wave Width\":10}",
+        "old_options": "{}",
+        "ms": 80,
+        "games": 8,
+        "out": "/workspace/work/experiments/c40w10.json",
+        "nodes": null
+      },
+      "wins": 3,
+      "losses": 2,
+      "draws": 3,
+      "unfinished": 0
+    },
+    {
+      "trial": "c15w16",
+      "conditions": {
+        "new": "/workspace/work/bin/wavechess-3.0",
+        "old": "/workspace/work/bin/wavechess-2.2",
+        "options": "{\"Chain Weight\":15,\"Wave Width\":16}",
+        "old_options": "{}",
+        "ms": 100,
+        "games": 8,
+        "out": "/workspace/work/experiments/c15w16.json",
+        "nodes": null
+      },
+      "wins": 3,
+      "losses": 4,
+      "draws": 1,
+      "unfinished": 0
+    },
+    {
+      "trial": "risk40",
+      "conditions": {
+        "new": "/workspace/work/bin/wavechess-risk",
+        "old": "/workspace/work/bin/wavechess-2.2",
+        "options": "{\"Chain Weight\":40,\"Wave Width\":10}",
+        "old_options": "{}",
+        "ms": 100,
+        "games": 8,
+        "out": "/workspace/work/experiments/risk40.json",
+        "nodes": null
+      },
+      "wins": 3,
+      "losses": 3,
+      "draws": 2,
+      "unfinished": 0
+    },
+    {
+      "trial": "spectral130",
+      "conditions": {
+        "new": "/workspace/work/bin/wavechess-spectral",
+        "old": "/workspace/work/bin/wavechess-2.2",
+        "options": "{\"Threat Weight\":130}",
+        "old_options": "{}",
+        "ms": 100,
+        "games": 8,
+        "out": "/workspace/work/experiments/spectral130.json",
+        "nodes": null
+      },
+      "wins": 6,
+      "losses": 1,
+      "draws": 1,
+      "unfinished": 0
+    },
+    {
+      "trial": "grad",
+      "conditions": {
+        "new": "/workspace/work/bin/wavechess-grad",
+        "old": "/workspace/work/bin/wavechess-2.2",
+        "options": "{}",
+        "old_options": "{}",
+        "ms": 100,
+        "games": 8,
+        "out": "/workspace/work/experiments/grad.json",
+        "nodes": null
+      },
+      "wins": 4,
+      "losses": 3,
+      "draws": 1,
+      "unfinished": 0
+    }
+  ]
+}

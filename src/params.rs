@@ -100,6 +100,14 @@ pub fn set(name: &str, v: f32) -> bool {
     false
 }
 
+pub fn values() -> Vec<(&'static str, f32)> {
+    NAMES
+        .iter()
+        .enumerate()
+        .map(|(i, &name)| (name, f32::from_bits(VALS[i].load(Ordering::Relaxed))))
+        .collect()
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

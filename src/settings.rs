@@ -13,7 +13,7 @@ pub const CACHE_MAX_MB: usize = 2048;
 
 /// Вес волны угрозы (в процентах): насколько сильно движок боится «волнового размена»
 /// на клетках своих фигур и ценит давление на чужие. 100 — как задумано, 0 — угрозы не учитываются.
-pub const THREAT_DEFAULT: i32 = 100;
+pub const THREAT_DEFAULT: i32 = 130;
 pub const THREAT_MIN: i32 = 0;
 pub const THREAT_MAX: i32 = 300;
 
@@ -37,6 +37,9 @@ pub struct EngineConfig {
     pub cache_mb: usize,
     pub threat_pct: i32,
     pub chain_pct: i32,
+    pub wave_width: usize,
+    pub opening_variety: i32,
+    pub random_seed: u64,
 }
 
 impl Default for EngineConfig {
@@ -46,6 +49,9 @@ impl Default for EngineConfig {
             cache_mb: CACHE_DEFAULT_MB,
             threat_pct: THREAT_DEFAULT,
             chain_pct: CHAIN_DEFAULT,
+            wave_width: 8,
+            opening_variety: 20,
+            random_seed: 0,
         };
         c.set_threads(available_cores() as i64);
         c
@@ -87,7 +93,7 @@ impl EngineConfig {
             format!("{} МБ", self.cache_mb)
         };
         format!(
-            "  ядра (потоки)         {}   (доступно в системе: {})\n  кэш волновых оценок   {}\n  вес волны угрозы      {} %\n  вес конца цепочки     {} %",
+            "  ядра (потоки)         {}   (доступно в системе: {})\n  кэш волновых оценок   {}\n  вес волны угрозы      {} %\n  вес прогноза          {} %",
             self.threads,
             available_cores(),
             cache,

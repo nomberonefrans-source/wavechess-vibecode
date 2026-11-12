@@ -5,7 +5,7 @@
 //!   Hash              размер кэша волновых оценок, МБ (0 — кэш выключен, по умолчанию 32)
 //!   Clear Hash        кнопка: очистить кэш
 //!   MultiPV           число линий анализа 1..8 (старое имя `Variants` тоже принимается)
-//!   Threat Weight     вес волны угрозы, % (0..300, по умолчанию 100)
+//!   Threat Weight     вес волны угрозы, % (0..300, по умолчанию 130)
 //!   Chain Weight      вес конца волновой цепочки, % (0..100, по умолчанию 40)
 //!   Move Overhead     запас времени на задержки оболочки/сети, мс (вычитается из времени хода)
 //!   UCI_LimitStrength / UCI_Elo   ограничение силы (длина цепочки + число позиций, шкала ПРИБЛИЗИТЕЛЬНАЯ)
@@ -103,6 +103,9 @@ fn print_options() {
         CACHE_DEFAULT_MB, CACHE_MIN_MB, CACHE_MAX_MB
     ));
     out("option name Clear Hash type button");
+    out("option name Wave Width type spin default 8 min 1 max 32");
+    out("option name Opening Variety type spin default 20 min 0 max 100");
+    out("option name Random Seed type spin default 0 min 0 max 2147483647");
     out(&format!(
         "option name MultiPV type spin default 1 min 1 max {}",
         MULTIPV_MAX
@@ -125,10 +128,27 @@ fn print_options() {
         ELO_DEFAULT, ELO_MIN, ELO_MAX
     ));
     out("option name UCI_AnalyseMode type check default false");
+    for (name, value) in crate::params::values() {
+        out(&format!(
+            "option name W:{} type string default {}",
+            name, value
+        ));
+    }
 }
 
 fn apply_option(name: &str, value: &str, st: &mut Settings, eng: &mut Engine) {
     match name.trim().to_lowercase().as_str() {
+        "wave width" | "opening variety" | "random seed" => {
+            if let Ok(v) = value.trim().parse::<i64>() {
+                let mut c = eng.config();
+                match name.trim().to_lowercase().as_str() {
+                    "wave width" => c.wave_width = v.clamp(1, 32) as usize,
+                    "opening variety" => c.opening_variety = v.clamp(0, 100) as i32,
+                    _ => c.random_seed = v.clamp(0, 2147483647) as u64,
+                }
+                eng.set_config(&c);
+            }
+        }
         "threads" => {
             if let Ok(v) = value.trim().parse::<i64>() {
                 let mut c = eng.config();
@@ -288,7 +308,7 @@ pub fn run() {
         }
         match words[0] {
             "uci" => {
-                out("id name WaveChess 2.2 (wave mathematics)");
+                out("id name WaveChess 3.0 (wave mathematics)");
                 out("id author WaveChess");
                 print_options();
                 out("uciok");
@@ -359,7 +379,7 @@ pub fn run() {
                 if !can_extend {
                     match Board::from_fen(&fen) {
                         Ok(b) => {
-                            eng.set_board(b);
+                            eng.sync_board(b, engine_side);
                             start_fen = fen.clone();
                             played.clear();
                         }
@@ -546,6 +566,20 @@ pub fn run() {
             "stop" => {} // уже учтён потоком чтения по номеру go
             "d" | "fen" => {
                 out(&eng.board.to_fen());
+            }
+            "memory" => {
+                out(&format!(
+                    "info string memory moves {} positions {} predictions {}/{} plan {}",
+                    eng.history.len(),
+                    eng.hashes.len(),
+                    eng.predicted_hits,
+                    eng.predicted_total,
+                    eng.plan
+                        .iter()
+                        .map(Move::to_uci)
+                        .collect::<Vec<_>>()
+                        .join(" ")
+                ));
             }
             "quit" => break,
             _ => {}

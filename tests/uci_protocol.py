@@ -77,7 +77,7 @@ class Protocol(unittest.TestCase):
 
     def test_removed_recursive_solver_options(self):
         text = "\n".join(self.engine.handshake)
-        self.assertIn("WaveChess 2.2", text)
+        self.assertIn("WaveChess 3.0", text)
         self.assertNotIn("Mate Defense", text)
         self.assertNotIn("Mate Attack", text)
 
@@ -116,6 +116,49 @@ class Protocol(unittest.TestCase):
         lines = self.engine.until(lambda line: line.startswith("bestmove "), timeout=5)
         self.assertNotEqual(lines[-1], "bestmove 0000")
         self.assertFalse(any("NaN" in line or "inf" in line.split() for line in lines))
+
+    def test_fen_only_updates_keep_real_repetition_history(self):
+        fens = [
+            "rnbqkbnr/pppppppp/8/8/8/5N2/PPPPPPPP/RNBQKB1R b KQkq - 1 1",
+            "rnbqkb1r/pppppppp/5n2/8/8/5N2/PPPPPPPP/RNBQKB1R w KQkq - 2 2",
+            "rnbqkb1r/pppppppp/5n2/8/8/8/PPPPPPPP/RNBQKBNR b KQkq - 3 2",
+            "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 4 3",
+        ]
+        self.engine.send("position startpos")
+        for fen in fens:
+            self.engine.send("position fen " + fen)
+        self.engine.send("memory")
+        info = self.engine.until(lambda line: line.startswith("info string memory"))[-1]
+        self.assertIn("moves 4 positions 5", info)
+        self.engine.send("setoption name Clear Hash\nmemory")
+        info = self.engine.until(lambda line: line.startswith("info string memory"))[-1]
+        self.assertIn("moves 4 positions 5", info)
+        self.engine.send("ucinewgame\nmemory")
+        info = self.engine.until(lambda line: line.startswith("info string memory"))[-1]
+        self.assertIn("moves 0 positions 1", info)
+
+    def test_seeded_variety_and_final_pv_match_bestmove(self):
+        self.engine.send("setoption name Random Seed value 42")
+        seen = set()
+        for _ in range(12):
+            self.engine.send("ucinewgame\nposition startpos\ngo depth 1")
+            lines = self.engine.until(lambda line: line.startswith("bestmove "))
+            best = lines[-1].split()[1]
+            pv = [line for line in lines if " multipv 1 " in line and " pv " in line][-1]
+            self.assertEqual(pv.split(" pv ")[1].split()[0], best)
+            self.assertFalse(any("multipv 2" in line for line in lines))
+            seen.add(best)
+        self.assertGreaterEqual(len(seen), 2)
+
+    def test_analysis_is_deterministic_and_all_weights_are_advertised(self):
+        text = "\n".join(self.engine.handshake)
+        self.assertIn("option name W:ReplyK", text)
+        self.engine.send("setoption name UCI_AnalyseMode value true")
+        choices = []
+        for _ in range(3):
+            self.engine.send("ucinewgame\nposition startpos\ngo depth 2")
+            choices.append(self.engine.until(lambda line: line.startswith("bestmove "))[-1].split()[1])
+        self.assertEqual(len(set(choices)), 1)
 
 
 if __name__ == "__main__":

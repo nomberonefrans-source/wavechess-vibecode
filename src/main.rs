@@ -36,7 +36,7 @@ fn setup_console() {
 fn setup_console() {}
 
 fn print_usage() {
-    println!("WaveChess 2.2 — шахматный движок на волновой математике");
+    println!("WaveChess 3.0 — шахматный движок на волновой математике");
     println!();
     println!("Использование:");
     println!("  wavechess            игра в консоли (если запущен из терминала)");
