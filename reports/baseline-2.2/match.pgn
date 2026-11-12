@@ -1,0 +1,87 @@
+[Event "WaveChess paired smoke match"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "revised"]
+[Black "baseline"]
+[Result "1/2-1/2"]
+[Termination "INSUFFICIENT_MATERIAL"]
+
+1. d3 Nc6 2. Nf3 Nf6 3. Nc3 d5 4. Bf4 d4 5. Nb5 e5 6. Nxe5 Nxe5 7. Bxe5 Bb4+ 8. c3 dxc3 9. bxc3 Bxc3+ 10. Bxc3 Bd7 11. Bxf6 gxf6 12. Qa4 Bxb5 13. Qxb5+ c6 14. Qxb7 Rb8 15. Qxc6+ Ke7 16. Rc1 Qa5+ 17. Qc3 Qxc3+ 18. Rxc3 Rhc8 19. Rc4 Rxc4 20. dxc4 Rb2 21. a3 Rb3 22. a4 Rb4 23. e4 Rxa4 24. Kd2 Rb4 25. Kc3 Rb6 26. c5 Rc6 27. Kb4 a6 28. Bc4 h5 29. Ra1 f5 30. exf5 a5+ 31. Kc3 Rxc5 32. Re1+ Kd7 33. f6 a4 34. Kd4 Rf5 35. Bxf7 Rxf6 36. Be8+ Kc7 37. Bxa4 Rxf2 38. Rc1+ Kb6 39. Rc2 Rf4+ 40. Ke3 Rxa4 41. Kf3 Kb5 42. Rb2+ Kc4 43. h3 Rb4 44. Rxb4+ Kxb4 45. g4 hxg4+ 46. hxg4 Kc4 47. g5 Kd5 48. g6 Ke6 49. g7 Kf7 50. Ke4 Kxg7 1/2-1/2
+
+[Event "WaveChess paired smoke match"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "baseline"]
+[Black "revised"]
+[Result "1-0"]
+[Termination "CHECKMATE"]
+
+1. Nf3 d6 2. Nc3 Nf6 3. d4 Nc6 4. d5 Ne5 5. Nxe5 dxe5 6. Be3 e6 7. dxe6 Bxe6 8. Qxd8+ Rxd8 9. Rd1 Rxd1+ 10. Kxd1 b6 11. h4 Bc5 12. Bxc5 bxc5 13. e3 Ke7 14. Bb5 Rd8+ 15. Ke2 e4 16. Rd1 Rxd1 17. Kxd1 h6 18. Kd2 g5 19. hxg5 hxg5 20. Bc6 Bf5 21. Nb5 Bg4 22. Nxc7 Kd6 23. Ne8+ Ke7 24. Nxf6 Kxf6 25. Bxe4 Bf5 26. Bxf5 Kxf5 27. a3 Ke5 28. b4 cxb4 29. axb4 f6 30. b5 Kf5 31. f3 g4 32. Kd3 gxf3 33. gxf3 Ke6 34. c4 Kd7 35. c5 Kd8 36. c6 f5 37. e4 f4 38. Kd2 Ke7 39. c7 Kd7 40. c8=Q+ Kxc8 41. Ke2 Kd8 42. Kd3 Kd7 43. e5 Ke8 44. Ke4 Kd7 45. Kd5 Ke7 46. Kc6 Ke6 47. Kb7 a5 48. bxa6 Kxe5 49. Kc6 Kd4 50. a7 Kd3 51. a8=Q Ke2 52. Kc5 Kf2 53. Qe4 Kg3 54. Qe2 Kh3 55. Kd4 Kh4 56. Qg2 Kh5 57. Qg7 Kh4 58. Qg4# 1-0
+
+[Event "WaveChess paired smoke match"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "revised"]
+[Black "baseline"]
+[Result "1-0"]
+[Termination "CHECKMATE"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bc4 Nf6 4. Nc3 Bc5 5. d3 d6 6. Be3 Bxe3 7. fxe3 Be6 8. Bxe6 fxe6 9. O-O O-O 10. Ng5 Qe7 11. Qe2 h6 12. Nf3 a5 13. Kh1 a4 14. a3 Kf7 15. Nh4 g5 16. Qh5+ Kg7 17. Qg6+ Kh8 18. Qxh6+ Qh7 19. Ng6+ Kg8 20. Qxg5 Nxe4 21. Nxe4 Rxf1+ 22. Rxf1 Kg7 23. Nf8+ Kh8 24. Nxh7 Rg8 25. Qh6 Rg7 26. Rf8+ Rg8 27. Nhg5# 1-0
+
+[Event "WaveChess paired smoke match"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "baseline"]
+[Black "revised"]
+[Result "1/2-1/2"]
+[Termination "THREEFOLD_REPETITION"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bc4 Nf6 4. Nc3 Bc5 5. d4 exd4 6. Na4 Nxe4 7. Qe2 Qe7 8. Nxc5 Nxc5 9. Qxe7+ Kxe7 10. Bf4 d6 11. O-O-O Ne6 12. Rhe1 Kf8 13. Bxe6 Bxe6 14. Nxd4 Nxd4 15. Rxd4 Bxa2 16. Ra4 Be6 17. Be3 a5 18. Bd2 b6 19. Rf4 Kg8 20. Bc3 a4 21. Kd2 a3 22. bxa3 Rxa3 23. Ra1 Rxa1 24. Bxa1 f6 25. Re4 Kf7 26. Bc3 Bd5 27. Rg4 h5 28. Rg3 h4 29. Rg4 Be6 30. Re4 d5 31. Re1 c5 32. f4 d4 33. Bb2 g5 34. fxg5 fxg5 35. Rf1+ Ke7 36. Re1 Kd6 37. h3 Bd5 38. Re2 Rf8 39. Ke1 Bc4 40. Rf2 Bf7 41. Rf6+ Kc7 42. Rxf7+ Rxf7 43. Ke2 b5 44. Ba3 Kd6 45. Bb2 b4 46. Bc1 Rf5 47. Bb2 Ke6 48. Ba1 Rf8 49. Bb2 Ke7 50. Bc1 Kf6 51. Bb2 Ke7 52. Ba1 b3 53. cxb3 Ra8 54. Bxd4 cxd4 55. Kd3 Rd8 56. Kd2 Rb8 57. Kd1 Rc8 58. Kd2 Rc3 59. b4 Kd8 60. Ke1 Kc8 61. Ke2 Kb8 62. Kf1 Kb7 63. Ke2 Kb8 64. Kf1 Kb7 65. Kf2 Rc2+ 66. Kf1 1/2-1/2
+
+[Event "WaveChess paired smoke match"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "revised"]
+[Black "baseline"]
+[Result "0-1"]
+[Termination "CHECKMATE"]
+
+1. d4 d5 2. c4 e6 3. Nc3 Nf6 4. cxd5 exd5 5. Nf3 Nc6 6. Qa4 Bf5 7. Ne5 Qd6 8. Bg5 Qb4 9. Nxc6 bxc6 10. Qxc6+ Ke7 11. Qxa8 Qxb2 12. Rc1 h6 13. Nxd5+ Ke6 14. Rxc7 Bb4+ 15. Nxb4 Rxa8 16. Rc6+ Kd7 17. Bxf6 Qxb4+ 18. Kd1 Kxc6 19. Bxg7 Qb1+ 20. Kd2 Qxa2+ 21. Ke3 Re8+ 22. Kf4 Qd2+ 23. Kf3 Qg5 24. Be5 f6 25. e4 Bg4+ 26. Kg3 Bh5+ 27. Kh3 Qg4# 0-1
+
+[Event "WaveChess paired smoke match"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "baseline"]
+[Black "revised"]
+[Result "0-1"]
+[Termination "CHECKMATE"]
+
+1. d4 d5 2. c4 e6 3. Nc3 Nf6 4. cxd5 exd5 5. Nf3 Bb4 6. Qa4+ Nc6 7. Ne5 Bd7 8. Nxc6 Bxc3+ 9. bxc3 Bxc6 10. Qa3 Ne4 11. f3 Qh4+ 12. g3 Nxg3 13. hxg3 Qxh1 14. Bg5 f6 15. Bf4 Kd7 16. Kd2 g5 17. Bh3+ Qxh3 18. Be3 Qxg3 19. Rg1 Qd6 20. Qxd6+ cxd6 21. f4 gxf4 22. Bxf4 Rhg8 23. Rxg8 Rxg8 24. a3 h5 25. Kd3 h4 26. c4 dxc4+ 27. Kxc4 h3 28. d5 Rg4 29. dxc6+ bxc6 30. e3 h2 31. Kd3 h1=Q 32. Kc3 Rxf4 33. exf4 Qe4 34. f5 Qxf5 35. Kd2 Qe4 36. Kc3 f5 37. Kd2 f4 38. a4 f3 39. a5 f2 40. a6 f1=Q 41. Kc3 Qfb1 42. Kd2 Qbe1# 0-1
+
+[Event "WaveChess paired smoke match"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "revised"]
+[Black "baseline"]
+[Result "0-1"]
+[Termination "CHECKMATE"]
+
+1. e4 c5 2. Nf3 d6 3. d4 cxd4 4. Nxd4 Nf6 5. Bb5+ Bd7 6. Nc3 Bxb5 7. Ndxb5 Qa5 8. O-O Nc6 9. Be3 Qb4 10. Nc7+ Kd8 11. Nxa8 Nxe4 12. Nxe4 Qxe4 13. Qd3 Qxd3 14. cxd3 g6 15. Rac1 Bg7 16. Rc2 Kd7 17. Rxc6 bxc6 18. Nb6+ axb6 19. Rb1 c5 20. a4 Ra8 21. b3 Be5 22. f4 Bd4 23. Bxd4 cxd4 24. Re1 Rc8 25. Re4 Rc1+ 26. Kf2 Rc2+ 27. Kg1 Rc1+ 28. Kf2 Rc2+ 29. Kf1 f5 30. Re2 Rc3 31. a5 bxa5 32. Ra2 Rxd3 33. Rxa5 Rxb3 34. Rd5 d3 35. Ke1 Ke6 36. Ra5 Rb2 37. Ra4 d2+ 38. Kd1 d5 39. Rd4 Rb1+ 40. Kxd2 Rb2+ 41. Kc1 Rxg2 42. Rd2 Rxd2 43. Kxd2 d4 44. h3 g5 45. Kd1 g4 46. hxg4 fxg4 47. f5+ Kd5 48. f6 exf6 49. Ke2 Kc5 50. Ke1 Kc4 51. Ke2 h5 52. Ke1 Kc3 53. Kd1 h4 54. Ke2 g3 55. Ke1 d3 56. Kf1 d2 57. Kg2 d1=Q 58. Kh3 Qe2 59. Kxh4 Qf3 60. Kh3 f5 61. Kh4 Qg4# 0-1
+
+[Event "WaveChess paired smoke match"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "baseline"]
+[Black "revised"]
+[Result "0-1"]
+[Termination "CHECKMATE"]
+
+1. e4 c5 2. Nf3 d6 3. d4 cxd4 4. Nxd4 Nf6 5. Bb5+ Nbd7 6. Nc3 Qa5 7. O-O a6 8. Bxd7+ Bxd7 9. Nb3 Qe5 10. f4 Qh5 11. Qxh5 Nxh5 12. Be3 Nf6 13. e5 Ng4 14. Bd4 dxe5 15. fxe5 Bc6 16. h3 Nh6 17. Rad1 e6 18. Bc5 Bxc5+ 19. Nxc5 Nf5 20. g4 Ne3 21. Rd3 Nxf1 22. Kxf1 O-O 23. N3e4 b6 24. Rd6 Rfc8 25. Rxc6 Rxc6 26. Nd3 Rxc2 27. a4 Rd8 28. Nef2 Rd4 29. b3 Rc3 30. Ke2 Rxb3 31. Ke3 Rd5 32. Ke4 Rc3 33. h4 Rc4+ 34. Kf3 Rxa4 35. Ke2 Rc4 36. h5 a5 37. g5 a4 38. h6 Rc2+ 39. Kf3 a3 40. hxg7 a2 41. Nb4 Rc3+ 42. Kf4 Rd4+ 43. Ne4 Rxb4 44. g6 a1=Q 45. gxf7+ Kxg7 46. f8=Q+ Kxf8 47. Kg5 Rxe4 48. Kf6 Rc6 49. Kg5 Qxe5+ 50. Kh6 Rh4# 0-1

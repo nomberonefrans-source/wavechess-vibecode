@@ -1,0 +1,80 @@
+{
+  "movetime_ms": 40,
+  "max_plies": 240,
+  "threads": 1,
+  "cache_mb": 16,
+  "games": [
+    {
+      "opening": 0,
+      "revised_white": true,
+      "result": "1/2-1/2",
+      "winner": null,
+      "termination": "INSUFFICIENT_MATERIAL",
+      "plies": 100,
+      "final_fen": "8/6k1/8/8/4K3/8/8/8 w - - 0 51"
+    },
+    {
+      "opening": 0,
+      "revised_white": false,
+      "result": "1-0",
+      "winner": "baseline",
+      "termination": "CHECKMATE",
+      "plies": 115,
+      "final_fen": "8/8/8/8/3K1pQk/5P2/8/8 b - - 14 58"
+    },
+    {
+      "opening": 1,
+      "revised_white": true,
+      "result": "1-0",
+      "winner": "revised",
+      "termination": "CHECKMATE",
+      "plies": 53,
+      "final_fen": "5Rrk/1pp5/2npp2Q/4p1N1/p3N3/P2PP3/1PP3PP/7K b - - 6 27"
+    },
+    {
+      "opening": 1,
+      "revised_white": false,
+      "result": "1/2-1/2",
+      "winner": null,
+      "termination": "THREEFOLD_REPETITION",
+      "plies": 131,
+      "final_fen": "8/1k6/8/6p1/1P1p3p/7P/2r3P1/5K2 b - - 14 66"
+    },
+    {
+      "opening": 2,
+      "revised_white": true,
+      "result": "0-1",
+      "winner": "baseline",
+      "termination": "CHECKMATE",
+      "plies": 54,
+      "final_fen": "4r3/p7/2k2p1p/4B2b/3PP1q1/7K/5PPP/5B1R w - - 5 28"
+    },
+    {
+      "opening": 2,
+      "revised_white": false,
+      "result": "0-1",
+      "winner": "revised",
+      "termination": "CHECKMATE",
+      "plies": 84,
+      "final_fen": "8/p2k4/P1pp4/8/4q3/8/3K4/4q3 w - - 4 43"
+    },
+    {
+      "opening": 3,
+      "revised_white": true,
+      "result": "0-1",
+      "winner": "baseline",
+      "termination": "CHECKMATE",
+      "plies": 122,
+      "final_fen": "8/8/8/5p2/6qK/2k3p1/8/8 w - - 2 62"
+    },
+    {
+      "opening": 3,
+      "revised_white": false,
+      "result": "0-1",
+      "winner": "revised",
+      "termination": "CHECKMATE",
+      "plies": 100,
+      "final_fen": "5k2/7p/1pr1p2K/4q3/7r/8/8/8 w - - 2 51"
+    }
+  ]
+}
