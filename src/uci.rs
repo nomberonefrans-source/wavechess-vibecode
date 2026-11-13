@@ -308,7 +308,7 @@ pub fn run() {
         }
         match words[0] {
             "uci" => {
-                out("id name WaveChess 3.1 (wave mathematics)");
+                out("id name WaveChess 3.2 (wave mathematics)");
                 out("id author WaveChess");
                 print_options();
                 out("uciok");

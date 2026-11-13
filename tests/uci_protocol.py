@@ -77,7 +77,7 @@ class Protocol(unittest.TestCase):
 
     def test_removed_recursive_solver_options(self):
         text = "\n".join(self.engine.handshake)
-        self.assertIn("WaveChess 3.1", text)
+        self.assertIn("WaveChess 3.2", text)
         self.assertNotIn("Mate Defense", text)
         self.assertNotIn("Mate Attack", text)
 
