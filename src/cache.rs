@@ -6,6 +6,7 @@
 //! может дать промах, но не чужую оценку. Все атомики снимка используют
 //! SeqCst; статистика и выбор места для вытеснения не участвуют в снимке.
 
+use crate::counters::Counters;
 use std::mem::size_of;
 use std::sync::atomic::{AtomicU64, Ordering};
 
@@ -83,8 +84,7 @@ impl Bucket {
 pub struct WaveCache {
     buckets: Vec<Bucket>,
     mask: usize,
-    probes: AtomicU64,
-    hits: AtomicU64,
+    counters: Counters,
 }
 
 impl WaveCache {
@@ -99,8 +99,7 @@ impl WaveCache {
         Self {
             buckets,
             mask: count.saturating_sub(1),
-            probes: AtomicU64::new(0),
-            hits: AtomicU64::new(0),
+            counters: Counters::new(),
         }
     }
 
@@ -108,11 +107,11 @@ impl WaveCache {
         if !self.is_enabled() {
             return None;
         }
-        self.probes.fetch_add(1, Ordering::Relaxed);
+        self.counters.add(0);
         for entry in &self.buckets[(key as usize) & self.mask].entries {
             if let Some((stored_key, data)) = entry.snapshot() {
                 if stored_key == key && data & VALID_BIT != 0 {
-                    self.hits.fetch_add(1, Ordering::Relaxed);
+                    self.counters.add(1);
                     return Some(data as u32 as i32);
                 }
             }
@@ -159,8 +158,7 @@ impl WaveCache {
             }
             bucket.next.store(0, Ordering::Relaxed);
         }
-        self.probes.store(0, Ordering::Relaxed);
-        self.hits.store(0, Ordering::Relaxed);
+        self.counters.clear();
     }
 
     pub fn is_enabled(&self) -> bool {
@@ -177,10 +175,7 @@ impl WaveCache {
     }
 
     pub fn stats(&self) -> (u64, u64) {
-        (
-            self.probes.load(Ordering::Relaxed),
-            self.hits.load(Ordering::Relaxed),
-        )
+        self.counters.values()
     }
 }
 

@@ -6,13 +6,14 @@
 
 use crate::board::*;
 pub use crate::cache::WaveCache;
+use crate::counters::Counters;
 use crate::geometry::*;
 use crate::params::Ps;
 use crate::settings::EngineConfig;
 use crate::wave;
-use std::sync::atomic::{AtomicBool, AtomicU64, AtomicUsize, Ordering};
+use rayon::prelude::*;
+use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
-use std::thread;
 use std::time::Instant;
 
 pub const MATE: i32 = 30000;
@@ -61,6 +62,8 @@ pub struct SearchResult {
 
 /// Оценка позиции, в которой сходившему тут же ставят мат.
 pub const MATED_NEXT: i32 = -(MATE - 2);
+// Position-local draw marker, distinct from an equal but live position.
+const LOCAL_DRAW: i32 = 31000;
 
 /// Как «осела» позиция `b` с точки зрения стороны, только что сделавшей ход (сотые пешки).
 /// Зависит только от позиции и веса угрозы, поэтому её безопасно хранить в кэше по хэшу.
@@ -140,31 +143,9 @@ fn par_map<T: Send, F: Fn(usize) -> T + Sync>(n: usize, threads: usize, f: F) ->
     if threads <= 1 || n <= 1 {
         return (0..n).map(|i| f(i)).collect();
     }
-    let workers = if threads < n { threads } else { n };
-    let next = AtomicUsize::new(0);
-    let mut parts: Vec<Vec<(usize, T)>> = Vec::new();
-    thread::scope(|sc| {
-        let mut handles = Vec::new();
-        for _ in 0..workers {
-            handles.push(sc.spawn(|| {
-                let mut local: Vec<(usize, T)> = Vec::new();
-                loop {
-                    let i = next.fetch_add(1, Ordering::Relaxed);
-                    if i >= n {
-                        break;
-                    }
-                    local.push((i, f(i)));
-                }
-                local
-            }));
-        }
-        for h in handles {
-            parts.push(h.join().unwrap());
-        }
-    });
-    let mut all: Vec<(usize, T)> = parts.into_iter().flatten().collect();
-    all.sort_by_key(|p| p.0);
-    all.into_iter().map(|p| p.1).collect()
+    // Indexed collection preserves move order. Work stealing also allows idle
+    // workers to help with moves inside a long-running trajectory.
+    (0..n).into_par_iter().map(&f).collect()
 }
 
 /// Ход-кандидат и его оценка с точки зрения ходящего.
@@ -192,7 +173,7 @@ struct Chain {
     phase_confidence: Vec<f32>,
     done: Option<End>,
     grp: usize,
-    w: f32,
+    w: f64,
     confidence: f32,
     active: bool,
 }
@@ -200,9 +181,10 @@ struct Chain {
 // ---------------------------------------------------------------- решатель
 
 pub struct Searcher {
+    pool: Arc<rayon::ThreadPool>,
     cache: WaveCache,
     cfg: EngineConfig,
-    counter: AtomicU64,
+    counter: Counters,
     start: Instant,
     time_limit_ms: u64,
     stop: Arc<AtomicBool>,
@@ -215,9 +197,15 @@ pub struct Searcher {
 impl Searcher {
     pub fn new(cfg: &EngineConfig, stop: Arc<AtomicBool>) -> Searcher {
         Searcher {
+            pool: Arc::new(
+                rayon::ThreadPoolBuilder::new()
+                    .num_threads(cfg.threads.max(1))
+                    .build()
+                    .expect("wave workers"),
+            ),
             cache: WaveCache::new(cfg.cache_mb),
             cfg: *cfg,
-            counter: AtomicU64::new(0),
+            counter: Counters::new(),
             start: Instant::now(),
             time_limit_ms: 0,
             stop,
@@ -235,6 +223,14 @@ impl Searcher {
     /// Применить новые настройки. Кэш пересоздаётся при смене размера
     /// и очищается при смене веса угрозы (старые значения стали бы неверными).
     pub fn apply_config(&mut self, cfg: &EngineConfig) {
+        if cfg.threads != self.cfg.threads {
+            self.pool = Arc::new(
+                rayon::ThreadPoolBuilder::new()
+                    .num_threads(cfg.threads.max(1))
+                    .build()
+                    .expect("wave workers"),
+            );
+        }
         let resize = cfg.cache_mb != self.cfg.cache_mb;
         let stale = cfg.threat_pct != self.cfg.threat_pct;
         self.cfg = *cfg;
@@ -273,7 +269,7 @@ impl Searcher {
         if self.stop.load(Ordering::Relaxed) {
             return true;
         }
-        if self.node_limit > 0 && self.counter.load(Ordering::Relaxed) >= self.node_limit {
+        if self.node_limit > 0 && self.counter.values().0 >= self.node_limit {
             return true;
         }
         if self.time_limit_ms > 0 {
@@ -287,21 +283,33 @@ impl Searcher {
 
     /// Осевшая волна позиции (через кэш).
     fn settle(&self, b: &Board) -> i32 {
-        self.counter.fetch_add(1, Ordering::Relaxed);
+        self.counter.add(0);
         if let Some(v) = self.cache.get(b.hash) {
             return v;
         }
-        let v = settle_value(b, self.cfg.threat_pct);
+        // Only board-local facts belong in the hash. Halfmove clocks and real
+        // repetition history are checked by score_moves even on cache hits.
+        let v = if !has_legal(b) {
+            if b.in_check() {
+                MATE
+            } else {
+                LOCAL_DRAW
+            }
+        } else if b.insufficient() {
+            LOCAL_DRAW
+        } else {
+            settle_value(b, self.cfg.threat_pct)
+        };
         self.cache.put(b.hash, v);
         v
     }
 
     /// Исход позиции `nb` по правилам, если он уже решён (оценка с точки зрения сходившего).
-    fn rule_outcome(&self, nb: &Board, game: &[u64], chain: &[u64]) -> Option<i32> {
-        if !has_legal(nb) {
-            return Some(if nb.in_check() { MATE } else { 0 });
+    fn rule_outcome(&self, nb: &Board, value: i32, game: &[u64], chain: &[u64]) -> Option<i32> {
+        if value == MATE {
+            return Some(MATE);
         }
-        if nb.halfmove >= 100 || nb.insufficient() {
+        if value == LOCAL_DRAW || nb.halfmove >= 100 {
             return Some(0);
         }
         let mut cnt = 0;
@@ -338,14 +346,15 @@ impl Searcher {
             }
             let mv = legal.m[i];
             let nb = b.make(mv);
-            Some(match self.rule_outcome(&nb, game, chain) {
+            let local = self.settle(&nb);
+            Some(match self.rule_outcome(&nb, local, game, chain) {
                 Some(v) => Cand {
                     mv,
                     val: v,
                     term: true,
                 },
                 None => {
-                    let mut val = self.settle(&nb);
+                    let mut val = local;
                     // Повторный визит уменьшает положительный поток энергии:
                     // движение по замкнутому контуру не приближает выигрыш.
                     // Это не объявление ничьей до третьего повторения.
@@ -418,7 +427,7 @@ impl Searcher {
         if self.stop_now() {
             return None;
         }
-        let scored = self.score_moves(&c.board, game, &c.hashes, 1, true);
+        let scored = self.score_moves(&c.board, game, &c.hashes, self.cfg.threads, true);
         if scored.iter().any(|x| x.is_none()) {
             return None;
         }
@@ -437,7 +446,7 @@ impl Searcher {
         if self.stop_now() {
             return None;
         }
-        let scored = self.score_moves(&c.board, game, &c.hashes, 1, true);
+        let scored = self.score_moves(&c.board, game, &c.hashes, self.cfg.threads, true);
         if scored.iter().any(|x| x.is_none()) {
             return None;
         }
@@ -452,10 +461,70 @@ impl Searcher {
                 break;
             }
             let mut n = self.apply_pick(c, cand, certainty);
-            n.w = amplitude;
+            n.w = (c.w * amplitude as f64).max(f64::MIN_POSITIVE);
             out.push(n);
         }
+        // Forward transport conserves the parent's mass, including when only
+        // one plausible reply survives the energy window.
+        let mass: f64 = out.iter().map(|n| n.w).sum();
+        for n in &mut out {
+            n.w = (n.w * (c.w / mass)).max(f64::MIN_POSITIVE);
+        }
         Some(out)
+    }
+
+    /// Deterministic stratified particle compression. It bounds memory/work
+    /// without backing up any max/min values from descendants. Equal inputs
+    /// yield identical ensembles at every completed phase on any thread count.
+    fn compress(chains: Vec<Chain>, limit: usize) -> Vec<Chain> {
+        let groups = chains.iter().map(|c| c.grp).max().unwrap_or(0) + 1;
+        let mut grouped: Vec<Vec<Chain>> = (0..groups).map(|_| Vec::new()).collect();
+        for c in chains {
+            grouped[c.grp].push(c);
+        }
+        let mut result = Vec::new();
+        for mut group in grouped {
+            if group.len() <= limit {
+                result.extend(group);
+                continue;
+            }
+            // Reserve the most adverse observed trajectory with its exact
+            // mass. Otherwise systematic sampling could erase a rare mate or
+            // material collapse that the ensemble has already discovered.
+            // This reserves a sample, it does not replace the root's integral
+            // with that sample's value or propagate it back through a tree.
+            let slots = if limit > 1 {
+                let hazard = |c: &Chain| match c.done {
+                    Some(End::Mate { sign: -1, .. }) => -MATE,
+                    _ => c.vals.iter().copied().min().unwrap_or(c.s0),
+                };
+                let tail = (0..group.len()).min_by_key(|&i| hazard(&group[i])).unwrap();
+                result.push(group.remove(tail));
+                limit - 1
+            } else {
+                limit
+            };
+            let total: f64 = group.iter().map(|c| c.w).sum();
+            let step = total / slots as f64;
+            let mut counts = vec![0usize; group.len()];
+            let mut i = 0;
+            let mut cumulative = group[0].w;
+            for sample in 0..slots {
+                let target = (sample as f64 + 0.5) * step;
+                while cumulative < target && i + 1 < group.len() {
+                    i += 1;
+                    cumulative += group[i].w;
+                }
+                counts[i] += 1;
+            }
+            for (mut c, count) in group.into_iter().zip(counts) {
+                if count > 0 {
+                    c.w = count as f64 * step;
+                    result.push(c);
+                }
+            }
+        }
+        result
     }
 
     fn chain_score(&self, c: &Chain, hint: Move) -> i32 {
@@ -506,30 +575,56 @@ impl Searcher {
     }
 
     fn make_lines(&self, chains: &[Chain], nvar: usize, _depth: i32, hint: Move) -> Vec<Line> {
+        let scores: Vec<i32> = chains.iter().map(|c| self.chain_score(c, hint)).collect();
         let ng = chains.iter().map(|c| c.grp).max().unwrap_or(0) + 1;
         let mut sum = vec![0.0f64; ng];
         let mut weights = vec![0.0f64; ng];
         let mut rep = vec![usize::MAX; ng];
         for (i, c) in chains.iter().enumerate() {
             let g = c.grp;
-            sum[g] += c.w as f64 * self.chain_score(c, hint) as f64;
+            sum[g] += c.w as f64 * scores[i] as f64;
             weights[g] += c.w as f64;
             if rep[g] == usize::MAX || c.w > chains[rep[g]].w {
                 rep[g] = i;
             }
         }
         let mut downside = vec![0.0f64; ng];
-        for c in chains {
+        for (i, c) in chains.iter().enumerate() {
             let mean = sum[c.grp] / weights[c.grp];
-            let d = (mean - self.chain_score(c, hint) as f64).max(0.0);
+            let d = (mean - scores[i] as f64).max(0.0);
             downside[c.grp] += c.w as f64 * d * d;
         }
         let mut ranked = Vec::new();
+        let risk_tau = Ps::load().risk_tau;
         for g in 0..ng {
             if rep[g] != usize::MAX {
                 // Риск нижней части спектра: опасный ответ не растворяется
                 // бесследно в среднем, но никакого выбора минимума нет.
-                let score = sum[g] / weights[g] - 0.5 * (downside[g] / weights[g]).sqrt();
+                let score = if risk_tau > 0.0 && chains[rep[g]].s0.abs() < MATE_BOUND {
+                    // Certainty equivalent of exponential utility. A finite
+                    // temperature keeps every sampled response in the sum;
+                    // this is not a recursive minimax or a proof of safety.
+                    let mean = sum[g] / weights[g];
+                    let log_terms: Vec<f64> = chains
+                        .iter()
+                        .enumerate()
+                        .filter(|(_, c)| c.grp == g)
+                        .map(|(i, c)| {
+                            (c.w as f64 / weights[g]).ln()
+                                + (mean - scores[i] as f64) / risk_tau as f64
+                        })
+                        .collect();
+                    let shift = log_terms.iter().copied().fold(f64::NEG_INFINITY, f64::max);
+                    mean - risk_tau as f64
+                        * (shift
+                            + log_terms
+                                .iter()
+                                .map(|x| (x - shift).exp())
+                                .sum::<f64>()
+                                .ln())
+                } else {
+                    sum[g] / weights[g] - 0.5 * (downside[g] / weights[g]).sqrt()
+                };
                 ranked.push((score.round() as i32, rep[g]));
             }
         }
@@ -542,12 +637,12 @@ impl Searcher {
                 depth: chains[i].moves.len() as i32,
                 pv: chains[i].moves.clone(),
                 local_energy: chains[i].s0,
-                confidence: chains
+                confidence: (chains
                     .iter()
                     .filter(|c| c.grp == chains[i].grp)
-                    .map(|c| c.confidence * c.w)
-                    .sum::<f32>()
-                    / weights[chains[i].grp] as f32,
+                    .map(|c| c.confidence as f64 * c.w)
+                    .sum::<f64>()
+                    / weights[chains[i].grp]) as f32,
                 replies: chains.iter().filter(|c| c.grp == chains[i].grp).count(),
             })
             .collect()
@@ -575,7 +670,7 @@ impl Searcher {
     }
 
     fn emit_uci(&self, _depth: i32, lines: &[Line]) {
-        let nodes = self.counter.load(Ordering::Relaxed);
+        let nodes = self.counter.values().0;
         let el = self.start.elapsed().as_millis() as u64;
         let nps = if el > 0 { nodes * 1000 / el } else { 0 };
         for (i, l) in lines.iter().take(self.report_variants).enumerate() {
@@ -613,6 +708,18 @@ impl Searcher {
         hint: Move,
         report: Report,
     ) -> SearchResult {
+        let pool = Arc::clone(&self.pool);
+        pool.install(|| self.think_waves(root, game_hashes, limits, hint, report))
+    }
+
+    fn think_waves(
+        &mut self,
+        root: &Board,
+        game_hashes: &[u64],
+        limits: &SearchLimits,
+        hint: Move,
+        report: Report,
+    ) -> SearchResult {
         let revision = crate::params::revision();
         if revision != self.parameter_revision {
             self.cache.clear();
@@ -620,8 +727,9 @@ impl Searcher {
         }
         self.start = Instant::now();
         self.time_limit_ms = limits.time_ms;
-        self.counter.store(0, Ordering::Relaxed);
+        self.counter.clear();
         self.report = report;
+        let cache_before = self.cache.stats();
 
         let mut result = SearchResult {
             best: Move::NONE,
@@ -763,18 +871,32 @@ impl Searcher {
             let ps = Ps::load();
             let rk = (ps.reply_k as usize).clamp(1, 8);
             let tau = ps.reply_tau.clamp(1.0, 1000.0);
-            if depth == 1 && rk > 1 {
+            let particles = (ps.particles as usize).clamp(1, 64);
+            if depth % 2 == 1 && rk > 1 && (depth == 1 || particles > rk) {
                 let br: Vec<Option<Vec<Chain>>> = par_map(chains.len(), threads, |i| {
                     self.branch(&chains[i], &game, rk, tau)
                 });
                 let complete = br.iter().all(|x| x.is_some());
                 // Завершённые ответы одного корня публикуются вместе.
                 // Дедлайн другой группы больше не уничтожает готовую работу.
+                let mut ready = vec![true; legal.n];
+                for (i, bundle) in br.iter().enumerate() {
+                    if bundle.is_none() {
+                        ready[chains[i].grp] = false;
+                    }
+                }
                 chains = br
                     .into_iter()
                     .enumerate()
-                    .flat_map(|(i, bundle)| bundle.unwrap_or_else(|| vec![chains[i].clone()]))
+                    .flat_map(|(i, bundle)| {
+                        if ready[chains[i].grp] {
+                            bundle.unwrap()
+                        } else {
+                            vec![chains[i].clone()]
+                        }
+                    })
                     .collect();
+                chains = Self::compress(chains, particles.max(rk));
                 if !complete {
                     best_lines = self.make_lines(&chains, nvar, depth + 1, hint);
                     break;
@@ -821,10 +943,14 @@ impl Searcher {
         result.depth = best_lines[0].depth;
         result.lines = best_lines;
         result.continuations = chains.iter().map(|c| c.moves.clone()).collect();
-        result.nodes = self.counter.load(Ordering::Relaxed);
+        result.nodes = self.counter.values().0;
         result.elapsed_ms = self.start.elapsed().as_millis() as u64;
         if self.report == Report::Uci {
             self.emit_uci(result.depth, &result.lines);
+            let (probes, hits) = self.cache.stats();
+            println!("info string wave evaluations {} cache_hits {} cache_probes {} trajectories {} threads {}",
+                result.nodes - (hits - cache_before.1), hits - cache_before.1,
+                probes - cache_before.0, chains.len(), self.cfg.threads);
         }
         result
     }
@@ -833,6 +959,106 @@ impl Searcher {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn cached_local_facts_do_not_cache_draw_history_or_clock() {
+        let cfg = EngineConfig {
+            threads: 1,
+            cache_mb: 1,
+            ..EngineConfig::default()
+        };
+        let s = Searcher::new(&cfg, Arc::new(AtomicBool::new(false)));
+        let b = Board::from_fen("7k/8/8/8/8/8/P7/R6K b - - 0 1").unwrap();
+        let local = s.settle(&b);
+        let mut late = b;
+        late.halfmove = 100;
+        assert_eq!(s.settle(&late), local);
+        assert_eq!(s.rule_outcome(&late, local, &[], &[]), Some(0));
+        assert_eq!(s.rule_outcome(&b, local, &[b.hash, b.hash], &[]), Some(0));
+        assert_eq!(s.rule_outcome(&b, local, &[], &[]), None);
+        assert!(s.cache.stats().1 > 0);
+        let mate = Board::from_fen("R5k1/5ppp/8/8/8/8/8/6K1 b - - 100 1").unwrap();
+        assert_eq!(s.rule_outcome(&mate, s.settle(&mate), &[], &[]), Some(MATE));
+    }
+
+    fn particle(grp: usize, w: f64, value: i32) -> Chain {
+        let b = Board::startpos();
+        let mv = b.legal_moves().m[0];
+        Chain {
+            mv,
+            s0: value,
+            moves: vec![mv],
+            board: b,
+            hashes: vec![b.hash],
+            vals: vec![value],
+            phase_confidence: vec![1.0],
+            done: None,
+            grp,
+            w,
+            confidence: 1.0,
+            active: true,
+        }
+    }
+
+    #[test]
+    fn repeated_branching_conserves_mass_and_bounds_each_root() {
+        let cfg = EngineConfig {
+            threads: 1,
+            cache_mb: 1,
+            ..EngineConfig::default()
+        };
+        let s = Searcher::new(&cfg, Arc::new(AtomicBool::new(false)));
+        let parent = particle(0, 0.25, 0);
+        let children = s.branch(&parent, &[], 3, 60.0).unwrap();
+        assert!((children.iter().map(|c| c.w).sum::<f64>() - parent.w).abs() < 1e-12);
+        let inputs: Vec<_> = (0..2)
+            .flat_map(|g| (0..19).map(move |i| particle(g, (i + 1) as f64 / 190.0, i * 5)))
+            .collect();
+        let compressed = Searcher::compress(inputs, 8);
+        for g in 0..2 {
+            let group: Vec<_> = compressed.iter().filter(|c| c.grp == g).collect();
+            assert!(group.len() <= 8);
+            assert!((group.iter().map(|c| c.w).sum::<f64>() - 1.0).abs() < 1e-12);
+        }
+        let mut inputs = vec![particle(0, 0.999 / 20.0, 100); 20];
+        inputs.push(particle(0, 0.001, -900));
+        let compressed = Searcher::compress(inputs, 4);
+        let danger = compressed.iter().find(|c| c.s0 == -900).unwrap();
+        assert!((danger.w - 0.001).abs() < 1e-7);
+        // A retained rare hazard can acquire tiny weight in a long forecast.
+        // It must not turn into 0/0 and poison the entire root with NaN.
+        for weight in [1e-250, f64::MIN_POSITIVE] {
+            let tiny = particle(0, weight, 0);
+            let children = s.branch(&tiny, &[], 8, 60.0).unwrap();
+            assert!(children.iter().all(|c| c.w.is_finite() && c.w > 0.0));
+            let lines = s.make_lines(&children, 1, 2, Move::NONE);
+            assert!(lines[0].confidence.is_finite());
+        }
+    }
+
+    #[test]
+    fn entropic_wave_risk_penalizes_a_dangerous_low_mass_reply() {
+        let cfg = EngineConfig {
+            threads: 1,
+            cache_mb: 0,
+            ..EngineConfig::default()
+        };
+        let s = Searcher::new(&cfg, Arc::new(AtomicBool::new(false)));
+        let lines = s.make_lines(
+            &[particle(0, 0.98, 0), particle(0, 0.02, -900)],
+            1,
+            1,
+            Move::NONE,
+        );
+        // The arithmetic expectation is only -18 cp: a severe response must
+        // not disappear merely because the local policy gave it little mass.
+        assert!(lines[0].score < -300);
+        assert!(lines[0].score > -900);
+        assert_eq!(
+            s.make_lines(&[particle(0, 1.0, 123)], 1, 1, Move::NONE)[0].score,
+            123
+        );
+    }
 
     #[test]
     fn immediate_quiet_promotion_is_a_local_threat() {

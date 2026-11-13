@@ -32,6 +32,8 @@ const DAMP: [f32; 8] = [1.0, 0.93, 0.8649, 0.8044, 0.7481, 0.6957, 0.6470, 0.601
 pub struct WaveField {
     pub charge: [f32; 64],
     pub amp: [[f32; 64]; 2],
+    /// Pressure behind a blocker is potential, never an immediate defence.
+    pub latent: [[f32; 64]; 2],
     pub hits: [[u8; 64]; 2],
     pub mobility: [f32; 2],
     /// Геометрия источников. Снимок заменяет обрезанные стопки: батареи и связки
@@ -156,6 +158,7 @@ impl WaveField {
         let mut w = WaveField {
             charge: [0.0; 64],
             amp: [[0.0; 64]; 2],
+            latent: [[0.0; 64]; 2],
             hits: [[0; 64]; 2],
             mobility: [0.0; 2],
             board: *b,
@@ -226,7 +229,11 @@ impl WaveField {
                         let q = b.sq[to];
                         let dd = if d > 7 { 7 } else { d };
                         if allowed {
-                            w.amp[c][to] += a * atten * DAMP[dd];
+                            if direct {
+                                w.amp[c][to] += a * DAMP[dd];
+                            } else {
+                                w.latent[c][to] += a * atten * DAMP[dd];
+                            }
                         }
                         if direct {
                             w.raw_hits[c][to] += 1;
@@ -451,7 +458,11 @@ pub fn exchange_capture(b: &Board, mv: Move) -> f32 {
         target,
         -b.side,
         b.side,
-        if p == 0 { promotion } else { MASS[(p - 1) as usize] + promotion },
+        if p == 0 {
+            promotion
+        } else {
+            MASS[(p - 1) as usize] + promotion
+        },
     )
 }
 
@@ -543,7 +554,8 @@ pub fn analyze_with(b: &Board, ps: &Ps) -> (WaveField, Energy) {
     // 1) масса + контроль пространства + давление вокруг королей
     for s in 0..64usize {
         e.mass += w.charge[s];
-        let diff = sat(w.amp[0][s]) - sat(w.amp[1][s]);
+        let diff =
+            sat(w.amp[0][s] + 0.2 * w.latent[0][s]) - sat(w.amp[1][s] + 0.2 * w.latent[1][s]);
         e.control += ps.k_control * (0.4 + t.centre[s]) * diff;
         // Свои волны около собственного короля не создают атакующую энергию:
         // они лишь ослабляют входящий поток. Это не позволяет безопасному на
@@ -751,6 +763,21 @@ mod tests {
     use super::*;
 
     #[test]
+    fn blockers_separate_latent_pressure_from_actual_support() {
+        // A rook cannot defend e6 through an enemy bishop on e4.
+        let b = Board::from_fen("7k/8/4N3/8/4b3/8/8/K3R3 w - - 0 1").unwrap();
+        let w = WaveField::compute(&b);
+        assert_eq!(w.hits[0][44], 0);
+        assert_eq!(w.amp[0][44], 0.0);
+        assert!(w.latent[0][44] > 0.0);
+        let mirrored = WaveField::compute(&b.mirrored());
+        for s in 0..64 {
+            assert!((w.amp[0][s] - mirrored.amp[1][s ^ 56]).abs() < 1e-6);
+            assert!((w.latent[0][s] - mirrored.latent[1][s ^ 56]).abs() < 1e-6);
+        }
+    }
+
+    #[test]
     fn pinned_knight_has_no_effective_field_but_still_attacks_for_king_rules() {
         let b = Board::from_fen("4r2k/8/8/8/8/8/4N3/4K3 w - - 0 1").unwrap();
         let w = WaveField::compute(&b);
@@ -790,7 +817,8 @@ mod tests {
 
     #[test]
     fn spectral_energy_is_bounded_optional_and_colour_symmetric() {
-        let b = Board::from_fen("r3k2r/ppp2ppp/2npbn2/8/2B1P3/2N2N2/PPP2PPP/R2Q1RK1 w kq - 0 1").unwrap();
+        let b = Board::from_fen("r3k2r/ppp2ppp/2npbn2/8/2B1P3/2N2N2/PPP2PPP/R2Q1RK1 w kq - 0 1")
+            .unwrap();
         let mut ps = Ps::load();
         ps.spectral = 16.0;
         let (_, on) = analyze_with(&b, &ps);

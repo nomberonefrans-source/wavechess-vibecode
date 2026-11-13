@@ -4,6 +4,7 @@
 mod board;
 mod cache;
 mod console;
+mod counters;
 mod engine;
 mod geometry;
 mod notation;
@@ -37,7 +38,7 @@ fn setup_console() {
 fn setup_console() {}
 
 fn print_usage() {
-    println!("WaveChess 3.2 — шахматный движок на волновой математике");
+    println!("WaveChess 4 — шахматный движок на волновой математике");
     println!();
     println!("Использование:");
     println!("  wavechess            игра в консоли (если запущен из терминала)");

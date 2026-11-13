@@ -41,7 +41,7 @@ jobs:
       - run: python tests/rules_oracle.py
       - uses: actions/upload-artifact@v4
         with:
-          name: wavechess-3.2-${{ matrix.os }}
+          name: wavechess-4-${{ matrix.os }}
           path: |
             ${{ matrix.binary }}
             README.md

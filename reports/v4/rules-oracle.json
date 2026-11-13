@@ -1,0 +1,9 @@
+{
+  "positions": 253,
+  "perft2_nodes": 246700,
+  "seed": 22026,
+  "legal_moves_match": true,
+  "perft2_match": true,
+  "incremental_hashes_match": true,
+  "reference": "python-chess 1.11.2"
+}

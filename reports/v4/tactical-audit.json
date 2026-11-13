@@ -1,0 +1,1549 @@
+{
+  "selection": "first games, plies 16/28/40/52, no evaluation filtering",
+  "source_sha256": "8f1315559fe7bf411022bb5aef060dcc04f846c5c344628e38040a926fa9930f",
+  "oracle_nodes_per_analysis": 30000,
+  "movetime_ms": 120,
+  "mate_score_for_loss_cp": 10000,
+  "rows": [
+    {
+      "game": 1,
+      "ply": 16,
+      "fen": "r1b1k2r/1pp1nppp/p1nq4/3Bp3/4P3/3PPN2/PPP3PP/RN1QK2R w KQkq - 1 9",
+      "oracle_best": "d5b3",
+      "oracle_cp": 124,
+      "moves": {
+        "v3.2": {
+          "move": "b1c3",
+          "oracle_cp": 133,
+          "loss_cp": 0,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        },
+        "v4": {
+          "move": "b1c3",
+          "oracle_cp": 133,
+          "loss_cp": 0,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        }
+      }
+    },
+    {
+      "game": 1,
+      "ply": 28,
+      "fen": "r4rk1/1ppb1ppp/pq6/3Pp3/RP2P3/2NP1N2/1PP3PP/3QK2R w K - 3 15",
+      "oracle_best": "a4a1",
+      "oracle_cp": 632,
+      "moves": {
+        "v3.2": {
+          "move": "f3e5",
+          "oracle_cp": 103,
+          "loss_cp": 529,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        },
+        "v4": {
+          "move": "f3e5",
+          "oracle_cp": 103,
+          "loss_cp": 529,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        }
+      }
+    },
+    {
+      "game": 1,
+      "ply": 40,
+      "fen": "R3brk1/2p3pp/1p6/3PNp2/1P2P3/2NP4/1PP1K1PP/7R w - - 0 21",
+      "oracle_best": "a8e8",
+      "oracle_cp": 890,
+      "moves": {
+        "v3.2": {
+          "move": "h1a1",
+          "oracle_cp": 920,
+          "loss_cp": 0,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        },
+        "v4": {
+          "move": "h1a1",
+          "oracle_cp": 920,
+          "loss_cp": 0,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        }
+      }
+    },
+    {
+      "game": 1,
+      "ply": 52,
+      "fen": "R3b3/2p1k1p1/1p6/1N1PN2p/1P2P3/8/1PK3PP/4R3 w - - 2 27",
+      "oracle_best": "b5c7",
+      "oracle_cp": 1171,
+      "moves": {
+        "v3.2": {
+          "move": "b5c7",
+          "oracle_cp": 1171,
+          "loss_cp": 0,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        },
+        "v4": {
+          "move": "b5c7",
+          "oracle_cp": 1171,
+          "loss_cp": 0,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        }
+      }
+    },
+    {
+      "game": 2,
+      "ply": 16,
+      "fen": "r3kbnr/1pp2ppp/p1p1b1q1/6B1/3pP3/2N2N1P/PPP2PP1/R2QK2R w KQkq - 2 9",
+      "oracle_best": "d1d4",
+      "oracle_cp": -69,
+      "moves": {
+        "v3.2": {
+          "move": "d1d4",
+          "oracle_cp": -69,
+          "loss_cp": 0,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        },
+        "v4": {
+          "move": "d1d4",
+          "oracle_cp": -69,
+          "loss_cp": 0,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        }
+      }
+    },
+    {
+      "game": 2,
+      "ply": 28,
+      "fen": "3rk1nr/1p4pp/p2pbp1q/2p5/4P2N/2N1Q2P/PPP2PP1/2KR3R w k - 4 15",
+      "oracle_best": "e3h6",
+      "oracle_cp": 59,
+      "moves": {
+        "v3.2": {
+          "move": "h4f5",
+          "oracle_cp": 27,
+          "loss_cp": 32,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        },
+        "v4": {
+          "move": "h4f5",
+          "oracle_cp": 27,
+          "loss_cp": 32,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        }
+      }
+    },
+    {
+      "game": 2,
+      "ply": 40,
+      "fen": "3r2k1/1p3r1p/p2pbp2/2p1n1p1/P3P1P1/2N4P/1PP2P1N/2KR3R w - - 1 21",
+      "oracle_best": "h2f1",
+      "oracle_cp": 70,
+      "moves": {
+        "v3.2": {
+          "move": "c3d5",
+          "oracle_cp": 19,
+          "loss_cp": 51,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        },
+        "v4": {
+          "move": "c3d5",
+          "oracle_cp": 19,
+          "loss_cp": 51,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        }
+      }
+    },
+    {
+      "game": 2,
+      "ply": 52,
+      "fen": "3r4/5rkp/p2pbp1N/6p1/p2pP1P1/1PN4P/2P2P2/2K4R w - - 0 27",
+      "oracle_best": "h6f7",
+      "oracle_cp": -3,
+      "moves": {
+        "v3.2": {
+          "move": "h6f7",
+          "oracle_cp": -3,
+          "loss_cp": 0,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        },
+        "v4": {
+          "move": "h6f7",
+          "oracle_cp": -3,
+          "loss_cp": 0,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        }
+      }
+    },
+    {
+      "game": 3,
+      "ply": 16,
+      "fen": "r1b1k1nr/1ppq1pp1/p1np3p/2bNp3/2B1P3/3PBN2/PPP2PPP/R2QK2R w KQkq - 2 9",
+      "oracle_best": "d3d4",
+      "oracle_cp": 44,
+      "moves": {
+        "v3.2": {
+          "move": "d3d4",
+          "oracle_cp": 44,
+          "loss_cp": 0,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        },
+        "v4": {
+          "move": "d3d4",
+          "oracle_cp": 44,
+          "loss_cp": 0,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        }
+      }
+    },
+    {
+      "game": 3,
+      "ply": 28,
+      "fen": "r1b2knr/2q2pp1/p1pp3p/1pb2N2/4P3/1B2N3/PPP2PPP/R2QK2R w KQ - 4 15",
+      "oracle_best": "d1f3",
+      "oracle_cp": -61,
+      "moves": {
+        "v3.2": {
+          "move": "a2a4",
+          "oracle_cp": -77,
+          "loss_cp": 16,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        },
+        "v4": {
+          "move": "e1g1",
+          "oracle_cp": -103,
+          "loss_cp": 42,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        }
+      }
+    },
+    {
+      "game": 3,
+      "ply": 40,
+      "fen": "2b2knr/4rp2/pqpp3p/1pb2Pp1/3NP3/1BPQN3/PP4PP/R4RK1 w - - 0 21",
+      "oracle_best": "f5f6",
+      "oracle_cp": 312,
+      "moves": {
+        "v3.2": {
+          "move": "f5f6",
+          "oracle_cp": 312,
+          "loss_cp": 0,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        },
+        "v4": {
+          "move": "f5f6",
+          "oracle_cp": 312,
+          "loss_cp": 0,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        }
+      }
+    },
+    {
+      "game": 3,
+      "ply": 52,
+      "fen": "2b1rknr/5p2/2p2P2/ppbPq1pp/3N2P1/1BPQN2P/PP1R4/5RK1 w - - 1 27",
+      "oracle_best": "f1f3",
+      "oracle_cp": -198,
+      "moves": {
+        "v3.2": {
+          "move": "f1f3",
+          "oracle_cp": -198,
+          "loss_cp": 0,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        },
+        "v4": {
+          "move": "f1f3",
+          "oracle_cp": -198,
+          "loss_cp": 0,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        }
+      }
+    },
+    {
+      "game": 4,
+      "ply": 16,
+      "fen": "r1bqk2r/2pp1ppp/p1n2n2/1p6/3pP3/PBb2N2/1PP2PPP/R1BQK2R w KQkq - 0 9",
+      "oracle_best": "b2c3",
+      "oracle_cp": -127,
+      "moves": {
+        "v3.2": {
+          "move": "b2c3",
+          "oracle_cp": -127,
+          "loss_cp": 0,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        },
+        "v4": {
+          "move": "b2c3",
+          "oracle_cp": -127,
+          "loss_cp": 0,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        }
+      }
+    },
+    {
+      "game": 4,
+      "ply": 28,
+      "fen": "r1b1k2r/2p1qppp/p7/1p2n3/5Bn1/PBp5/2P2PPP/R2QR1K1 w kq - 2 15",
+      "oracle_best": "b3d5",
+      "oracle_cp": -1,
+      "moves": {
+        "v3.2": {
+          "move": "d1d5",
+          "oracle_cp": -225,
+          "loss_cp": 224,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        },
+        "v4": {
+          "move": "d1d5",
+          "oracle_cp": -225,
+          "loss_cp": 224,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        }
+      }
+    },
+    {
+      "game": 4,
+      "ply": 40,
+      "fen": "r4knr/3bq1pp/p1pB1p2/1p6/3Q4/PBp2P2/2P3PP/R3R1K1 w - - 5 21",
+      "oracle_best": "e1e7",
+      "oracle_cp": 2053,
+      "moves": {
+        "v3.2": {
+          "move": "d6b4",
+          "oracle_cp": 1010,
+          "loss_cp": 1043,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        },
+        "v4": {
+          "move": "d6e7",
+          "oracle_cp": 1382,
+          "loss_cp": 671,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        }
+      }
+    },
+    {
+      "game": 4,
+      "ply": 52,
+      "fen": "1r3k1r/4n2p/p1pB1p2/2Q3p1/1P4P1/1Bp5/2P4P/4R1K1 w - - 1 27",
+      "oracle_best": "d6e7",
+      "oracle_cp": 9996,
+      "moves": {
+        "v3.2": {
+          "move": "c5c3",
+          "oracle_cp": 9996,
+          "loss_cp": 0,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        },
+        "v4": {
+          "move": "c5c3",
+          "oracle_cp": 9996,
+          "loss_cp": 0,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        }
+      }
+    },
+    {
+      "game": 5,
+      "ply": 16,
+      "fen": "r1bqk2r/1pp1bppp/p2p1n2/4n1B1/2BNP3/2N5/PPP2PPP/R2QK2R w KQkq - 1 9",
+      "oracle_best": "c4e2",
+      "oracle_cp": 2,
+      "moves": {
+        "v3.2": {
+          "move": "d1e2",
+          "oracle_cp": -40,
+          "loss_cp": 42,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        },
+        "v4": {
+          "move": "b2b3",
+          "oracle_cp": -58,
+          "loss_cp": 60,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        }
+      }
+    },
+    {
+      "game": 5,
+      "ply": 28,
+      "fen": "r2qk2r/1p3ppp/p2p4/2p1nP2/5P1b/2P5/P1PB2PP/R2QK2R w KQkq - 1 15",
+      "oracle_best": "g2g3",
+      "oracle_cp": -564,
+      "moves": {
+        "v3.2": {
+          "move": "g2g3",
+          "oracle_cp": -564,
+          "loss_cp": 0,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        },
+        "v4": {
+          "move": "g2g3",
+          "oracle_cp": -564,
+          "loss_cp": 0,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        }
+      }
+    },
+    {
+      "game": 5,
+      "ply": 40,
+      "fen": "r6r/1pk2ppp/p1np4/2p2P1P/5P2/2P4q/P1PBQ2P/R5KR w - - 5 21",
+      "oracle_best": "e2d3",
+      "oracle_cp": -428,
+      "moves": {
+        "v3.2": {
+          "move": "e2d3",
+          "oracle_cp": -428,
+          "loss_cp": 0,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        },
+        "v4": {
+          "move": "e2d3",
+          "oracle_cp": -428,
+          "loss_cp": 0,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        }
+      }
+    },
+    {
+      "game": 5,
+      "ply": 52,
+      "fen": "rr6/1pk1nppp/3p1q2/pQp2P1P/P4P2/2P5/2PB3P/1R4KR w - - 2 27",
+      "oracle_best": "b5b6",
+      "oracle_cp": -165,
+      "moves": {
+        "v3.2": {
+          "move": "b5b6",
+          "oracle_cp": -165,
+          "loss_cp": 0,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        },
+        "v4": {
+          "move": "b5b6",
+          "oracle_cp": -165,
+          "loss_cp": 0,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        }
+      }
+    },
+    {
+      "game": 6,
+      "ply": 16,
+      "fen": "r2qk1nr/1pp3pp/p1p1bp2/4p3/1b2P3/1PNP1N2/P1P1QPPP/R1B1K2R w KQkq - 1 9",
+      "oracle_best": "c1d2",
+      "oracle_cp": -34,
+      "moves": {
+        "v3.2": {
+          "move": "e2d2",
+          "oracle_cp": -76,
+          "loss_cp": 42,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        },
+        "v4": {
+          "move": "c1d2",
+          "oracle_cp": -34,
+          "loss_cp": 0,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        }
+      }
+    },
+    {
+      "game": 6,
+      "ply": 28,
+      "fen": "r2qk1nr/2p3pp/p1p1bp2/8/3pP3/1P1P1N2/3BQPPP/3RK2R w Kkq - 0 15",
+      "oracle_best": "d2b4",
+      "oracle_cp": 55,
+      "moves": {
+        "v3.2": {
+          "move": "b3b4",
+          "oracle_cp": 36,
+          "loss_cp": 19,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        },
+        "v4": {
+          "move": "d1b1",
+          "oracle_cp": 18,
+          "loss_cp": 37,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        }
+      }
+    },
+    {
+      "game": 6,
+      "ply": 40,
+      "fen": "r4rk1/2pqn2p/2p1bp2/p7/1B1pN3/1P1P4/4QPPP/2R1K2R w K - 2 21",
+      "oracle_best": "e4c5",
+      "oracle_cp": 152,
+      "moves": {
+        "v3.2": {
+          "move": "c1c4",
+          "oracle_cp": -695,
+          "loss_cp": 847,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        },
+        "v4": {
+          "move": "b4a3",
+          "oracle_cp": -6,
+          "loss_cp": 158,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        }
+      }
+    },
+    {
+      "game": 6,
+      "ply": 52,
+      "fen": "1r4k1/2p4p/2p1rp2/p7/3p2P1/1P1P4/5P1P/2R2K1R w - - 1 27",
+      "oracle_best": "c1c4",
+      "oracle_cp": -65,
+      "moves": {
+        "v3.2": {
+          "move": "c1b1",
+          "oracle_cp": -405,
+          "loss_cp": 340,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        },
+        "v4": {
+          "move": "c1b1",
+          "oracle_cp": -405,
+          "loss_cp": 340,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        }
+      }
+    },
+    {
+      "game": 7,
+      "ply": 16,
+      "fen": "r1b1k1nr/2pp1pp1/p1N2q1p/1pb5/4P3/1B6/PPP2PPP/RNBQK2R w KQkq - 1 9",
+      "oracle_best": "e1g1",
+      "oracle_cp": 92,
+      "moves": {
+        "v3.2": {
+          "move": "c1e3",
+          "oracle_cp": 31,
+          "loss_cp": 61,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        },
+        "v4": {
+          "move": "b3f7",
+          "oracle_cp": -63,
+          "loss_cp": 155,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        }
+      }
+    },
+    {
+      "game": 7,
+      "ply": 28,
+      "fen": "r4rk1/1bp1n1p1/p6p/1pbp4/3NP3/2N1Bq2/PPP2PPP/R4RK1 w - - 0 15",
+      "oracle_best": "d4f3",
+      "oracle_cp": 18,
+      "moves": {
+        "v3.2": {
+          "move": "g2f3",
+          "oracle_cp": -79,
+          "loss_cp": 97,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        },
+        "v4": {
+          "move": "g2f3",
+          "oracle_cp": -79,
+          "loss_cp": 97,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        }
+      }
+    },
+    {
+      "game": 7,
+      "ply": 40,
+      "fen": "5rk1/bb2n1p1/p5rp/2ppP3/N2N4/4BP2/1PP2P1P/3R1R1K w - - 1 21",
+      "oracle_best": "a4c5",
+      "oracle_cp": -526,
+      "moves": {
+        "v3.2": {
+          "move": "d1d3",
+          "oracle_cp": -674,
+          "loss_cp": 148,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        },
+        "v4": {
+          "move": "d4b3",
+          "oracle_cp": -781,
+          "loss_cp": 255,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        }
+      }
+    },
+    {
+      "game": 7,
+      "ply": 52,
+      "fen": "6k1/4n1p1/p5rp/2b1P3/4R3/4B3/1PP4P/5r1K w - - 0 27",
+      "oracle_best": "e3g1",
+      "oracle_cp": -9999,
+      "moves": {
+        "v3.2": {
+          "move": "e3g1",
+          "oracle_cp": -9999,
+          "loss_cp": 0,
+          "allows_mate_in_one": true,
+          "avoidable_mate_in_one": false
+        },
+        "v4": {
+          "move": "e3g1",
+          "oracle_cp": -9999,
+          "loss_cp": 0,
+          "allows_mate_in_one": true,
+          "avoidable_mate_in_one": false
+        }
+      }
+    },
+    {
+      "game": 8,
+      "ply": 16,
+      "fen": "r1bqk2r/1pp2ppp/p1p2n2/4P3/3p4/b4N2/PPP2PPP/R1BQ1RK1 w kq - 0 9",
+      "oracle_best": "e5f6",
+      "oracle_cp": 47,
+      "moves": {
+        "v3.2": {
+          "move": "b2a3",
+          "oracle_cp": -60,
+          "loss_cp": 107,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        },
+        "v4": {
+          "move": "b2a3",
+          "oracle_cp": -60,
+          "loss_cp": 107,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        }
+      }
+    },
+    {
+      "game": 8,
+      "ply": 28,
+      "fen": "r2qk2r/1pp4p/p1p2pb1/7Q/3p3B/P7/P1P2PPP/R4RK1 w kq - 0 15",
+      "oracle_best": "h5c5",
+      "oracle_cp": -32,
+      "moves": {
+        "v3.2": {
+          "move": "h5g4",
+          "oracle_cp": -57,
+          "loss_cp": 25,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        },
+        "v4": {
+          "move": "f1e1",
+          "oracle_cp": -66,
+          "loss_cp": 34,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        }
+      }
+    },
+    {
+      "game": 8,
+      "ply": 40,
+      "fen": "r4rk1/1p5p/p1pp1p2/5P2/6bB/P1p5/P5PP/R1R3K1 w - - 3 21",
+      "oracle_best": "c1c3",
+      "oracle_cp": -205,
+      "moves": {
+        "v3.2": {
+          "move": "c1c3",
+          "oracle_cp": -205,
+          "loss_cp": 0,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        },
+        "v4": {
+          "move": "c1c3",
+          "oracle_cp": -205,
+          "loss_cp": 0,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        }
+      }
+    },
+    {
+      "game": 8,
+      "ply": 52,
+      "fen": "5rk1/7p/p1pp1p2/1p2r3/P5bB/R7/P6P/5RK1 w - - 0 27",
+      "oracle_best": "a3g3",
+      "oracle_cp": -13,
+      "moves": {
+        "v3.2": {
+          "move": "f1f6",
+          "oracle_cp": -407,
+          "loss_cp": 394,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        },
+        "v4": {
+          "move": "f1f6",
+          "oracle_cp": -407,
+          "loss_cp": 394,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        }
+      }
+    },
+    {
+      "game": 9,
+      "ply": 16,
+      "fen": "rnbqk3/pp1ppprp/2p3p1/8/2PP2P1/2N5/PP3P1P/R1BQKBNR w KQq - 0 9",
+      "oracle_best": "d4d5",
+      "oracle_cp": 1068,
+      "moves": {
+        "v3.2": {
+          "move": "c1h6",
+          "oracle_cp": 1023,
+          "loss_cp": 45,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        },
+        "v4": {
+          "move": "c1h6",
+          "oracle_cp": 1023,
+          "loss_cp": 45,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        }
+      }
+    },
+    {
+      "game": 9,
+      "ply": 28,
+      "fen": "rnbq4/pp1k1pBp/2pppQp1/8/2PP2P1/2N2N2/PP3P1P/R3KB1R w KQ - 2 15",
+      "oracle_best": "f3e5",
+      "oracle_cp": 1089,
+      "moves": {
+        "v3.2": {
+          "move": "f3g5",
+          "oracle_cp": 1006,
+          "loss_cp": 83,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        },
+        "v4": {
+          "move": "f3g5",
+          "oracle_cp": 1006,
+          "loss_cp": 83,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        }
+      }
+    },
+    {
+      "game": 9,
+      "ply": 40,
+      "fen": "rnb5/3k2BN/1pppp1p1/p7/2PP2P1/2NB4/PP3P1P/R3K2R w KQ - 0 21",
+      "oracle_best": "e1d2",
+      "oracle_cp": 1246,
+      "moves": {
+        "v3.2": {
+          "move": "d3g6",
+          "oracle_cp": 1282,
+          "loss_cp": 0,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        },
+        "v4": {
+          "move": "d3g6",
+          "oracle_cp": 1282,
+          "loss_cp": 0,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        }
+      }
+    },
+    {
+      "game": 10,
+      "ply": 16,
+      "fen": "r1bqk2r/ppp2pb1/3p1npp/3Pp1B1/2PnP3/2N4P/PP2BPP1/R2QK1NR w KQkq - 0 9",
+      "oracle_best": "g5e3",
+      "oracle_cp": -37,
+      "moves": {
+        "v3.2": {
+          "move": "d1a4",
+          "oracle_cp": -134,
+          "loss_cp": 97,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        },
+        "v4": {
+          "move": "d1a4",
+          "oracle_cp": -134,
+          "loss_cp": 97,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        }
+      }
+    },
+    {
+      "game": 10,
+      "ply": 28,
+      "fen": "1k1r3r/pp1b1pb1/3p1npp/2pPp3/1qPnP3/1PNBB2P/PQ3PP1/2R1K1NR w K - 5 15",
+      "oracle_best": "g1e2",
+      "oracle_cp": 39,
+      "moves": {
+        "v3.2": {
+          "move": "g1f3",
+          "oracle_cp": -73,
+          "loss_cp": 112,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        },
+        "v4": {
+          "move": "g1f3",
+          "oracle_cp": -73,
+          "loss_cp": 112,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        }
+      }
+    },
+    {
+      "game": 10,
+      "ply": 40,
+      "fen": "k1r3r1/pp1b1pb1/1q1p1n2/2pPp1pp/2PnP1P1/1P1BN2P/PQ3P2/2R1BKNR w - - 0 21",
+      "oracle_best": "f2f3",
+      "oracle_cp": 7,
+      "moves": {
+        "v3.2": {
+          "move": "f2f3",
+          "oracle_cp": 7,
+          "loss_cp": 0,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        },
+        "v4": {
+          "move": "f2f3",
+          "oracle_cp": 7,
+          "loss_cp": 0,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        }
+      }
+    },
+    {
+      "game": 10,
+      "ply": 52,
+      "fen": "k1r3r1/1p1b1pb1/3p1n2/p1pPp1p1/2P1P1Pp/1n1BNP1P/6K1/3RB1NR w - - 0 27",
+      "oracle_best": "d3c2",
+      "oracle_cp": -30,
+      "moves": {
+        "v3.2": {
+          "move": "e3f5",
+          "oracle_cp": -298,
+          "loss_cp": 268,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        },
+        "v4": {
+          "move": "e3f5",
+          "oracle_cp": -298,
+          "loss_cp": 268,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        }
+      }
+    },
+    {
+      "game": 11,
+      "ply": 16,
+      "fen": "r1b2rk1/pp1pppbp/n5p1/q1PQP2n/2P5/2N2N2/PP3PPP/R1B1KB1R w KQ - 5 9",
+      "oracle_best": "g2g4",
+      "oracle_cp": 298,
+      "moves": {
+        "v3.2": {
+          "move": "c1e3",
+          "oracle_cp": 349,
+          "loss_cp": 0,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        },
+        "v4": {
+          "move": "c1e3",
+          "oracle_cp": 349,
+          "loss_cp": 0,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        }
+      }
+    },
+    {
+      "game": 11,
+      "ply": 28,
+      "fen": "r2r2k1/pb2ppbp/1p4pP/q1p1P3/QnP5/2N1BN2/PP3P1P/R3KB1R w KQ - 1 15",
+      "oracle_best": "a4a5",
+      "oracle_cp": 509,
+      "moves": {
+        "v3.2": {
+          "move": "f1e2",
+          "oracle_cp": 101,
+          "loss_cp": 408,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        },
+        "v4": {
+          "move": "f1e2",
+          "oracle_cp": 101,
+          "loss_cp": 408,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        }
+      }
+    },
+    {
+      "game": 11,
+      "ply": 40,
+      "fen": "r2r2k1/p3ppPp/1p4p1/2p1P3/N7/4B3/PP1N1PBP/R1nK1b1R w - - 4 21",
+      "oracle_best": "g2f1",
+      "oracle_cp": 982,
+      "moves": {
+        "v3.2": {
+          "move": "h1f1",
+          "oracle_cp": 949,
+          "loss_cp": 33,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        },
+        "v4": {
+          "move": "h1f1",
+          "oracle_cp": 949,
+          "loss_cp": 33,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        }
+      }
+    },
+    {
+      "game": 11,
+      "ply": 52,
+      "fen": "3r4/p3ppk1/6p1/1BN1P2p/8/4B3/PP1N1P1P/2RK1R2 w - - 1 27",
+      "oracle_best": "b2b3",
+      "oracle_cp": 1371,
+      "moves": {
+        "v3.2": {
+          "move": "b5d3",
+          "oracle_cp": 1339,
+          "loss_cp": 32,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        },
+        "v4": {
+          "move": "b5d3",
+          "oracle_cp": 1339,
+          "loss_cp": 32,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        }
+      }
+    },
+    {
+      "game": 12,
+      "ply": 16,
+      "fen": "r4rk1/ppp1ppbp/2nq1np1/3p1bB1/Q1PP4/2N1PN2/PP3PPP/3RKB1R w K - 5 9",
+      "oracle_best": "g5f6",
+      "oracle_cp": 173,
+      "moves": {
+        "v3.2": {
+          "move": "c4c5",
+          "oracle_cp": 35,
+          "loss_cp": 138,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        },
+        "v4": {
+          "move": "c4c5",
+          "oracle_cp": 35,
+          "loss_cp": 138,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        }
+      }
+    },
+    {
+      "game": 12,
+      "ply": 28,
+      "fen": "r2r2k1/pp2pp1p/2p1bbp1/n1P5/3P4/2N1PN2/PP2BPPP/3RK2R w K - 2 15",
+      "oracle_best": "d1c1",
+      "oracle_cp": 209,
+      "moves": {
+        "v3.2": {
+          "move": "f3e5",
+          "oracle_cp": 96,
+          "loss_cp": 113,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        },
+        "v4": {
+          "move": "f3e5",
+          "oracle_cp": 96,
+          "loss_cp": 113,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        }
+      }
+    },
+    {
+      "game": 12,
+      "ply": 40,
+      "fen": "1r1r2k1/p4p1p/2p2pp1/n1P5/3P4/1p2PN2/bP2BPPP/2R2RK1 w - - 2 21",
+      "oracle_best": "f1d1",
+      "oracle_cp": 481,
+      "moves": {
+        "v3.2": {
+          "move": "f3d2",
+          "oracle_cp": 446,
+          "loss_cp": 35,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        },
+        "v4": {
+          "move": "e2d3",
+          "oracle_cp": 477,
+          "loss_cp": 4,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        }
+      }
+    },
+    {
+      "game": 12,
+      "ply": 52,
+      "fen": "1r4k1/p4p2/2p3p1/n1Pr1p2/3P4/1pR1P1K1/bP1NBP1p/5R2 w - - 0 27",
+      "oracle_best": "f1h1",
+      "oracle_cp": 247,
+      "moves": {
+        "v3.2": {
+          "move": "g3h2",
+          "oracle_cp": 204,
+          "loss_cp": 43,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        },
+        "v4": {
+          "move": "g3h2",
+          "oracle_cp": 204,
+          "loss_cp": 43,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        }
+      }
+    },
+    {
+      "game": 13,
+      "ply": 16,
+      "fen": "rn1qk1nr/pp1bppb1/3p2pp/2p1P3/Q1PP4/2NB1N2/PP3PPP/R1B1K2R w KQkq - 2 9",
+      "oracle_best": "c3b5",
+      "oracle_cp": -25,
+      "moves": {
+        "v3.2": {
+          "move": "a4b3",
+          "oracle_cp": -109,
+          "loss_cp": 84,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        },
+        "v4": {
+          "move": "c3b5",
+          "oracle_cp": -25,
+          "loss_cp": 0,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        }
+      }
+    },
+    {
+      "game": 13,
+      "ply": 28,
+      "fen": "rn1q1rk1/pp1bppb1/6pp/1NP1N3/5Q2/3B4/PP3PPP/R3K2R w KQ - 1 15",
+      "oracle_best": "e1g1",
+      "oracle_cp": -71,
+      "moves": {
+        "v3.2": {
+          "move": "d3c4",
+          "oracle_cp": -685,
+          "loss_cp": 614,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        },
+        "v4": {
+          "move": "d3c4",
+          "oracle_cp": -685,
+          "loss_cp": 614,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        }
+      }
+    },
+    {
+      "game": 13,
+      "ply": 40,
+      "fen": "3r1rk1/1p1qppb1/p5pp/2Pn4/8/3B4/PP1Q1PPP/3R1RK1 w - - 0 21",
+      "oracle_best": "d3c2",
+      "oracle_cp": -658,
+      "moves": {
+        "v3.2": {
+          "move": "d3e4",
+          "oracle_cp": -677,
+          "loss_cp": 19,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        },
+        "v4": {
+          "move": "d3c4",
+          "oracle_cp": -692,
+          "loss_cp": 34,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        }
+      }
+    },
+    {
+      "game": 13,
+      "ply": 52,
+      "fen": "5rk1/1p3p2/p2RBqpp/2P1b3/8/6P1/PP3P1P/5RK1 w - - 1 27",
+      "oracle_best": "e6f5",
+      "oracle_cp": -791,
+      "moves": {
+        "v3.2": {
+          "move": "e6b3",
+          "oracle_cp": -835,
+          "loss_cp": 44,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        },
+        "v4": {
+          "move": "e6d5",
+          "oracle_cp": -861,
+          "loss_cp": 70,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        }
+      }
+    },
+    {
+      "game": 14,
+      "ply": 16,
+      "fen": "r1bqk2r/ppp1ppbp/3p1np1/n2P4/2P1P3/2N2N1P/PPQ2PP1/R1B1KB1R w KQkq - 1 9",
+      "oracle_best": "b2b4",
+      "oracle_cp": 398,
+      "moves": {
+        "v3.2": {
+          "move": "b2b4",
+          "oracle_cp": 398,
+          "loss_cp": 0,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        },
+        "v4": {
+          "move": "b2b4",
+          "oracle_cp": 398,
+          "loss_cp": 0,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        }
+      }
+    },
+    {
+      "game": 14,
+      "ply": 28,
+      "fen": "r3k2r/pp3pbp/1q1p2p1/n1pP1bBn/2P5/2N2N1P/PPQ1BPP1/R4RK1 w kq - 4 15",
+      "oracle_best": "e2d3",
+      "oracle_cp": 472,
+      "moves": {
+        "v3.2": {
+          "move": "c2d2",
+          "oracle_cp": 297,
+          "loss_cp": 175,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        },
+        "v4": {
+          "move": "c2d2",
+          "oracle_cp": 297,
+          "loss_cp": 175,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        }
+      }
+    },
+    {
+      "game": 14,
+      "ply": 40,
+      "fen": "r6r/pp1k1p1p/1q1p2p1/n1pP2B1/2PN4/3b2PP/P1Q3P1/4RRK1 w - - 2 21",
+      "oracle_best": "c2a4",
+      "oracle_cp": 1369,
+      "moves": {
+        "v3.2": {
+          "move": "c2a4",
+          "oracle_cp": 1369,
+          "loss_cp": 0,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        },
+        "v4": {
+          "move": "c2a4",
+          "oracle_cp": 1369,
+          "loss_cp": 0,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        }
+      }
+    },
+    {
+      "game": 15,
+      "ply": 16,
+      "fen": "r1bqk2r/ppp1p1b1/2np2pp/4P3/2PP4/2N5/PP3P1P/R1BQKBNR w KQkq - 0 9",
+      "oracle_best": "f1d3",
+      "oracle_cp": 595,
+      "moves": {
+        "v3.2": {
+          "move": "f2f4",
+          "oracle_cp": 446,
+          "loss_cp": 149,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        },
+        "v4": {
+          "move": "f2f4",
+          "oracle_cp": 446,
+          "loss_cp": 149,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        }
+      }
+    },
+    {
+      "game": 15,
+      "ply": 28,
+      "fen": "r3qrk1/ppp1p1b1/2n4p/3NPbp1/2P2P2/4B3/PP1Q3P/R3KBNR w KQ - 6 15",
+      "oracle_best": "g1f3",
+      "oracle_cp": 338,
+      "moves": {
+        "v3.2": {
+          "move": "d5c7",
+          "oracle_cp": 279,
+          "loss_cp": 59,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        },
+        "v4": {
+          "move": "d5c7",
+          "oracle_cp": 279,
+          "loss_cp": 59,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        }
+      }
+    },
+    {
+      "game": 15,
+      "ply": 40,
+      "fen": "N4rk1/pp2p1b1/2n4p/8/2P2Bq1/4Qb2/PP5P/R3KB1R w KQ - 2 21",
+      "oracle_best": "h1g1",
+      "oracle_cp": 70,
+      "moves": {
+        "v3.2": {
+          "move": "h1g1",
+          "oracle_cp": 70,
+          "loss_cp": 0,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        },
+        "v4": {
+          "move": "h1g1",
+          "oracle_cp": 70,
+          "loss_cp": 0,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        }
+      }
+    },
+    {
+      "game": 15,
+      "ply": 52,
+      "fen": "N5k1/pp2p1b1/2n4p/8/2P1r3/5R2/PqK2Q1P/R4B2 w - - 0 27",
+      "oracle_best": "c2d1",
+      "oracle_cp": -942,
+      "moves": {
+        "v3.2": {
+          "move": "c2d1",
+          "oracle_cp": -942,
+          "loss_cp": 0,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        },
+        "v4": {
+          "move": "c2d1",
+          "oracle_cp": -942,
+          "loss_cp": 0,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        }
+      }
+    },
+    {
+      "game": 16,
+      "ply": 16,
+      "fen": "r2q1rk1/ppp2pbp/2np1np1/4pb2/2PP4/2N3PP/PP2PPBN/R1BQK2R w KQ - 0 9",
+      "oracle_best": "d4d5",
+      "oracle_cp": 38,
+      "moves": {
+        "v3.2": {
+          "move": "d4d5",
+          "oracle_cp": 38,
+          "loss_cp": 0,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        },
+        "v4": {
+          "move": "d4d5",
+          "oracle_cp": 38,
+          "loss_cp": 0,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        }
+      }
+    },
+    {
+      "game": 16,
+      "ply": 28,
+      "fen": "r4rk1/ppp2p1p/2npq1p1/4b3/2P1b3/4BNPP/PP2PPB1/R2QK2R w KQ - 0 15",
+      "oracle_best": "f3g5",
+      "oracle_cp": 429,
+      "moves": {
+        "v3.2": {
+          "move": "d1b3",
+          "oracle_cp": -218,
+          "loss_cp": 647,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        },
+        "v4": {
+          "move": "d1b3",
+          "oracle_cp": -218,
+          "loss_cp": 647,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        }
+      }
+    },
+    {
+      "game": 16,
+      "ply": 40,
+      "fen": "1r3rk1/ppp2p1p/q2p2p1/3B2N1/1n6/2b1B1PP/P3PPK1/1R1Q3R w - - 8 21",
+      "oracle_best": "b1b4",
+      "oracle_cp": 731,
+      "moves": {
+        "v3.2": {
+          "move": "a2a4",
+          "oracle_cp": 468,
+          "loss_cp": 263,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        },
+        "v4": {
+          "move": "a2a4",
+          "oracle_cp": 468,
+          "loss_cp": 263,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        }
+      }
+    },
+    {
+      "game": 16,
+      "ply": 52,
+      "fen": "4rbk1/pp3N1p/q1p3p1/3p4/5B1P/1Q4P1/P3PPK1/7R w - - 3 27",
+      "oracle_best": "f7h6",
+      "oracle_cp": 588,
+      "moves": {
+        "v3.2": {
+          "move": "f7h6",
+          "oracle_cp": 588,
+          "loss_cp": 0,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        },
+        "v4": {
+          "move": "f7h6",
+          "oracle_cp": 588,
+          "loss_cp": 0,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        }
+      }
+    },
+    {
+      "game": 17,
+      "ply": 16,
+      "fen": "r1b1kb1r/1p1n1ppp/p3pq2/1Bpp4/3P4/2N5/PPP2PPP/R1BQK1NR w KQkq - 0 9",
+      "oracle_best": "b5d7",
+      "oracle_cp": 484,
+      "moves": {
+        "v3.2": {
+          "move": "b5d7",
+          "oracle_cp": 484,
+          "loss_cp": 0,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        },
+        "v4": {
+          "move": "b5d7",
+          "oracle_cp": 484,
+          "loss_cp": 0,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        }
+      }
+    },
+    {
+      "game": 17,
+      "ply": 28,
+      "fen": "r1br4/3k1ppp/pQ2p3/3p4/8/2N5/PPP2PPP/R1B1K2R w KQ - 1 15",
+      "oracle_best": "b6e3",
+      "oracle_cp": 1079,
+      "moves": {
+        "v3.2": {
+          "move": "c1g5",
+          "oracle_cp": 1091,
+          "loss_cp": 0,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        },
+        "v4": {
+          "move": "c1g5",
+          "oracle_cp": 1091,
+          "loss_cp": 0,
+          "allows_mate_in_one": false,
+          "avoidable_mate_in_one": false
+        }
+      }
+    }
+  ],
+  "engines": {
+    "v3.2": {
+      "id": {
+        "name": "WaveChess 3.2 (wave mathematics)",
+        "author": "WaveChess"
+      },
+      "path": "/workspace/work/wavechess-3.2",
+      "sha256": "734b216337538c8bc2561089f2c42c3139cd0228aced38119f3727a13f848f7c",
+      "options": {
+        "Threads": 1,
+        "Hash": 16,
+        "Move Overhead": 0,
+        "Opening Variety": 0,
+        "Random Seed": 42,
+        "UCI_LimitStrength": false
+      }
+    },
+    "v4": {
+      "id": {
+        "name": "WaveChess 4 (wave mathematics)",
+        "author": "WaveChess"
+      },
+      "path": "/workspace/work/wavechess-4",
+      "sha256": "b76badc8ac68cb1561ce757ddc6ea055e7bbceffc1dc06eefbddb72cac8232be",
+      "options": {
+        "Threads": 1,
+        "Hash": 16,
+        "Move Overhead": 0,
+        "Opening Variety": 0,
+        "Random Seed": 42,
+        "UCI_LimitStrength": false
+      }
+    }
+  },
+  "oracle": {
+    "id": {
+      "name": "Stockfish 19",
+      "author": "the Stockfish developers (see AUTHORS file)"
+    },
+    "path": "/workspace/work/stockfish/stockfish-linux-x86-64-universal",
+    "sha256": "0f83d24cc46d2c66c60f16001af5444873bc112b7d028594513426894c12da19",
+    "options": {
+      "Threads": 1,
+      "Hash": 16,
+      "Move Overhead": 0,
+      "UCI_LimitStrength": false
+    }
+  },
+  "summary": {
+    "v3.2": {
+      "positions": 64,
+      "mean_loss_cp": 116.84,
+      "median_loss_cp": 32.5,
+      "loss_at_least_200cp": 11,
+      "loss_at_least_100cp": 18,
+      "allows_mate_in_one": 1,
+      "avoidable_mate_in_one": 0
+    },
+    "v4": {
+      "positions": 64,
+      "mean_loss_cp": 102.7,
+      "median_loss_cp": 33.5,
+      "loss_at_least_200cp": 11,
+      "loss_at_least_100cp": 19,
+      "allows_mate_in_one": 1,
+      "avoidable_mate_in_one": 0
+    }
+  }
+}

@@ -56,6 +56,8 @@ params! {
     mate_bonus: "MateBonus"=> 4000.0, // полезность матовой фазы до скидок на дальность и достоверность
     reply_k:    "ReplyK"   => 3.0,   // сколько лучших ответов соперника берём в суперпозицию (1 — один)
     reply_tau:  "ReplyTau" => 60.0,  // «температура» амплитуд ответов, сотые пешки
+    particles:  "Particles" => 8.0, // bounded forward ensemble per root
+    risk_tau:   "RiskTau" => 120.0, // finite entropic risk scale; 0 = legacy aggregation
     crush:      "Crush"    => 5.0,   // во сколько раз усилена тяга к мату при подавляющем перевесе
     // ---- осевшая волна (угрозы)
     counter1:   "Counter1" => 0.10,  // доля лучшей встречной угрозы
@@ -76,6 +78,7 @@ fn valid_value(name: &str, v: f32) -> bool {
     }
     match name {
         "ReplyK" => (1.0..=8.0).contains(&v) && v.fract() == 0.0,
+        "Particles" => (1.0..=64.0).contains(&v) && v.fract() == 0.0,
         "ReplyTau" => (1.0..=1000.0).contains(&v),
         "XrayOwn" | "XrayEnemy" | "Counter1" | "Counter2" => v <= 1.0,
         "MateBonus" => v <= 10000.0,
