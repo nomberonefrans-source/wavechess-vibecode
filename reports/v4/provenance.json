@@ -1,6 +1,6 @@
 {
   "date": "2026-11-13",
-  "source_base": "0e3b45b",
+  "source_base": "0e3b45b2e13a63d8c63c4dbd5affc250176f9511",
   "source_files_sha256": {
     "Cargo.toml": "29a54e7418ee9c9241476dc06e425d054a79c5fc96e712ee5d1f3a5ea2e97f59",
     "Cargo.lock": "bd638f03408f67c42e1a0acd21467e62e82d943d00dbe68aac5657cd3f41ccf1",
@@ -38,5 +38,11 @@
   "stockfish_archive": {
     "url": "https://github.com/official-stockfish/Stockfish/releases/download/sf_19/stockfish-linux-x86-64-universal.tar.gz",
     "sha256": "9defc0d4e55d49c65a6d042f3e571a39fcea499ade6dbe741b53b8c65e03611f"
+  },
+  "github_source_commit": "bd9d2229103128b525a96387260556a93f97accd",
+  "github_ci": {
+    "url": "https://github.com/nomberonefrans-source/wavechess-vibecode/actions/runs/43435401322",
+    "windows": "success",
+    "linux": "success"
   }
 }

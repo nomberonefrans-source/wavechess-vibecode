@@ -1,0 +1,224 @@
+[Event "WaveChess quick Elo"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "candidate"]
+[Black "opponent"]
+[Result "1-0"]
+[Termination "CHECKMATE"]
+[TimeControl "?"]
+[MoveTimeMs "80"]
+[NominalOpponentElo "0"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 4. Bc4 b5 5. Bd5 Bc5 6. Nc3 Nf6 7. d3 Bb4 8. O-O Bc5 9. Be3 Bxe3 10. fxe3 b4 11. Ne2 Ng4 12. Qd2 h5 13. h3 Nf6 14. a3 Rb8 15. axb4 Rxb4 16. c3 Rb6 17. b4 d6 18. Bc4 d5 19. exd5 Nxd5 20. e4 Nf6 21. Qg5 Be6 22. Qxg7 Rf8 23. Rxa6 Rg8 24. Qh6 Rg6 25. Qh8+ Ke7 26. Ra8 Rb8 27. Rxb8 Qxb8 28. Qxb8 Nxb8 29. Nxe5 Rg5 30. Bxe6 fxe6 31. Nf3 Rg6 32. Nf4 Rg8 33. Kh1 Nc6 34. Nd4 Nxd4 35. cxd4 Rb8 36. Ng6+ Kf7 37. Ne5+ Kg7 38. Nc6 Rb7 39. e5 Nd5 40. Rb1 Kg8 41. Rb2 Rb5 42. g4 hxg4 43. hxg4 Rb6 44. b5 Nf4 45. Rb3 Ne2 46. Ne7+ Kf7 47. Nc6 Kg6 48. Kg2 Rb7 49. Ne7+ Kg5 50. d5 Nf4+ 51. Kg3 c5 52. Nc6 Nxd5 53. Kf3 Nc7 54. b6 Nd5 55. Rb1 Rxb6 56. Rxb6 Nxb6 57. Nd8 Na4 58. Nxe6+ Kh6 59. Nc7 Nb2 60. Kg3 Nxd3 61. e6 c4 62. e7 c3 63. e8=Q c2 64. Qh5+ Kg7 65. Qg5+ Kh7 66. Ne6 c1=Q 67. Qg7# 1-0
+
+[Event "WaveChess quick Elo"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "opponent"]
+[Black "candidate"]
+[Result "1-0"]
+[Termination "CHECKMATE"]
+[TimeControl "?"]
+[MoveTimeMs "80"]
+[NominalOpponentElo "0"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 4. Bc4 b5 5. Bd5 Bc5 6. Nc3 Nf6 7. d3 Bb4 8. O-O Bc5 9. Be3 Bxe3 10. fxe3 b4 11. Bxc6 dxc6 12. Ne2 Qd6 13. Ng3 Be6 14. Nf5 Bxf5 15. exf5 e4 16. dxe4 Nxe4 17. Qd4 Nf6 18. Rad1 O-O-O 19. Ne5 Rhf8 20. Nc4 Qd5 21. b3 c5 22. Qa1 Qe4 23. Rd2 Rd5 24. Rdf2 Rg8 25. h3 h6 26. a3 Kb7 27. axb4 cxb4 28. Qa4 c5 29. Kh2 Re8 30. Na5+ Ka7 31. Nc4 Kb7 32. g4 h5 33. Na5+ Kc8 34. Qc6+ Kd8 35. Nb7+ Ke7 36. Qc7+ Kf8 37. Nxc5 Qe5+ 38. Qxe5 Rexe5 39. Nxa6 hxg4 40. Nxb4 Rb5 41. Rf4 Re4 42. Rxe4 Nxe4 43. Nd3 g3+ 44. Kh1 g2+ 45. Kxg2 f6 46. Rf4 Nd6 47. e4 Rb7 48. e5 fxe5 49. Nxe5 Rb5 50. Nd7+ Kg8 51. f6 Rf5 52. Rf1 gxf6 53. Nxf6+ Kg7 54. Nd7 Kh7 55. Rxf5 Nxf5 56. c4 Nd4 57. b4 Nf5 58. Nf6+ Kh6 59. Kh2 Ng7 60. c5 Ne6 61. Ne8 Nxc5 62. bxc5 Kg6 63. Kg1 Kf7 64. Nd6+ Ke6 65. h4 Kd5 66. Ne8 Kxc5 67. h5 Kc4 68. h6 Kd4 69. h7 Ke4 70. h8=Q Kd5 71. Qc3 Ke6 72. Qc5 Kd7 73. Ng7 Kd8 74. Kg2 Kd7 75. Kf3 Kd8 76. Ke4 Kd7 77. Ke5 Kd8 78. Qc6 Ke7 79. Qe8# 1-0
+
+[Event "WaveChess quick Elo"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "candidate"]
+[Black "opponent"]
+[Result "1/2-1/2"]
+[Termination "THREEFOLD_REPETITION"]
+[TimeControl "?"]
+[MoveTimeMs "80"]
+[NominalOpponentElo "0"]
+
+1. d4 Nf6 2. c4 g6 3. Nc3 Bg7 4. Nf3 Nc6 5. d5 Nb4 6. Qa4 c5 7. a3 Na6 8. Bf4 Nh5 9. Be5 f6 10. Bg3 O-O 11. O-O-O Bh6+ 12. e3 d6 13. Bd3 Bd7 14. Qb3 Qb6 15. Nb5 Bf5 16. Qc3 Nc7 17. h3 a6 18. Bxf5 gxf5 19. Nxc7 Qxc7 20. Kb1 Qb6 21. Ka1 f4 22. Bxf4 Nxf4 23. exf4 Bxf4 24. g3 Be5 25. Nxe5 fxe5 26. Qe3 Qa5 27. Qd2 Qa4 28. Qg5+ Kf7 29. Qg4 Rg8 30. Qe4 Rg6 31. Rd3 b5 32. Rf3+ Kg8 33. Rc1 Rf8 34. Kb1 Rgf6 35. Qg4+ Kh8 36. Rxf6 Rxf6 37. cxb5 Qb3 38. bxa6 Rxf2 39. Qc8+ Kg7 40. Qg4+ Kh8 41. Qc8+ Kg7 42. Qg4+ 1/2-1/2
+
+[Event "WaveChess quick Elo"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "opponent"]
+[Black "candidate"]
+[Result "1-0"]
+[Termination "CHECKMATE"]
+[TimeControl "?"]
+[MoveTimeMs "80"]
+[NominalOpponentElo "0"]
+
+1. d4 Nf6 2. c4 g6 3. Nc3 Bg7 4. e4 Nc6 5. e5 Ng8 6. Nf3 d6 7. Qa4 Bd7 8. Qb5 b6 9. Bg5 f6 10. Bf4 a6 11. Qd5 Nb4 12. Qe4 Bf5 13. Qb7 Nc2+ 14. Kd2 Nxa1 15. Bd3 Bxd3 16. Kxd3 dxe5 17. Bg3 e4+ 18. Nxe4 f5 19. Neg5 Bxd4 20. Nxd4 Nc2 21. Ne6 Nb4+ 22. Kc3 Nxa2+ 23. Kb3 Nf6 24. Nxd8 Rxd8 25. Be5 Rxd4 26. Bxd4 Nb4 27. Qa8+ Kf7 28. Qxh8 Nc6 29. Bxf6 exf6 30. Rd1 h5 31. Rd5 b5 32. f4 g5 33. Rd7+ Ne7 34. Qh7+ Kf8 35. Rd8# 1-0
+
+[Event "WaveChess quick Elo"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "candidate"]
+[Black "opponent"]
+[Result "1-0"]
+[Termination "CHECKMATE"]
+[TimeControl "?"]
+[MoveTimeMs "80"]
+[NominalOpponentElo "0"]
+
+1. e4 e6 2. d4 d5 3. Nc3 Nf6 4. Bb5+ c6 5. Bd3 Bb4 6. Bd2 dxe4 7. Bxe4 Qxd4 8. Bd3 Qe5+ 9. Qe2 Nbd7 10. Nf3 Qh5 11. a3 Bc5 12. b4 Bb6 13. O-O-O O-O 14. h3 g6 15. g4 Nxg4 16. hxg4 Qxg4 17. Rdg1 Ne5 18. Nxe5 Qxe2 19. Bxe2 Bxf2 20. Rg2 Bd4 21. Nf3 Rd8 22. Rh4 e5 23. Bc4 Be6 24. Bxe6 fxe6 25. Ng5 Bxc3 26. Bxc3 h5 27. Bxe5 Rd5 28. Nf3 Kf7 29. c4 Rd3 30. Rf4+ Ke7 31. Bf6+ Kd6 32. Rd4+ Rxd4 33. Bxd4 Rg8 34. Bxa7 Kd7 35. Bd4 Kc7 36. Be5+ Kb6 37. Nd4 Rf8 38. Nxe6 Rf1+ 39. Kd2 Ka7 40. Rxg6 h4 41. Rf6 Rb1 42. Ng5 Ka6 43. Kc2 Rh1 44. Bd4 Re1 45. Nf3 Re7 46. Nxh4 Re4 47. Nf5 Re1 48. b5+ Ka5 49. Bc3+ Ka4 50. Bxe1 cxb5 51. Rb6 bxc4 52. Rxb7 c3 53. Bxc3 Kxa3 54. Ra7# 1-0
+
+[Event "WaveChess quick Elo"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "opponent"]
+[Black "candidate"]
+[Result "0-1"]
+[Termination "CHECKMATE"]
+[TimeControl "?"]
+[MoveTimeMs "80"]
+[NominalOpponentElo "0"]
+
+1. e4 e6 2. d4 d5 3. Nc3 Nf6 4. e5 Ne4 5. Bb5+ c6 6. Bd3 Bb4 7. Bd2 Qh4 8. Nxe4 dxe4 9. Bxb4 exd3 10. Nf3 Qe4+ 11. Kd2 dxc2 12. Qxc2 Qg6 13. Nh4 Qg5+ 14. f4 Qxh4 15. g3 Qd8 16. Bd6 Na6 17. Qb3 Qb6 18. Qc3 f5 19. exf6 gxf6 20. Bc5 Qd8 21. Rhe1 b6 22. Ba3 c5 23. Kd3 O-O 24. Qc4 Qd5 25. Kc3 Rf7 26. Rad1 Rc7 27. Kb3 b5 28. Qxd5 exd5 29. Re8+ Kf7 30. Rh8 Kg7 31. Re8 b4 32. dxc5 bxa3 33. Rxd5 axb2 34. Kc2 Nb4+ 35. Kxb2 Nxd5 36. f5 Rxc5 37. Ka1 Kf7 38. Rd8 Rb8 39. a3 Rc1+ 40. Ka2 Nc3# 0-1
+
+[Event "WaveChess quick Elo"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "candidate"]
+[Black "opponent"]
+[Result "1-0"]
+[Termination "CHECKMATE"]
+[TimeControl "?"]
+[MoveTimeMs "80"]
+[NominalOpponentElo "0"]
+
+1. e4 c6 2. d4 d5 3. Nc3 dxe4 4. Nxe4 Nf6 5. Nc5 b6 6. Nb3 Bg4 7. f3 Be6 8. Bf4 a5 9. Bd3 a4 10. Bxb8 Rxb8 11. Nd2 Qxd4 12. Qc1 Qe5+ 13. Kf1 g5 14. Nc4 Qf4 15. b3 axb3 16. axb3 b5 17. Ne3 Ng4 18. Nxg4 Bxg4 19. Ne2 Qf6 20. Kg1 Bc8 21. Ra7 Rb7 22. Ra8 e6 23. Qa1 Bc5+ 24. Kf1 Qxa1+ 25. Rxa1 Ra7 26. Rd1 f5 27. h4 Rg8 28. c4 bxc4 29. Bxc4 Be3 30. Nd4 gxh4 31. Bxe6 Bxe6 32. Nxe6 Rg6 33. Rd8+ Ke7 34. Rxh4 Rh6 35. Rxh6 Bxh6 36. Rc8 Kd7 37. Rd8+ Kxe6 38. g4 Bg5 39. gxf5+ Kxf5 40. Rd6 Ra1+ 41. Kg2 c5 42. Rd5+ Kf4 43. Rxc5 Rd1 44. Rc4+ Kf5 45. b4 Bf4 46. Rc5+ Ke6 47. b5 Kd6 48. Rc6+ Ke5 49. b6 Rd6 50. Rc5+ Kd4 51. Rb5 Rd5 52. Rb4+ Ke5 53. Kf2 Bd2 54. Rb2 Kf6 55. Rc2 Rd8 56. b7 Bb4 57. Rc4 Rd2+ 58. Ke3 Rd8 59. Rc8 Bc5+ 60. Ke2 Re8+ 61. Kf1 h6 62. Rxe8 Ba7 63. Ra8 Kg7 64. Rxa7 Kf7 65. b8=Q+ Ke6 66. Qb5 Kd6 67. f4 h5 68. f5 h4 69. Rd7# 1-0
+
+[Event "WaveChess quick Elo"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "opponent"]
+[Black "candidate"]
+[Result "0-1"]
+[Termination "CHECKMATE"]
+[TimeControl "?"]
+[MoveTimeMs "80"]
+[NominalOpponentElo "0"]
+
+1. e4 c6 2. d4 d5 3. Nc3 dxe4 4. Nxe4 Nf6 5. Ng3 Bg4 6. Be2 Be6 7. b3 Qa5+ 8. Bd2 Qb6 9. Nf3 Na6 10. Bc4 c5 11. dxc5 Nxc5 12. Ne5 Nce4 13. Qf3 Qd4 14. Bb5+ Bd7 15. Bxd7+ Kd8 16. Ba5+ b6 17. Nxf7+ Kc7 18. Qf4+ e5 19. Qf3 Qxa1+ 20. Ke2 Qxa2 21. Nxe4 Qxc2+ 22. Kf1 Qc1+ 23. Be1 Bb4 24. Nc3 Kxd7 25. Nxe5+ Kd6 26. Qe3 Qxe3 27. fxe3 Kxe5 28. Bd2 Ne4 29. g3 Nxd2+ 30. Ke2 Bxc3 31. Kd1 Ke4 32. Re1 Nxb3 33. Re2 Nc5 34. Re1 Bxe1 35. Kxe1 Rhd8 36. Kf2 Rd2+ 37. Kg1 Kxe3 38. g4 Rf8 39. h4 Rff2 40. Kh1 Rd1# 0-1
+
+[Event "WaveChess quick Elo"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "candidate"]
+[Black "opponent"]
+[Result "1/2-1/2"]
+[Termination "THREEFOLD_REPETITION"]
+[TimeControl "?"]
+[MoveTimeMs "80"]
+[NominalOpponentElo "0"]
+
+1. c4 e5 2. Nc3 Nf6 3. g3 d5 4. Qa4+ Bd7 5. Nb5 a6 6. Bh3 Qc8 7. Bxd7+ Kxd7 8. Na7+ b5 9. Nxb5 Nc6 10. Nc3 d4 11. Nd5 Bd6 12. d3 Qb7 13. Qb3 Bb4+ 14. Bd2 Rab8 15. Qa4 Bxd2+ 16. Kf1 Ke6 17. Nf3 Bh6 18. Nxf6 gxf6 19. b3 Rhg8 20. h3 Ke7 21. Qa3+ Ke8 22. Qa4 Kf8 23. Qa3+ Kg7 24. Kg2 Nb4 25. Kh2 Nc2 26. Qe7 Rge8 27. Qd7 Red8 28. Qg4+ Kh8 29. Rab1 Rg8 30. Qh4 Bg5 31. Qh5 c5 32. h4 Qe7 33. hxg5 fxg5 34. Rbc1 Nb4 35. a3 Na2 36. Rb1 Nc3 37. Rb2 e4 38. dxe4 Nxe4 39. Kg2 f5 40. Qh6 a5 41. Rd1 Rg6 42. Qh5 Nc3 43. Rdd2 Qe4 44. Kg1 g4 45. Ng5 Qb7 46. f3 gxf3 47. exf3 Qe7 48. f4 Qe3+ 49. Kh2 Rb7 50. Qh3 Rf6 51. Qh4 Rfb6 52. Kh1 Rxb3 53. Rbc2 Rxa3 54. Rb2 Ra1+ 55. Kg2 Rg1+ 56. Kh2 Rb1 57. Rbc2 Ne4 58. Nxe4 Qxe4 59. Qd8+ Kg7 60. Qg5+ Kf7 61. Qh5+ Ke7 62. Qxh7+ Kf8 63. Qh8+ Kf7 64. Qh7+ Ke8 65. Qh8+ Kf7 66. Qh7+ Ke8 67. Qh8+ 1/2-1/2
+
+[Event "WaveChess quick Elo"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "opponent"]
+[Black "candidate"]
+[Result "1/2-1/2"]
+[Termination "THREEFOLD_REPETITION"]
+[TimeControl "?"]
+[MoveTimeMs "80"]
+[NominalOpponentElo "0"]
+
+1. c4 e5 2. Nc3 Nf6 3. g3 d5 4. Qa4+ c6 5. Bg2 d4 6. Nd5 Bd7 7. Nxf6+ Qxf6 8. d3 b5 9. Qa5 Qd8 10. Bd2 Qf6 11. Nf3 h6 12. Qc7 Bd6 13. Qb7 bxc4 14. Qxa8 cxd3 15. exd3 a6 16. O-O O-O 17. Rac1 Be6 18. b3 Bd5 19. Nh4 Qe6 20. Be4 f5 21. Bxd5 Qxd5 22. Ng6 Rf6 23. Nh4 Rf8 24. f4 e4 25. dxe4 fxe4 26. Ng6 Rf6 27. Nh4 e3 28. Bxe3 dxe3 29. Rfe1 Re6 30. Rcd1 Qc5 31. Rc1 Qd5 32. f5 Re8 33. Rcd1 Qc5 34. Rc1 Qb6 35. Rc4 Qa5 36. Rcc1 Qxa2 37. Qb7 Re7 38. Qc8+ Kf7 39. Rb1 Re8 40. Qb7+ Kg8 41. Kh1 Re7 42. Qc8+ Kf7 43. Qd8 Bc7 44. Qd3 Qd2 45. Rbd1 Qb4 46. Qc4+ Qxc4 47. bxc4 a5 48. Re2 Re4 49. c5 Na6 50. Rd7+ Kg8 51. f6 gxf6 52. g4 Be5 53. Rd8+ Kh7 54. Rd7+ Kg8 55. Re7 Nxc5 56. h3 a4 57. Ng2 f5 58. gxf5 Kf8 59. Rh7 Bf4 60. Nh4 Kg8 61. Ra7 Bb8 62. Rg2+ Kf8 63. Ng6+ Ke8 64. Rh7 a3 65. Rxh6 Be5 66. Re2 a2 67. Rxa2 Nb3 68. Rh7 Bf6 69. Re2 Nd4 70. Re1 Nxf5 71. Rc7 Ne7 72. Nxe7 Rxe7 73. Rc8+ Kd7 74. Rf8 Re6 75. Rg8 Re8 76. Rd1+ Ke7 77. Rxe8+ Kxe8 78. Kh2 Bh4 79. Rd4 Bf2 80. Rf4 c5 81. Kg2 Ke7 82. Kf1 Kd6 83. h4 Ke5 84. Rc4 Kf6 85. Rf4+ Kg6 86. Ke2 Kg7 87. Kd1 Kh8 88. Rf8+ Kh7 89. Rf3 Kg6 90. Rf4 e2+ 91. Kxe2 Bd4 92. Rf1 c4 93. Rf8 Kg7 94. Rf5 Kh7 95. Rh5+ Kg6 96. Rd5 Bb2 97. Rd8 Kh5 98. Rb8 Bd4 99. Kf3 Bg7 100. Rb7 Bh6 101. Rb4 c3 102. Rc4 Bd2 103. Kg2 Kh6 104. Rc8 Kg6 105. Kf1 Kh5 106. Rc4 Kg6 107. Rc7 Kf5 108. Kf2 Kg6 109. Kf1 Kh5 110. Rc4 Kg6 1/2-1/2
+
+[Event "WaveChess quick Elo"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "candidate"]
+[Black "opponent"]
+[Result "0-1"]
+[Termination "CHECKMATE"]
+[TimeControl "?"]
+[MoveTimeMs "80"]
+[NominalOpponentElo "0"]
+
+1. Nf3 d5 2. g3 Nf6 3. Bg2 c5 4. d4 Ne4 5. Ne5 Qa5+ 6. Kf1 Nc6 7. c3 cxd4 8. cxd4 f6 9. Bxe4 fxe5 10. Bd3 Nxd4 11. Bd2 Bh3+ 12. Kg1 Qb6 13. Qa4+ Qc6 14. Nc3 Bd7 15. Qa5 e6 16. f4 e4 17. Bb1 Qb6 18. Na4 Nxe2+ 19. Kg2 Qd4 20. Bc2 b6 21. Nxb6 Qxb6 22. b4 Rc8 23. Ba4 Nc3 24. Bxd7+ Kxd7 25. a3 e3 26. Be1 d4 27. Qe5 h5 28. Rc1 Qc6+ 29. Kg1 Ne2+ 30. Kf1 Qf3+ 31. Bf2 Qxf2# 0-1
+
+[Event "WaveChess quick Elo"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "opponent"]
+[Black "candidate"]
+[Result "1-0"]
+[Termination "CHECKMATE"]
+[TimeControl "?"]
+[MoveTimeMs "80"]
+[NominalOpponentElo "0"]
+
+1. Nf3 d5 2. g3 Nf6 3. Bg2 c5 4. Ne5 Nc6 5. f4 Qd6 6. Nd3 c4 7. Nf2 Bf5 8. Nc3 Nd4 9. e4 Qe6 10. d3 Bg4 11. Nxg4 Nxg4 12. Nxd5 Rc8 13. c3 Nb5 14. f5 Qd6 15. Qxg4 cxd3 16. Bf4 d2+ 17. Kxd2 e5 18. fxe6 Qxe6 19. Qe2 Qd7 20. Ke1 Bd6 21. a4 Nc7 22. e5 Bc5 23. Nb4 Ne6 24. Qb5 Rc7 25. Rd1 Nxf4 26. Rxd7 Nxg2+ 27. Kf1 Ne3+ 28. Ke2 Rxd7 29. Qxc5 Ng4 30. Rd1 h5 31. Rd6 Rxd6 32. exd6 f6 33. Qc8+ Kf7 34. Qxh8 Ne5 35. Nd3 Nd7 36. Qxh5+ Ke6 37. Qb5 Nb6 38. d7 Nxd7 39. Qxb7 a5 40. Qb5 Nb6 41. Qxb6+ Ke7 42. Qxa5 Kf8 43. Qd5 g5 44. Qd7 Kg8 45. a5 Kf8 46. a6 Kg8 47. a7 g4 48. a8=Q# 1-0
+
+[Event "WaveChess quick Elo"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "candidate"]
+[Black "opponent"]
+[Result "1/2-1/2"]
+[Termination "THREEFOLD_REPETITION"]
+[TimeControl "?"]
+[MoveTimeMs "80"]
+[NominalOpponentElo "0"]
+
+1. d4 d5 2. c4 c6 3. Nf3 Nf6 4. Ne5 Ne4 5. Nc3 Qa5 6. Bd2 e6 7. Qa4 Bb4 8. cxd5 Nxc3 9. Qxa5 Bxa5 10. Bxc3 Bxc3+ 11. bxc3 exd5 12. e3 f6 13. Nf3 Bf5 14. Nh4 Be4 15. f3 Bc2 16. Kd2 Bg6 17. Bd3 Bxd3 18. Kxd3 Na6 19. Nf5 g6 20. Nd6+ Kd7 21. Nxb7 Rab8 22. Nc5+ Nxc5+ 23. dxc5 Rb2 24. Rhg1 Re8 25. e4 dxe4+ 26. fxe4 Re5 27. Kd4 Re2 28. Kd3 R5xe4 29. c4 R4e3+ 30. Kd4 Re5 31. Rgf1 Rd2+ 32. Kc3 Rxg2 33. Rad1+ Ke7 34. Rd2 Ree2 35. Rxe2+ Rxe2 36. Kd3 Rxa2 37. h4 g5 38. hxg5 Rg2 39. Rxf6 Rxg5 40. Rh6 Rg7 41. Rxc6 Rg6 42. Rc7+ Ke8 43. Rxh7 a5 44. Ra7 Rg3+ 45. Kc2 Ra3 46. c6 Kd8 47. c7+ Kc8 48. Kb2 Ra4 49. Kb3 Rb4+ 50. Kc3 Ra4 51. Kd3 Ra2 52. Kd4 Ra1 53. Ke4 Ra2 54. Ke5 Re2+ 55. Kd4 Ra2 56. Kc3 Ra1 57. Kb2 Ra4 58. Kc3 Ra1 59. Kd3 Ra2 60. Ke4 Re2+ 61. Kd3 1/2-1/2
+
+[Event "WaveChess quick Elo"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "opponent"]
+[Black "candidate"]
+[Result "0-1"]
+[Termination "CHECKMATE"]
+[TimeControl "?"]
+[MoveTimeMs "80"]
+[NominalOpponentElo "0"]
+
+1. d4 d5 2. c4 c6 3. Nf3 Nf6 4. Ne5 Ne4 5. Nc3 Qa5 6. Bd2 e6 7. Qa4 Bb4 8. Rc1 Nd7 9. cxd5 exd5 10. f3 Nxe5 11. fxe4 Bxc3 12. Qxa5 Bxa5 13. dxe5 Bxd2+ 14. Kxd2 dxe4 15. e3 Be6 16. Bc4 O-O-O+ 17. Ke2 h5 18. Bxe6+ fxe6 19. Rc4 Rhf8 20. Rxe4 Rd5 21. Rf1 Rf5 22. Rxf5 exf5 23. Ra4 Rxe5 24. Rxa7 Kb8 25. Ra4 Re4 26. Rd4 c5 27. Rd5 f4 28. Rxc5 Rxe3+ 29. Kd2 h4 30. Rh5 g6 31. Rxh4 g5 32. Rh8+ Kc7 33. Rg8 Re5 34. a4 Rd5+ 35. Kc2 Rf5 36. h3 f3 37. Rg7+ Kb6 38. g4 Rf4 39. Rd7 f2 40. h4 f1=Q 41. Rd6+ Kc7 42. h5 Kxd6 43. h6 Rxa4 44. h7 Qh3 45. Kb1 Qd3+ 46. Kc1 Rc4# 0-1
+
+[Event "WaveChess quick Elo"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "candidate"]
+[Black "opponent"]
+[Result "1-0"]
+[Termination "CHECKMATE"]
+[TimeControl "?"]
+[MoveTimeMs "80"]
+[NominalOpponentElo "0"]
+
+1. e4 e5 2. Nc3 Nf6 3. Bc4 Nc6 4. Nf3 Bc5 5. d3 d6 6. Be3 Be6 7. Nd5 O-O 8. O-O a6 9. Ng5 Bg4 10. Nxf6+ gxf6 11. Qxg4 fxg5 12. Qxg5+ Kh8 13. Qf5 Qe7 14. Bg5 f6 15. Be3 Nd4 16. Bxd4 Bxd4 17. c3 Bc5 18. Qe6 Rae8 19. Qh3 Qg7 20. Kh1 b5 21. Bd5 Qg5 22. b4 Bb6 23. a4 Qd2 24. axb5 axb5 25. Ra2 Qxc3 26. Rb1 c6 27. Be6 Bd4 28. Bf5 Re7 29. Be6 Rfe8 30. Bd7 Rd8 31. Be6 Ra7 32. Qf3 f5 33. g3 d5 34. Re2 dxe4 35. Rxe4 Qc2 36. Rbe1 Qxf2 37. Qxf5 Rf8 38. Qh5 Qf3+ 39. Qxf3 Rxf3 40. Rd1 Ra1 41. Ree1 Ra3 42. Rc1 Bc3 43. Re4 Bd4 44. Rxc6 Raxd3 45. Rc8+ Kg7 46. Rg8+ Kf6 47. Bd5 Rf1+ 48. Kg2 Rb1 49. Rf8+ Kg6 50. Rg4+ Kh5 51. Rfg8 Rg1+ 52. Kh3 Rdxg3+ 53. hxg3 Rxg3+ 54. Kxg3 Bf2+ 55. Kxf2 e4 56. Rxe4 Kh6 57. Rh4# 1-0
+
+[Event "WaveChess quick Elo"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "opponent"]
+[Black "candidate"]
+[Result "1-0"]
+[Termination "CHECKMATE"]
+[TimeControl "?"]
+[MoveTimeMs "80"]
+[NominalOpponentElo "0"]
+
+1. e4 e5 2. Nc3 Nf6 3. Bc4 Nc6 4. Nf3 Bc5 5. d3 d6 6. Be3 Be6 7. Bb5 O-O 8. d4 Bb4 9. O-O a6 10. Bd3 exd4 11. Nxd4 Bg4 12. f3 Be6 13. Nxe6 fxe6 14. Bc4 Qd7 15. a3 Bc5 16. Qc1 Ne5 17. b3 b5 18. Be2 b4 19. axb4 Bxb4 20. Qd2 Qc6 21. Bd4 Bc5 22. Kh1 Qb6 23. Rfd1 Nc6 24. Bg1 Ne5 25. Na4 Qc6 26. Bd4 Bxd4 27. Qxd4 Qxc2 28. Bc4 Rfe8 29. Rd2 Qxd2 30. Qxd2 Kh8 31. Nc3 a5 32. Nb5 Nxc4 33. Qd4 Ne5 34. Nxc7 Rab8 35. Nxe8 Nxe8 36. Qc3 Nf6 37. Rxa5 h5 38. h4 Kh7 39. Ra7 Kg8 40. g3 Ned7 41. Ra6 Rb6 42. Rxb6 Nxb6 43. Qd4 Nfd7 44. Qxd6 e5 45. Kh2 Kf7 46. f4 Ke8 47. Qc7 Ke7 48. fxe5 Na8 49. Qa5 Nab6 50. b4 Nc4 51. Qc7 Na3 52. Qa5 Nc2 53. Kg2 Ne3+ 54. Kf3 Nc4 55. Qc7 Nxe5+ 56. Ke2 Kf6 57. b5 Nb8 58. Qxb8 Nc6 59. bxc6 Ke7 60. c7 g5 61. c8=Q gxh4 62. Qf5 h3 63. Qbf8# 1-0
+

@@ -1,0 +1,44 @@
+[
+  {
+    "file": "reports/v4/ladder-60ms.json",
+    "games": 64,
+    "pgn_results_verified": true,
+    "rating_recomputed": true,
+    "candidate_sha256": "b76badc8ac68cb1561ce757ddc6ea055e7bbceffc1dc06eefbddb72cac8232be"
+  },
+  {
+    "file": "reports/v4/versions-120ms.json",
+    "games": 32,
+    "pgn_results_verified": true,
+    "rating_recomputed": true,
+    "candidate_sha256": "b76badc8ac68cb1561ce757ddc6ea055e7bbceffc1dc06eefbddb72cac8232be"
+  },
+  {
+    "file": "reports/v4/resources-120ms.json",
+    "games": 16,
+    "pgn_results_verified": true,
+    "rating_recomputed": true,
+    "candidate_sha256": "b76badc8ac68cb1561ce757ddc6ea055e7bbceffc1dc06eefbddb72cac8232be"
+  },
+  {
+    "file": "reports/v4/exploratory/chain85.json",
+    "games": 8,
+    "pgn_results_verified": true,
+    "rating_recomputed": true,
+    "candidate_sha256": "734b216337538c8bc2561089f2c42c3139cd0228aced38119f3727a13f848f7c"
+  },
+  {
+    "file": "reports/v4/exploratory/ensemble-baseline.json",
+    "games": 16,
+    "pgn_results_verified": true,
+    "rating_recomputed": true,
+    "candidate_sha256": "ab073e408270325ba34d9a7a06798becec110d0445e1d6dcf641e10e4e26a1c1"
+  },
+  {
+    "file": "reports/v4/exploratory/candidate-ladder-60ms.json",
+    "games": 64,
+    "pgn_results_verified": true,
+    "rating_recomputed": true,
+    "candidate_sha256": "371298dc026c07fd72430c2f9b50ccc4bb2b8c562a7eecd4d7f8386bb5c1fb86"
+  }
+]

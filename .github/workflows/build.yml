@@ -46,4 +46,6 @@ jobs:
             ${{ matrix.binary }}
             README.md
             CHANGES_RU.md
+            THIRD_PARTY_NOTICES.md
+            reports/v4/ANALYSIS_RU.md
           if-no-files-found: error
