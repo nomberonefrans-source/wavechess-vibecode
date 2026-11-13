@@ -1,0 +1,2530 @@
+{
+  "format": 1,
+  "mode": "nominal_stockfish_elo",
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+  "python_chess": "1.11.2",
+  "movetime_ms": 60,
+  "max_plies": 400,
+  "draw_claims": true,
+  "adjudication": false,
+  "sequential": true,
+  "levels": [
+    1320,
+    1520,
+    1720,
+    1920
+  ],
+  "pairs_per_level": 8,
+  "games": [
+    {
+      "score": 0.0,
+      "result": "0-1",
+      "termination": "CHECKMATE",
+      "error": null,
+      "final_fen": "3r1rk1/4Rp1p/6p1/Q5P1/4B3/P3P1b1/2P2q2/5K2 w - - 6 39",
+      "timing_ms": {
+        "candidate": {
+          "sum": 2098.08,
+          "mean": 59.95,
+          "max": 70.94,
+          "moves": 35
+        },
+        "opponent": {
+          "sum": 2138.46,
+          "mean": 61.1,
+          "max": 63.86,
+          "moves": 35
+        }
+      },
+      "mean_reported_depth": {
+        "candidate": 5.69,
+        "opponent": 12.34
+      },
+      "nodes": {
+        "candidate": 271616,
+        "opponent": 1943236
+      },
+      "game": 1,
+      "opening": 8,
+      "anchor": 1320,
+      "candidate_white": true,
+      "initial_fen": "r1bqkbnr/pppp1ppp/2n5/8/3pP3/5N2/PPP2PPP/RNBQKB1R w KQkq - 0 4",
+      "opponent_strength": {
+        "UCI_LimitStrength": true,
+        "UCI_Elo": 1320
+      }
+    },
+    {
+      "score": 1.0,
+      "result": "0-1",
+      "termination": "CHECKMATE",
+      "error": null,
+      "final_fen": "1rb5/1p1p2p1/p2pp3/4k3/8/PP6/3q1rP1/4K3 w - - 4 34",
+      "timing_ms": {
+        "opponent": {
+          "sum": 1758.36,
+          "mean": 58.61,
+          "max": 68.91,
+          "moves": 30
+        },
+        "candidate": {
+          "sum": 1624.93,
+          "mean": 54.16,
+          "max": 67.99,
+          "moves": 30
+        }
+      },
+      "mean_reported_depth": {
+        "opponent": 27.13,
+        "candidate": 13.13
+      },
+      "nodes": {
+        "opponent": 1682953,
+        "candidate": 222879
+      },
+      "game": 2,
+      "opening": 8,
+      "anchor": 1320,
+      "candidate_white": false,
+      "initial_fen": "r1bqkbnr/pppp1ppp/2n5/8/3pP3/5N2/PPP2PPP/RNBQKB1R w KQkq - 0 4",
+      "opponent_strength": {
+        "UCI_LimitStrength": true,
+        "UCI_Elo": 1320
+      }
+    },
+    {
+      "score": 1.0,
+      "result": "1-0",
+      "termination": "CHECKMATE",
+      "error": null,
+      "final_fen": "8/p6p/5Q2/6k1/5R2/P6R/P1B1KP1P/8 b - - 2 44",
+      "timing_ms": {
+        "candidate": {
+          "sum": 2213.87,
+          "mean": 54.0,
+          "max": 70.38,
+          "moves": 41
+        },
+        "opponent": {
+          "sum": 2255.98,
+          "mean": 56.4,
+          "max": 64.55,
+          "moves": 40
+        }
+      },
+      "mean_reported_depth": {
+        "candidate": 13,
+        "opponent": 35.58
+      },
+      "nodes": {
+        "candidate": 325054,
+        "opponent": 2630656
+      },
+      "game": 3,
+      "opening": 8,
+      "anchor": 1520,
+      "candidate_white": true,
+      "initial_fen": "r1bqkbnr/pppp1ppp/2n5/8/3pP3/5N2/PPP2PPP/RNBQKB1R w KQkq - 0 4",
+      "opponent_strength": {
+        "UCI_LimitStrength": true,
+        "UCI_Elo": 1520
+      }
+    },
+    {
+      "score": 0.0,
+      "result": "1-0",
+      "termination": "CHECKMATE",
+      "error": null,
+      "final_fen": "4rk2/1pp2Q1p/p1p4N/2q1p3/P3P3/8/r4P1P/4R1K1 b - - 0 35",
+      "timing_ms": {
+        "opponent": {
+          "sum": 1964.61,
+          "mean": 61.39,
+          "max": 67.73,
+          "moves": 32
+        },
+        "candidate": {
+          "sum": 1647.5,
+          "mean": 53.15,
+          "max": 66.52,
+          "moves": 31
+        }
+      },
+      "mean_reported_depth": {
+        "opponent": 10.78,
+        "candidate": 9.39
+      },
+      "nodes": {
+        "opponent": 1924521,
+        "candidate": 230296
+      },
+      "game": 4,
+      "opening": 8,
+      "anchor": 1520,
+      "candidate_white": false,
+      "initial_fen": "r1bqkbnr/pppp1ppp/2n5/8/3pP3/5N2/PPP2PPP/RNBQKB1R w KQkq - 0 4",
+      "opponent_strength": {
+        "UCI_LimitStrength": true,
+        "UCI_Elo": 1520
+      }
+    },
+    {
+      "score": 0.0,
+      "result": "0-1",
+      "termination": "CHECKMATE",
+      "error": null,
+      "final_fen": "1r4k1/5pp1/P7/3p3p/q6P/2P2P2/K1P4P/7R w - - 3 40",
+      "timing_ms": {
+        "candidate": {
+          "sum": 1989.13,
+          "mean": 55.25,
+          "max": 69.27,
+          "moves": 36
+        },
+        "opponent": {
+          "sum": 2163.44,
+          "mean": 60.1,
+          "max": 67.3,
+          "moves": 36
+        }
+      },
+      "mean_reported_depth": {
+        "candidate": 14.17,
+        "opponent": 19.17
+      },
+      "nodes": {
+        "candidate": 266949,
+        "opponent": 2079049
+      },
+      "game": 5,
+      "opening": 8,
+      "anchor": 1720,
+      "candidate_white": true,
+      "initial_fen": "r1bqkbnr/pppp1ppp/2n5/8/3pP3/5N2/PPP2PPP/RNBQKB1R w KQkq - 0 4",
+      "opponent_strength": {
+        "UCI_LimitStrength": true,
+        "UCI_Elo": 1720
+      }
+    },
+    {
+      "score": 0.0,
+      "result": "1-0",
+      "termination": "CHECKMATE",
+      "error": null,
+      "final_fen": "7k/8/8/ppP4R/P4p1P/3p1P2/2P2KR1/8 b - - 0 45",
+      "timing_ms": {
+        "opponent": {
+          "sum": 2376.41,
+          "mean": 56.58,
+          "max": 64.84,
+          "moves": 42
+        },
+        "candidate": {
+          "sum": 2160.17,
+          "mean": 52.69,
+          "max": 66.33,
+          "moves": 41
+        }
+      },
+      "mean_reported_depth": {
+        "opponent": 34.9,
+        "candidate": 12.34
+      },
+      "nodes": {
+        "opponent": 2849993,
+        "candidate": 328887
+      },
+      "game": 6,
+      "opening": 8,
+      "anchor": 1720,
+      "candidate_white": false,
+      "initial_fen": "r1bqkbnr/pppp1ppp/2n5/8/3pP3/5N2/PPP2PPP/RNBQKB1R w KQkq - 0 4",
+      "opponent_strength": {
+        "UCI_LimitStrength": true,
+        "UCI_Elo": 1720
+      }
+    },
+    {
+      "score": 0.0,
+      "result": "0-1",
+      "termination": "CHECKMATE",
+      "error": null,
+      "final_fen": "5rk1/1pp2pp1/3p1b1p/3P3P/1P3Bn1/5N2/2PQ1PP1/qK1R3R w - - 3 22",
+      "timing_ms": {
+        "candidate": {
+          "sum": 1045.11,
+          "mean": 58.06,
+          "max": 66.59,
+          "moves": 18
+        },
+        "opponent": {
+          "sum": 1100.92,
+          "mean": 61.16,
+          "max": 64.44,
+          "moves": 18
+        }
+      },
+      "mean_reported_depth": {
+        "candidate": 7.56,
+        "opponent": 11.11
+      },
+      "nodes": {
+        "candidate": 148384,
+        "opponent": 1010743
+      },
+      "game": 7,
+      "opening": 8,
+      "anchor": 1920,
+      "candidate_white": true,
+      "initial_fen": "r1bqkbnr/pppp1ppp/2n5/8/3pP3/5N2/PPP2PPP/RNBQKB1R w KQkq - 0 4",
+      "opponent_strength": {
+        "UCI_LimitStrength": true,
+        "UCI_Elo": 1920
+      }
+    },
+    {
+      "score": 0.0,
+      "result": "1-0",
+      "termination": "CHECKMATE",
+      "error": null,
+      "final_fen": "r2k3r/p2Q2pp/1p1p4/4P3/B7/2N2b2/P4PP1/6K1 b - - 1 34",
+      "timing_ms": {
+        "opponent": {
+          "sum": 1903.17,
+          "mean": 61.39,
+          "max": 70.06,
+          "moves": 31
+        },
+        "candidate": {
+          "sum": 1625.8,
+          "mean": 54.19,
+          "max": 66.72,
+          "moves": 30
+        }
+      },
+      "mean_reported_depth": {
+        "opponent": 16.23,
+        "candidate": 11.97
+      },
+      "nodes": {
+        "opponent": 2027508,
+        "candidate": 210609
+      },
+      "game": 8,
+      "opening": 8,
+      "anchor": 1920,
+      "candidate_white": false,
+      "initial_fen": "r1bqkbnr/pppp1ppp/2n5/8/3pP3/5N2/PPP2PPP/RNBQKB1R w KQkq - 0 4",
+      "opponent_strength": {
+        "UCI_LimitStrength": true,
+        "UCI_Elo": 1920
+      }
+    },
+    {
+      "score": 0.0,
+      "result": "0-1",
+      "termination": "CHECKMATE",
+      "error": null,
+      "final_fen": "3K4/3q4/8/2nk4/8/8/8/8 w - - 42 145",
+      "timing_ms": {
+        "candidate": {
+          "sum": 3453.05,
+          "mean": 24.49,
+          "max": 66.28,
+          "moves": 141
+        },
+        "opponent": {
+          "sum": 8658.9,
+          "mean": 61.41,
+          "max": 70.9,
+          "moves": 141
+        }
+      },
+      "mean_reported_depth": {
+        "candidate": 23.58,
+        "opponent": 15.85
+      },
+      "nodes": {
+        "candidate": 944506,
+        "opponent": 15874267
+      },
+      "game": 9,
+      "opening": 9,
+      "anchor": 1320,
+      "candidate_white": true,
+      "initial_fen": "rnb1kbnr/ppp1pppp/8/q7/8/2N5/PPPP1PPP/R1BQKBNR w KQkq - 2 4",
+      "opponent_strength": {
+        "UCI_LimitStrength": true,
+        "UCI_Elo": 1320
+      }
+    },
+    {
+      "score": 1.0,
+      "result": "0-1",
+      "termination": "CHECKMATE",
+      "error": null,
+      "final_fen": "2kr4/p4Np1/p1p1p2p/5p2/Pb3n2/7P/5PP1/2r1K2R w - - 0 32",
+      "timing_ms": {
+        "opponent": {
+          "sum": 1661.59,
+          "mean": 59.34,
+          "max": 64.28,
+          "moves": 28
+        },
+        "candidate": {
+          "sum": 1659.37,
+          "mean": 59.26,
+          "max": 67.85,
+          "moves": 28
+        }
+      },
+      "mean_reported_depth": {
+        "opponent": 20.46,
+        "candidate": 9.11
+      },
+      "nodes": {
+        "opponent": 1397719,
+        "candidate": 229021
+      },
+      "game": 10,
+      "opening": 9,
+      "anchor": 1320,
+      "candidate_white": false,
+      "initial_fen": "rnb1kbnr/ppp1pppp/8/q7/8/2N5/PPPP1PPP/R1BQKBNR w KQkq - 2 4",
+      "opponent_strength": {
+        "UCI_LimitStrength": true,
+        "UCI_Elo": 1320
+      }
+    },
+    {
+      "score": 0.0,
+      "result": "0-1",
+      "termination": "CHECKMATE",
+      "error": null,
+      "final_fen": "2kr2r1/1pp3PQ/p2bp3/5p2/8/3P3n/PP1P1P1P/R1B1N1qK w - - 0 29",
+      "timing_ms": {
+        "candidate": {
+          "sum": 1510.44,
+          "mean": 60.42,
+          "max": 139.75,
+          "moves": 25
+        },
+        "opponent": {
+          "sum": 1594.62,
+          "mean": 63.78,
+          "max": 96.06,
+          "moves": 25
+        }
+      },
+      "mean_reported_depth": {
+        "candidate": 8.88,
+        "opponent": 13.48
+      },
+      "nodes": {
+        "candidate": 159308,
+        "opponent": 1296689
+      },
+      "game": 11,
+      "opening": 9,
+      "anchor": 1520,
+      "candidate_white": true,
+      "initial_fen": "rnb1kbnr/ppp1pppp/8/q7/8/2N5/PPPP1PPP/R1BQKBNR w KQkq - 2 4",
+      "opponent_strength": {
+        "UCI_LimitStrength": true,
+        "UCI_Elo": 1520
+      }
+    },
+    {
+      "score": 0.0,
+      "result": "1-0",
+      "termination": "CHECKMATE",
+      "error": null,
+      "final_fen": "4R1k1/1p6/6PK/5p2/8/P6P/8/8 b - - 0 49",
+      "timing_ms": {
+        "opponent": {
+          "sum": 2805.52,
+          "mean": 60.99,
+          "max": 64.71,
+          "moves": 46
+        },
+        "candidate": {
+          "sum": 2571.82,
+          "mean": 57.15,
+          "max": 67.08,
+          "moves": 45
+        }
+      },
+      "mean_reported_depth": {
+        "opponent": 11.78,
+        "candidate": 18.96
+      },
+      "nodes": {
+        "opponent": 3183714,
+        "candidate": 428208
+      },
+      "game": 12,
+      "opening": 9,
+      "anchor": 1520,
+      "candidate_white": false,
+      "initial_fen": "rnb1kbnr/ppp1pppp/8/q7/8/2N5/PPPP1PPP/R1BQKBNR w KQkq - 2 4",
+      "opponent_strength": {
+        "UCI_LimitStrength": true,
+        "UCI_Elo": 1520
+      }
+    },
+    {
+      "score": 0.5,
+      "result": "1/2-1/2",
+      "termination": "THREEFOLD_REPETITION",
+      "error": null,
+      "final_fen": "7r/2R2k1P/8/5pp1/8/3n3P/6K1/8 b - - 12 77",
+      "timing_ms": {
+        "candidate": {
+          "sum": 4297.39,
+          "mean": 58.07,
+          "max": 67.77,
+          "moves": 74
+        },
+        "opponent": {
+          "sum": 4456.97,
+          "mean": 61.05,
+          "max": 67.46,
+          "moves": 73
+        }
+      },
+      "mean_reported_depth": {
+        "candidate": 21.66,
+        "opponent": 12.62
+      },
+      "nodes": {
+        "candidate": 974367,
+        "opponent": 5323749
+      },
+      "game": 13,
+      "opening": 9,
+      "anchor": 1720,
+      "candidate_white": true,
+      "initial_fen": "rnb1kbnr/ppp1pppp/8/q7/8/2N5/PPPP1PPP/R1BQKBNR w KQkq - 2 4",
+      "opponent_strength": {
+        "UCI_LimitStrength": true,
+        "UCI_Elo": 1720
+      }
+    },
+    {
+      "score": 0.0,
+      "result": "1-0",
+      "termination": "CHECKMATE",
+      "error": null,
+      "final_fen": "r4Nr1/2p1p2Q/1p5k/6pn/3P4/1pN2P1R/P1P4P/2B1K3 b - - 1 26",
+      "timing_ms": {
+        "opponent": {
+          "sum": 1251.3,
+          "mean": 54.4,
+          "max": 63.96,
+          "moves": 23
+        },
+        "candidate": {
+          "sum": 863.71,
+          "mean": 39.26,
+          "max": 66.13,
+          "moves": 22
+        }
+      },
+      "mean_reported_depth": {
+        "opponent": 58.3,
+        "candidate": 15.95
+      },
+      "nodes": {
+        "opponent": 1765056,
+        "candidate": 115993
+      },
+      "game": 14,
+      "opening": 9,
+      "anchor": 1720,
+      "candidate_white": false,
+      "initial_fen": "rnb1kbnr/ppp1pppp/8/q7/8/2N5/PPPP1PPP/R1BQKBNR w KQkq - 2 4",
+      "opponent_strength": {
+        "UCI_LimitStrength": true,
+        "UCI_Elo": 1720
+      }
+    },
+    {
+      "score": 0.0,
+      "result": "0-1",
+      "termination": "CHECKMATE",
+      "error": null,
+      "final_fen": "8/5p2/8/Kqk3p1/6P1/6P1/8/8 w - - 14 65",
+      "timing_ms": {
+        "candidate": {
+          "sum": 2529.72,
+          "mean": 41.47,
+          "max": 66.87,
+          "moves": 61
+        },
+        "opponent": {
+          "sum": 3678.03,
+          "mean": 60.3,
+          "max": 64.98,
+          "moves": 61
+        }
+      },
+      "mean_reported_depth": {
+        "candidate": 18.82,
+        "opponent": 19.34
+      },
+      "nodes": {
+        "candidate": 526244,
+        "opponent": 6077377
+      },
+      "game": 15,
+      "opening": 9,
+      "anchor": 1920,
+      "candidate_white": true,
+      "initial_fen": "rnb1kbnr/ppp1pppp/8/q7/8/2N5/PPPP1PPP/R1BQKBNR w KQkq - 2 4",
+      "opponent_strength": {
+        "UCI_LimitStrength": true,
+        "UCI_Elo": 1920
+      }
+    },
+    {
+      "score": 0.0,
+      "result": "1-0",
+      "termination": "CHECKMATE",
+      "error": null,
+      "final_fen": "3k1R2/8/3K4/8/8/8/8/8 b - - 26 102",
+      "timing_ms": {
+        "opponent": {
+          "sum": 5851.65,
+          "mean": 59.11,
+          "max": 64.92,
+          "moves": 99
+        },
+        "candidate": {
+          "sum": 3669.28,
+          "mean": 37.44,
+          "max": 66.99,
+          "moves": 98
+        }
+      },
+      "mean_reported_depth": {
+        "opponent": 26.3,
+        "candidate": 21.66
+      },
+      "nodes": {
+        "opponent": 10230015,
+        "candidate": 843416
+      },
+      "game": 16,
+      "opening": 9,
+      "anchor": 1920,
+      "candidate_white": false,
+      "initial_fen": "rnb1kbnr/ppp1pppp/8/q7/8/2N5/PPPP1PPP/R1BQKBNR w KQkq - 2 4",
+      "opponent_strength": {
+        "UCI_LimitStrength": true,
+        "UCI_Elo": 1920
+      }
+    },
+    {
+      "score": 1.0,
+      "result": "1-0",
+      "termination": "CHECKMATE",
+      "error": null,
+      "final_fen": "3r1b2/pp2R3/2b2R1p/2pp2p1/5kP1/2P2N1P/PP3P2/7K b - - 2 32",
+      "timing_ms": {
+        "candidate": {
+          "sum": 1698.02,
+          "mean": 58.55,
+          "max": 66.15,
+          "moves": 29
+        },
+        "opponent": {
+          "sum": 1597.8,
+          "mean": 57.06,
+          "max": 64.14,
+          "moves": 28
+        }
+      },
+      "mean_reported_depth": {
+        "candidate": 7.66,
+        "opponent": 28.36
+      },
+      "nodes": {
+        "candidate": 264434,
+        "opponent": 1680568
+      },
+      "game": 17,
+      "opening": 10,
+      "anchor": 1320,
+      "candidate_white": true,
+      "initial_fen": "rnbqkb1r/ppp1pp1p/3p1np1/8/3PP3/2N5/PPP2PPP/R1BQKBNR w KQkq - 0 4",
+      "opponent_strength": {
+        "UCI_LimitStrength": true,
+        "UCI_Elo": 1320
+      }
+    },
+    {
+      "score": 0.0,
+      "result": "1-0",
+      "termination": "CHECKMATE",
+      "error": null,
+      "final_fen": "2b4b/k1N1pp2/2P2nr1/2BPn1p1/4P1P1/5P2/2P1B3/1R1N1K2 b - - 0 39",
+      "timing_ms": {
+        "opponent": {
+          "sum": 2196.91,
+          "mean": 61.03,
+          "max": 65.66,
+          "moves": 36
+        },
+        "candidate": {
+          "sum": 1892.85,
+          "mean": 54.08,
+          "max": 66.63,
+          "moves": 35
+        }
+      },
+      "mean_reported_depth": {
+        "opponent": 19.28,
+        "candidate": 9.29
+      },
+      "nodes": {
+        "opponent": 2489006,
+        "candidate": 240123
+      },
+      "game": 18,
+      "opening": 10,
+      "anchor": 1320,
+      "candidate_white": false,
+      "initial_fen": "rnbqkb1r/ppp1pp1p/3p1np1/8/3PP3/2N5/PPP2PPP/R1BQKBNR w KQkq - 0 4",
+      "opponent_strength": {
+        "UCI_LimitStrength": true,
+        "UCI_Elo": 1320
+      }
+    },
+    {
+      "score": 1.0,
+      "result": "1-0",
+      "termination": "CHECKMATE",
+      "error": null,
+      "final_fen": "8/p6R/2N3pk/1p2p1N1/1P1P2PP/4P3/PpP5/6K1 b - - 1 34",
+      "timing_ms": {
+        "candidate": {
+          "sum": 1645.35,
+          "mean": 53.08,
+          "max": 66.12,
+          "moves": 31
+        },
+        "opponent": {
+          "sum": 1776.45,
+          "mean": 59.22,
+          "max": 64.66,
+          "moves": 30
+        }
+      },
+      "mean_reported_depth": {
+        "candidate": 11.74,
+        "opponent": 24
+      },
+      "nodes": {
+        "candidate": 310839,
+        "opponent": 1931354
+      },
+      "game": 19,
+      "opening": 10,
+      "anchor": 1520,
+      "candidate_white": true,
+      "initial_fen": "rnbqkb1r/ppp1pp1p/3p1np1/8/3PP3/2N5/PPP2PPP/R1BQKBNR w KQkq - 0 4",
+      "opponent_strength": {
+        "UCI_LimitStrength": true,
+        "UCI_Elo": 1520
+      }
+    },
+    {
+      "score": 0.0,
+      "result": "1-0",
+      "termination": "CHECKMATE",
+      "error": null,
+      "final_fen": "7k/pp4Qp/7P/8/Pp4pK/8/8/6n1 b - - 0 65",
+      "timing_ms": {
+        "opponent": {
+          "sum": 3468.98,
+          "mean": 55.95,
+          "max": 64.3,
+          "moves": 62
+        },
+        "candidate": {
+          "sum": 2225.83,
+          "mean": 36.49,
+          "max": 66.49,
+          "moves": 61
+        }
+      },
+      "mean_reported_depth": {
+        "opponent": 52.9,
+        "candidate": 16.74
+      },
+      "nodes": {
+        "opponent": 5419403,
+        "candidate": 346650
+      },
+      "game": 20,
+      "opening": 10,
+      "anchor": 1520,
+      "candidate_white": false,
+      "initial_fen": "rnbqkb1r/ppp1pp1p/3p1np1/8/3PP3/2N5/PPP2PPP/R1BQKBNR w KQkq - 0 4",
+      "opponent_strength": {
+        "UCI_LimitStrength": true,
+        "UCI_Elo": 1520
+      }
+    },
+    {
+      "score": 0.0,
+      "result": "0-1",
+      "termination": "CHECKMATE",
+      "error": null,
+      "final_fen": "r3k3/2P5/1p2p2p/8/1PP5/1K1q4/P4r2/8 w - - 1 40",
+      "timing_ms": {
+        "candidate": {
+          "sum": 1674.38,
+          "mean": 46.51,
+          "max": 66.04,
+          "moves": 36
+        },
+        "opponent": {
+          "sum": 2200.09,
+          "mean": 61.11,
+          "max": 64.99,
+          "moves": 36
+        }
+      },
+      "mean_reported_depth": {
+        "candidate": 10.31,
+        "opponent": 20.56
+      },
+      "nodes": {
+        "candidate": 234841,
+        "opponent": 2836428
+      },
+      "game": 21,
+      "opening": 10,
+      "anchor": 1720,
+      "candidate_white": true,
+      "initial_fen": "rnbqkb1r/ppp1pp1p/3p1np1/8/3PP3/2N5/PPP2PPP/R1BQKBNR w KQkq - 0 4",
+      "opponent_strength": {
+        "UCI_LimitStrength": true,
+        "UCI_Elo": 1720
+      }
+    },
+    {
+      "score": 0.0,
+      "result": "1-0",
+      "termination": "CHECKMATE",
+      "error": null,
+      "final_fen": "4q3/2p2kQ1/pr2p1p1/2pB4/P4PP1/2B2N2/2P5/2K5 b - - 5 34",
+      "timing_ms": {
+        "opponent": {
+          "sum": 1891.68,
+          "mean": 61.02,
+          "max": 64.3,
+          "moves": 31
+        },
+        "candidate": {
+          "sum": 1647.79,
+          "mean": 54.93,
+          "max": 66.36,
+          "moves": 30
+        }
+      },
+      "mean_reported_depth": {
+        "opponent": 12.55,
+        "candidate": 12.07
+      },
+      "nodes": {
+        "opponent": 1738967,
+        "candidate": 215281
+      },
+      "game": 22,
+      "opening": 10,
+      "anchor": 1720,
+      "candidate_white": false,
+      "initial_fen": "rnbqkb1r/ppp1pp1p/3p1np1/8/3PP3/2N5/PPP2PPP/R1BQKBNR w KQkq - 0 4",
+      "opponent_strength": {
+        "UCI_LimitStrength": true,
+        "UCI_Elo": 1720
+      }
+    },
+    {
+      "score": 0.0,
+      "result": "0-1",
+      "termination": "CHECKMATE",
+      "error": null,
+      "final_fen": "3r2k1/5p2/8/6pp/Q5bK/4q3/PRB1r1PP/7R w - - 0 44",
+      "timing_ms": {
+        "candidate": {
+          "sum": 2119.05,
+          "mean": 52.98,
+          "max": 68.34,
+          "moves": 40
+        },
+        "opponent": {
+          "sum": 2445.89,
+          "mean": 61.15,
+          "max": 66.58,
+          "moves": 40
+        }
+      },
+      "mean_reported_depth": {
+        "candidate": 13.78,
+        "opponent": 13.15
+      },
+      "nodes": {
+        "candidate": 295181,
+        "opponent": 2459639
+      },
+      "game": 23,
+      "opening": 10,
+      "anchor": 1920,
+      "candidate_white": true,
+      "initial_fen": "rnbqkb1r/ppp1pp1p/3p1np1/8/3PP3/2N5/PPP2PPP/R1BQKBNR w KQkq - 0 4",
+      "opponent_strength": {
+        "UCI_LimitStrength": true,
+        "UCI_Elo": 1920
+      }
+    },
+    {
+      "score": 0.0,
+      "result": "1-0",
+      "termination": "CHECKMATE",
+      "error": null,
+      "final_fen": "r4kr1/1p1Q3N/p6p/4P3/3P4/P1P2p2/2P5/2KR4 b - - 0 36",
+      "timing_ms": {
+        "opponent": {
+          "sum": 2033.91,
+          "mean": 61.63,
+          "max": 69.91,
+          "moves": 33
+        },
+        "candidate": {
+          "sum": 1765.44,
+          "mean": 55.17,
+          "max": 66.3,
+          "moves": 32
+        }
+      },
+      "mean_reported_depth": {
+        "opponent": 11.76,
+        "candidate": 15.16
+      },
+      "nodes": {
+        "opponent": 1761563,
+        "candidate": 250937
+      },
+      "game": 24,
+      "opening": 10,
+      "anchor": 1920,
+      "candidate_white": false,
+      "initial_fen": "rnbqkb1r/ppp1pp1p/3p1np1/8/3PP3/2N5/PPP2PPP/R1BQKBNR w KQkq - 0 4",
+      "opponent_strength": {
+        "UCI_LimitStrength": true,
+        "UCI_Elo": 1920
+      }
+    },
+    {
+      "score": 1.0,
+      "result": "1-0",
+      "termination": "CHECKMATE",
+      "error": null,
+      "final_fen": "r4k2/p2R1P1p/6pB/qpp4b/2B1P3/2P2P2/P5PP/2K4R b - - 1 23",
+      "timing_ms": {
+        "candidate": {
+          "sum": 1170.22,
+          "mean": 58.51,
+          "max": 66.66,
+          "moves": 20
+        },
+        "opponent": {
+          "sum": 1164.27,
+          "mean": 61.28,
+          "max": 64.43,
+          "moves": 19
+        }
+      },
+      "mean_reported_depth": {
+        "candidate": 9.55,
+        "opponent": 11.05
+      },
+      "nodes": {
+        "candidate": 146938,
+        "opponent": 935396
+      },
+      "game": 25,
+      "opening": 11,
+      "anchor": 1320,
+      "candidate_white": true,
+      "initial_fen": "rnbqkb1r/ppp1pppp/5n2/8/2pP4/5N2/PP2PPPP/RNBQKB1R w KQkq - 2 4",
+      "opponent_strength": {
+        "UCI_LimitStrength": true,
+        "UCI_Elo": 1320
+      }
+    },
+    {
+      "score": 1.0,
+      "result": "0-1",
+      "termination": "CHECKMATE",
+      "error": null,
+      "final_fen": "2r4r/p2kbppp/3P4/8/5PP1/1n1b4/1P5P/2qK4 w - - 0 28",
+      "timing_ms": {
+        "opponent": {
+          "sum": 1326.53,
+          "mean": 55.27,
+          "max": 65.61,
+          "moves": 24
+        },
+        "candidate": {
+          "sum": 1293.22,
+          "mean": 53.88,
+          "max": 66.6,
+          "moves": 24
+        }
+      },
+      "mean_reported_depth": {
+        "opponent": 41,
+        "candidate": 10.67
+      },
+      "nodes": {
+        "opponent": 1490503,
+        "candidate": 193124
+      },
+      "game": 26,
+      "opening": 11,
+      "anchor": 1320,
+      "candidate_white": false,
+      "initial_fen": "rnbqkb1r/ppp1pppp/5n2/8/2pP4/5N2/PP2PPPP/RNBQKB1R w KQkq - 2 4",
+      "opponent_strength": {
+        "UCI_LimitStrength": true,
+        "UCI_Elo": 1320
+      }
+    },
+    {
+      "score": 0.0,
+      "result": "0-1",
+      "termination": "CHECKMATE",
+      "error": null,
+      "final_fen": "3r1rk1/1pp1q1pp/p7/3Ppp2/4K1n1/PnNQ1N2/RP2PPPP/5B1R w - - 0 19",
+      "timing_ms": {
+        "candidate": {
+          "sum": 860.02,
+          "mean": 57.33,
+          "max": 66.15,
+          "moves": 15
+        },
+        "opponent": {
+          "sum": 914.89,
+          "mean": 60.99,
+          "max": 64.16,
+          "moves": 15
+        }
+      },
+      "mean_reported_depth": {
+        "candidate": 11,
+        "opponent": 12.33
+      },
+      "nodes": {
+        "candidate": 121789,
+        "opponent": 917528
+      },
+      "game": 27,
+      "opening": 11,
+      "anchor": 1520,
+      "candidate_white": true,
+      "initial_fen": "rnbqkb1r/ppp1pppp/5n2/8/2pP4/5N2/PP2PPPP/RNBQKB1R w KQkq - 2 4",
+      "opponent_strength": {
+        "UCI_LimitStrength": true,
+        "UCI_Elo": 1520
+      }
+    },
+    {
+      "score": 0.5,
+      "result": "1/2-1/2",
+      "termination": "THREEFOLD_REPETITION",
+      "error": null,
+      "final_fen": "1k6/5P2/4K1N1/7p/7P/8/8/4r3 w - - 9 64",
+      "timing_ms": {
+        "opponent": {
+          "sum": 3661.69,
+          "mean": 61.03,
+          "max": 64.81,
+          "moves": 60
+        },
+        "candidate": {
+          "sum": 2951.26,
+          "mean": 49.19,
+          "max": 66.53,
+          "moves": 60
+        }
+      },
+      "mean_reported_depth": {
+        "opponent": 12,
+        "candidate": 30.6
+      },
+      "nodes": {
+        "opponent": 5198716,
+        "candidate": 732830
+      },
+      "game": 28,
+      "opening": 11,
+      "anchor": 1520,
+      "candidate_white": false,
+      "initial_fen": "rnbqkb1r/ppp1pppp/5n2/8/2pP4/5N2/PP2PPPP/RNBQKB1R w KQkq - 2 4",
+      "opponent_strength": {
+        "UCI_LimitStrength": true,
+        "UCI_Elo": 1520
+      }
+    },
+    {
+      "score": 0.0,
+      "result": "0-1",
+      "termination": "CHECKMATE",
+      "error": null,
+      "final_fen": "4k1r1/2p1bp2/p3p1pp/1b2P3/2RrP3/2N1KBQ1/3q1PPP/1R6 w - - 2 31",
+      "timing_ms": {
+        "candidate": {
+          "sum": 1509.12,
+          "mean": 55.89,
+          "max": 66.08,
+          "moves": 27
+        },
+        "opponent": {
+          "sum": 1647.71,
+          "mean": 61.03,
+          "max": 64.28,
+          "moves": 27
+        }
+      },
+      "mean_reported_depth": {
+        "candidate": 8.7,
+        "opponent": 10.89
+      },
+      "nodes": {
+        "candidate": 197900,
+        "opponent": 1522704
+      },
+      "game": 29,
+      "opening": 11,
+      "anchor": 1720,
+      "candidate_white": true,
+      "initial_fen": "rnbqkb1r/ppp1pppp/5n2/8/2pP4/5N2/PP2PPPP/RNBQKB1R w KQkq - 2 4",
+      "opponent_strength": {
+        "UCI_LimitStrength": true,
+        "UCI_Elo": 1720
+      }
+    },
+    {
+      "score": 0.0,
+      "result": "1-0",
+      "termination": "CHECKMATE",
+      "error": null,
+      "final_fen": "r2r3k/q2b1Qp1/p3p1p1/P2n4/7R/1p2P3/1P2BPPP/5RK1 b - - 1 25",
+      "timing_ms": {
+        "opponent": {
+          "sum": 1345.4,
+          "mean": 61.15,
+          "max": 65.38,
+          "moves": 22
+        },
+        "candidate": {
+          "sum": 1200.71,
+          "mean": 57.18,
+          "max": 66.39,
+          "moves": 21
+        }
+      },
+      "mean_reported_depth": {
+        "opponent": 11.59,
+        "candidate": 9.71
+      },
+      "nodes": {
+        "opponent": 1230033,
+        "candidate": 149100
+      },
+      "game": 30,
+      "opening": 11,
+      "anchor": 1720,
+      "candidate_white": false,
+      "initial_fen": "rnbqkb1r/ppp1pppp/5n2/8/2pP4/5N2/PP2PPPP/RNBQKB1R w KQkq - 2 4",
+      "opponent_strength": {
+        "UCI_LimitStrength": true,
+        "UCI_Elo": 1720
+      }
+    },
+    {
+      "score": 0.0,
+      "result": "0-1",
+      "termination": "CHECKMATE",
+      "error": null,
+      "final_fen": "3r2k1/p3pp2/2p3pb/Kp2P3/q5p1/7P/P5P1/R4B1R w - - 0 31",
+      "timing_ms": {
+        "candidate": {
+          "sum": 1340.25,
+          "mean": 49.64,
+          "max": 67.32,
+          "moves": 27
+        },
+        "opponent": {
+          "sum": 1652.36,
+          "mean": 61.2,
+          "max": 64.85,
+          "moves": 27
+        }
+      },
+      "mean_reported_depth": {
+        "candidate": 16.93,
+        "opponent": 12.56
+      },
+      "nodes": {
+        "candidate": 175193,
+        "opponent": 1678948
+      },
+      "game": 31,
+      "opening": 11,
+      "anchor": 1920,
+      "candidate_white": true,
+      "initial_fen": "rnbqkb1r/ppp1pppp/5n2/8/2pP4/5N2/PP2PPPP/RNBQKB1R w KQkq - 2 4",
+      "opponent_strength": {
+        "UCI_LimitStrength": true,
+        "UCI_Elo": 1920
+      }
+    },
+    {
+      "score": 0.0,
+      "result": "1-0",
+      "termination": "CHECKMATE",
+      "error": null,
+      "final_fen": "8/8/7Q/8/8/5K1k/8/8 b - - 27 119",
+      "timing_ms": {
+        "opponent": {
+          "sum": 6910.14,
+          "mean": 59.57,
+          "max": 64.59,
+          "moves": 116
+        },
+        "candidate": {
+          "sum": 3191.04,
+          "mean": 27.75,
+          "max": 66.38,
+          "moves": 115
+        }
+      },
+      "mean_reported_depth": {
+        "opponent": 29.54,
+        "candidate": 23.06
+      },
+      "nodes": {
+        "opponent": 16002438,
+        "candidate": 840472
+      },
+      "game": 32,
+      "opening": 11,
+      "anchor": 1920,
+      "candidate_white": false,
+      "initial_fen": "rnbqkb1r/ppp1pppp/5n2/8/2pP4/5N2/PP2PPPP/RNBQKB1R w KQkq - 2 4",
+      "opponent_strength": {
+        "UCI_LimitStrength": true,
+        "UCI_Elo": 1920
+      }
+    },
+    {
+      "score": 1.0,
+      "result": "1-0",
+      "termination": "CHECKMATE",
+      "error": null,
+      "final_fen": "8/8/3N4/8/7p/1Q2BP1P/8/2k2K2 b - - 6 72",
+      "timing_ms": {
+        "candidate": {
+          "sum": 3740.11,
+          "mean": 54.2,
+          "max": 65.99,
+          "moves": 69
+        },
+        "opponent": {
+          "sum": 4086.4,
+          "mean": 60.09,
+          "max": 64.09,
+          "moves": 68
+        }
+      },
+      "mean_reported_depth": {
+        "candidate": 14.1,
+        "opponent": 18.72
+      },
+      "nodes": {
+        "candidate": 674191,
+        "opponent": 5268850
+      },
+      "game": 33,
+      "opening": 12,
+      "anchor": 1320,
+      "candidate_white": true,
+      "initial_fen": "rnbqkb1r/pppp2pp/4pn2/5p2/3P4/6P1/PPP1PPBP/RNBQK1NR w KQkq - 0 4",
+      "opponent_strength": {
+        "UCI_LimitStrength": true,
+        "UCI_Elo": 1320
+      }
+    },
+    {
+      "score": 0.0,
+      "result": "1-0",
+      "termination": "CHECKMATE",
+      "error": null,
+      "final_fen": "7Q/2nrrkR1/4pN2/p3Pp2/1p1p4/2pK1P2/8/8 b - - 0 51",
+      "timing_ms": {
+        "opponent": {
+          "sum": 2890.36,
+          "mean": 60.22,
+          "max": 65.32,
+          "moves": 48
+        },
+        "candidate": {
+          "sum": 2719.96,
+          "mean": 57.87,
+          "max": 66.3,
+          "moves": 47
+        }
+      },
+      "mean_reported_depth": {
+        "opponent": 16.44,
+        "candidate": 10.66
+      },
+      "nodes": {
+        "opponent": 2677172,
+        "candidate": 366825
+      },
+      "game": 34,
+      "opening": 12,
+      "anchor": 1320,
+      "candidate_white": false,
+      "initial_fen": "rnbqkb1r/pppp2pp/4pn2/5p2/3P4/6P1/PPP1PPBP/RNBQK1NR w KQkq - 0 4",
+      "opponent_strength": {
+        "UCI_LimitStrength": true,
+        "UCI_Elo": 1320
+      }
+    },
+    {
+      "score": 0.0,
+      "result": "0-1",
+      "termination": "CHECKMATE",
+      "error": null,
+      "final_fen": "8/p6p/1P6/5k1P/8/Pn2p3/4P3/2r1K3 w - - 3 41",
+      "timing_ms": {
+        "candidate": {
+          "sum": 1693.73,
+          "mean": 45.78,
+          "max": 66.72,
+          "moves": 37
+        },
+        "opponent": {
+          "sum": 2263.12,
+          "mean": 61.17,
+          "max": 67.98,
+          "moves": 37
+        }
+      },
+      "mean_reported_depth": {
+        "candidate": 23.35,
+        "opponent": 29.65
+      },
+      "nodes": {
+        "candidate": 297697,
+        "opponent": 3256538
+      },
+      "game": 35,
+      "opening": 12,
+      "anchor": 1520,
+      "candidate_white": true,
+      "initial_fen": "rnbqkb1r/pppp2pp/4pn2/5p2/3P4/6P1/PPP1PPBP/RNBQK1NR w KQkq - 0 4",
+      "opponent_strength": {
+        "UCI_LimitStrength": true,
+        "UCI_Elo": 1520
+      }
+    },
+    {
+      "score": 0.5,
+      "result": "1/2-1/2",
+      "termination": "THREEFOLD_REPETITION",
+      "error": null,
+      "final_fen": "3q4/2p5/1rn4Q/3ppp2/3P2k1/2P5/3B3P/4R1K1 w - - 8 53",
+      "timing_ms": {
+        "opponent": {
+          "sum": 2995.5,
+          "mean": 61.13,
+          "max": 64.86,
+          "moves": 49
+        },
+        "candidate": {
+          "sum": 2586.84,
+          "mean": 52.79,
+          "max": 66.55,
+          "moves": 49
+        }
+      },
+      "mean_reported_depth": {
+        "opponent": 13.04,
+        "candidate": 11.18
+      },
+      "nodes": {
+        "opponent": 3456216,
+        "candidate": 419784
+      },
+      "game": 36,
+      "opening": 12,
+      "anchor": 1520,
+      "candidate_white": false,
+      "initial_fen": "rnbqkb1r/pppp2pp/4pn2/5p2/3P4/6P1/PPP1PPBP/RNBQK1NR w KQkq - 0 4",
+      "opponent_strength": {
+        "UCI_LimitStrength": true,
+        "UCI_Elo": 1520
+      }
+    },
+    {
+      "score": 1.0,
+      "result": "1-0",
+      "termination": "CHECKMATE",
+      "error": null,
+      "final_fen": "8/8/8/p2BP2P/P7/2Q2p2/4k2P/4Q2K b - - 1 50",
+      "timing_ms": {
+        "candidate": {
+          "sum": 2136.34,
+          "mean": 45.45,
+          "max": 66.17,
+          "moves": 47
+        },
+        "opponent": {
+          "sum": 2678.87,
+          "mean": 58.24,
+          "max": 63.71,
+          "moves": 46
+        }
+      },
+      "mean_reported_depth": {
+        "candidate": 20.26,
+        "opponent": 25.35
+      },
+      "nodes": {
+        "candidate": 579105,
+        "opponent": 4024843
+      },
+      "game": 37,
+      "opening": 12,
+      "anchor": 1720,
+      "candidate_white": true,
+      "initial_fen": "rnbqkb1r/pppp2pp/4pn2/5p2/3P4/6P1/PPP1PPBP/RNBQK1NR w KQkq - 0 4",
+      "opponent_strength": {
+        "UCI_LimitStrength": true,
+        "UCI_Elo": 1720
+      }
+    },
+    {
+      "score": 0.0,
+      "result": "1-0",
+      "termination": "CHECKMATE",
+      "error": null,
+      "final_fen": "r1b2rk1/1p5Q/2p4R/p6p/2P3P1/P3P2P/5P2/6K1 b - - 4 27",
+      "timing_ms": {
+        "opponent": {
+          "sum": 1418.19,
+          "mean": 59.09,
+          "max": 64.42,
+          "moves": 24
+        },
+        "candidate": {
+          "sum": 1254.63,
+          "mean": 54.55,
+          "max": 66.43,
+          "moves": 23
+        }
+      },
+      "mean_reported_depth": {
+        "opponent": 27.46,
+        "candidate": 9.26
+      },
+      "nodes": {
+        "opponent": 1713932,
+        "candidate": 195326
+      },
+      "game": 38,
+      "opening": 12,
+      "anchor": 1720,
+      "candidate_white": false,
+      "initial_fen": "rnbqkb1r/pppp2pp/4pn2/5p2/3P4/6P1/PPP1PPBP/RNBQK1NR w KQkq - 0 4",
+      "opponent_strength": {
+        "UCI_LimitStrength": true,
+        "UCI_Elo": 1720
+      }
+    },
+    {
+      "score": 0.0,
+      "result": "0-1",
+      "termination": "CHECKMATE",
+      "error": null,
+      "final_fen": "4k1r1/1p6/4b2p/6p1/1n1P2P1/3nQ3/2qK3P/5R2 w - - 2 36",
+      "timing_ms": {
+        "candidate": {
+          "sum": 1830.98,
+          "mean": 57.22,
+          "max": 67.06,
+          "moves": 32
+        },
+        "opponent": {
+          "sum": 1949.91,
+          "mean": 60.93,
+          "max": 64.05,
+          "moves": 32
+        }
+      },
+      "mean_reported_depth": {
+        "candidate": 8.72,
+        "opponent": 11.91
+      },
+      "nodes": {
+        "candidate": 244211,
+        "opponent": 1874483
+      },
+      "game": 39,
+      "opening": 12,
+      "anchor": 1920,
+      "candidate_white": true,
+      "initial_fen": "rnbqkb1r/pppp2pp/4pn2/5p2/3P4/6P1/PPP1PPBP/RNBQK1NR w KQkq - 0 4",
+      "opponent_strength": {
+        "UCI_LimitStrength": true,
+        "UCI_Elo": 1920
+      }
+    },
+    {
+      "score": 0.0,
+      "result": "1-0",
+      "termination": "CHECKMATE",
+      "error": null,
+      "final_fen": "r2q1k1Q/pp4p1/3p4/6N1/3p2b1/P7/1PP3B1/4R1K1 b - - 2 29",
+      "timing_ms": {
+        "opponent": {
+          "sum": 1584.28,
+          "mean": 60.93,
+          "max": 64.25,
+          "moves": 26
+        },
+        "candidate": {
+          "sum": 1450.12,
+          "mean": 58.0,
+          "max": 66.34,
+          "moves": 25
+        }
+      },
+      "mean_reported_depth": {
+        "opponent": 12.08,
+        "candidate": 11.52
+      },
+      "nodes": {
+        "opponent": 1483853,
+        "candidate": 198106
+      },
+      "game": 40,
+      "opening": 12,
+      "anchor": 1920,
+      "candidate_white": false,
+      "initial_fen": "rnbqkb1r/pppp2pp/4pn2/5p2/3P4/6P1/PPP1PPBP/RNBQK1NR w KQkq - 0 4",
+      "opponent_strength": {
+        "UCI_LimitStrength": true,
+        "UCI_Elo": 1920
+      }
+    },
+    {
+      "score": 1.0,
+      "result": "1-0",
+      "termination": "CHECKMATE",
+      "error": null,
+      "final_fen": "6R1/5pk1/5N2/p2bP1B1/P5p1/6Pp/2P2K1P/3R4 b - - 0 37",
+      "timing_ms": {
+        "candidate": {
+          "sum": 1902.56,
+          "mean": 55.96,
+          "max": 73.23,
+          "moves": 34
+        },
+        "opponent": {
+          "sum": 1952.8,
+          "mean": 59.18,
+          "max": 64.44,
+          "moves": 33
+        }
+      },
+      "mean_reported_depth": {
+        "candidate": 11.82,
+        "opponent": 18.42
+      },
+      "nodes": {
+        "candidate": 321176,
+        "opponent": 2153019
+      },
+      "game": 41,
+      "opening": 13,
+      "anchor": 1320,
+      "candidate_white": true,
+      "initial_fen": "rnbqkbnr/pppp1p1p/8/6p1/4Pp2/5N2/PPPP2PP/RNBQKB1R w KQkq - 0 4",
+      "opponent_strength": {
+        "UCI_LimitStrength": true,
+        "UCI_Elo": 1320
+      }
+    },
+    {
+      "score": 0.5,
+      "result": "1/2-1/2",
+      "termination": "THREEFOLD_REPETITION",
+      "error": null,
+      "final_fen": "2rk4/4NR2/1p6/pP1P4/2P4p/1K4r1/P7/4R3 w - - 9 40",
+      "timing_ms": {
+        "opponent": {
+          "sum": 2196.2,
+          "mean": 61.01,
+          "max": 64.49,
+          "moves": 36
+        },
+        "candidate": {
+          "sum": 2062.48,
+          "mean": 57.29,
+          "max": 66.3,
+          "moves": 36
+        }
+      },
+      "mean_reported_depth": {
+        "opponent": 12.39,
+        "candidate": 18.94
+      },
+      "nodes": {
+        "opponent": 2428863,
+        "candidate": 358576
+      },
+      "game": 42,
+      "opening": 13,
+      "anchor": 1320,
+      "candidate_white": false,
+      "initial_fen": "rnbqkbnr/pppp1p1p/8/6p1/4Pp2/5N2/PPPP2PP/RNBQKB1R w KQkq - 0 4",
+      "opponent_strength": {
+        "UCI_LimitStrength": true,
+        "UCI_Elo": 1320
+      }
+    },
+    {
+      "score": 1.0,
+      "result": "1-0",
+      "termination": "CHECKMATE",
+      "error": null,
+      "final_fen": "3QRb2/3k4/7p/1P3pp1/1P3p2/8/P5PP/5nK1 b - - 1 30",
+      "timing_ms": {
+        "candidate": {
+          "sum": 1546.11,
+          "mean": 57.26,
+          "max": 65.95,
+          "moves": 27
+        },
+        "opponent": {
+          "sum": 1539.17,
+          "mean": 59.2,
+          "max": 64.41,
+          "moves": 26
+        }
+      },
+      "mean_reported_depth": {
+        "candidate": 9.93,
+        "opponent": 20.12
+      },
+      "nodes": {
+        "candidate": 240101,
+        "opponent": 1740168
+      },
+      "game": 43,
+      "opening": 13,
+      "anchor": 1520,
+      "candidate_white": true,
+      "initial_fen": "rnbqkbnr/pppp1p1p/8/6p1/4Pp2/5N2/PPPP2PP/RNBQKB1R w KQkq - 0 4",
+      "opponent_strength": {
+        "UCI_LimitStrength": true,
+        "UCI_Elo": 1520
+      }
+    },
+    {
+      "score": 1.0,
+      "result": "0-1",
+      "termination": "CHECKMATE",
+      "error": null,
+      "final_fen": "2kr1NnB/ppp5/7p/5p2/3P1p2/Pb2q2P/n3K1P1/4QBR1 w - - 5 26",
+      "timing_ms": {
+        "opponent": {
+          "sum": 1284.42,
+          "mean": 58.38,
+          "max": 64.91,
+          "moves": 22
+        },
+        "candidate": {
+          "sum": 1273.18,
+          "mean": 57.87,
+          "max": 66.17,
+          "moves": 22
+        }
+      },
+      "mean_reported_depth": {
+        "opponent": 22.09,
+        "candidate": 7.95
+      },
+      "nodes": {
+        "opponent": 1246989,
+        "candidate": 152099
+      },
+      "game": 44,
+      "opening": 13,
+      "anchor": 1520,
+      "candidate_white": false,
+      "initial_fen": "rnbqkbnr/pppp1p1p/8/6p1/4Pp2/5N2/PPPP2PP/RNBQKB1R w KQkq - 0 4",
+      "opponent_strength": {
+        "UCI_LimitStrength": true,
+        "UCI_Elo": 1520
+      }
+    },
+    {
+      "score": 0.0,
+      "result": "0-1",
+      "termination": "CHECKMATE",
+      "error": null,
+      "final_fen": "5r1k/p2b3p/2p3n1/P2p4/3P4/1BN3p1/2P4q/4Q1K1 w - - 2 38",
+      "timing_ms": {
+        "candidate": {
+          "sum": 1833.17,
+          "mean": 53.92,
+          "max": 66.73,
+          "moves": 34
+        },
+        "opponent": {
+          "sum": 2075.58,
+          "mean": 61.05,
+          "max": 64.84,
+          "moves": 34
+        }
+      },
+      "mean_reported_depth": {
+        "candidate": 8.29,
+        "opponent": 21.18
+      },
+      "nodes": {
+        "candidate": 268314,
+        "opponent": 2484927
+      },
+      "game": 45,
+      "opening": 13,
+      "anchor": 1720,
+      "candidate_white": true,
+      "initial_fen": "rnbqkbnr/pppp1p1p/8/6p1/4Pp2/5N2/PPPP2PP/RNBQKB1R w KQkq - 0 4",
+      "opponent_strength": {
+        "UCI_LimitStrength": true,
+        "UCI_Elo": 1720
+      }
+    },
+    {
+      "score": 0.0,
+      "result": "1-0",
+      "termination": "CHECKMATE",
+      "error": null,
+      "final_fen": "1rb2k1R/2p3R1/p3pB2/1p3pb1/3P2p1/1P6/P1K5/8 b - - 2 39",
+      "timing_ms": {
+        "opponent": {
+          "sum": 2160.73,
+          "mean": 60.02,
+          "max": 66.78,
+          "moves": 36
+        },
+        "candidate": {
+          "sum": 1846.06,
+          "mean": 52.74,
+          "max": 66.69,
+          "moves": 35
+        }
+      },
+      "mean_reported_depth": {
+        "opponent": 18.36,
+        "candidate": 19.49
+      },
+      "nodes": {
+        "opponent": 2310475,
+        "candidate": 281689
+      },
+      "game": 46,
+      "opening": 13,
+      "anchor": 1720,
+      "candidate_white": false,
+      "initial_fen": "rnbqkbnr/pppp1p1p/8/6p1/4Pp2/5N2/PPPP2PP/RNBQKB1R w KQkq - 0 4",
+      "opponent_strength": {
+        "UCI_LimitStrength": true,
+        "UCI_Elo": 1720
+      }
+    },
+    {
+      "score": 0.0,
+      "result": "0-1",
+      "termination": "CHECKMATE",
+      "error": null,
+      "final_fen": "2k1r3/7p/3p1r2/3P4/P7/7P/1PP2q2/R4K1R w - - 0 33",
+      "timing_ms": {
+        "candidate": {
+          "sum": 1456.12,
+          "mean": 50.21,
+          "max": 66.24,
+          "moves": 29
+        },
+        "opponent": {
+          "sum": 1771.33,
+          "mean": 61.08,
+          "max": 63.97,
+          "moves": 29
+        }
+      },
+      "mean_reported_depth": {
+        "candidate": 10.93,
+        "opponent": 17.38
+      },
+      "nodes": {
+        "candidate": 178702,
+        "opponent": 2095131
+      },
+      "game": 47,
+      "opening": 13,
+      "anchor": 1920,
+      "candidate_white": true,
+      "initial_fen": "rnbqkbnr/pppp1p1p/8/6p1/4Pp2/5N2/PPPP2PP/RNBQKB1R w KQkq - 0 4",
+      "opponent_strength": {
+        "UCI_LimitStrength": true,
+        "UCI_Elo": 1920
+      }
+    },
+    {
+      "score": 0.0,
+      "result": "1-0",
+      "termination": "CHECKMATE",
+      "error": null,
+      "final_fen": "8/2K5/8/8/3Q4/4Q3/B3k3/2R5 b - - 14 106",
+      "timing_ms": {
+        "opponent": {
+          "sum": 6066.12,
+          "mean": 58.89,
+          "max": 66.6,
+          "moves": 103
+        },
+        "candidate": {
+          "sum": 4203.22,
+          "mean": 41.21,
+          "max": 66.53,
+          "moves": 102
+        }
+      },
+      "mean_reported_depth": {
+        "opponent": 27.01,
+        "candidate": 21.11
+      },
+      "nodes": {
+        "opponent": 8440680,
+        "candidate": 1213175
+      },
+      "game": 48,
+      "opening": 13,
+      "anchor": 1920,
+      "candidate_white": false,
+      "initial_fen": "rnbqkbnr/pppp1p1p/8/6p1/4Pp2/5N2/PPPP2PP/RNBQKB1R w KQkq - 0 4",
+      "opponent_strength": {
+        "UCI_LimitStrength": true,
+        "UCI_Elo": 1920
+      }
+    },
+    {
+      "score": 1.0,
+      "result": "1-0",
+      "termination": "CHECKMATE",
+      "error": null,
+      "final_fen": "5kR1/8/1P2Q3/3P4/p6P/4P3/1P3PK1/R7 b - - 3 41",
+      "timing_ms": {
+        "candidate": {
+          "sum": 2104.75,
+          "mean": 55.39,
+          "max": 66.07,
+          "moves": 38
+        },
+        "opponent": {
+          "sum": 2148.6,
+          "mean": 58.07,
+          "max": 65.05,
+          "moves": 37
+        }
+      },
+      "mean_reported_depth": {
+        "candidate": 9.84,
+        "opponent": 25.3
+      },
+      "nodes": {
+        "candidate": 338525,
+        "opponent": 2415647
+      },
+      "game": 49,
+      "opening": 14,
+      "anchor": 1320,
+      "candidate_white": true,
+      "initial_fen": "rnbqkb1r/p1pp1ppp/1p2pn2/8/2P5/2N2N2/PP1PPPPP/R1BQKB1R w KQkq - 0 4",
+      "opponent_strength": {
+        "UCI_LimitStrength": true,
+        "UCI_Elo": 1320
+      }
+    },
+    {
+      "score": 1.0,
+      "result": "0-1",
+      "termination": "CHECKMATE",
+      "error": null,
+      "final_fen": "r3k2r/p1p2ppp/1p6/3p4/N1P1n1bP/5P2/PPnq2P1/R2K1B1R w kq - 2 18",
+      "timing_ms": {
+        "opponent": {
+          "sum": 748.94,
+          "mean": 53.5,
+          "max": 65.67,
+          "moves": 14
+        },
+        "candidate": {
+          "sum": 799.63,
+          "mean": 57.12,
+          "max": 66.16,
+          "moves": 14
+        }
+      },
+      "mean_reported_depth": {
+        "opponent": 45.5,
+        "candidate": 8.57
+      },
+      "nodes": {
+        "opponent": 738095,
+        "candidate": 109603
+      },
+      "game": 50,
+      "opening": 14,
+      "anchor": 1320,
+      "candidate_white": false,
+      "initial_fen": "rnbqkb1r/p1pp1ppp/1p2pn2/8/2P5/2N2N2/PP1PPPPP/R1BQKB1R w KQkq - 0 4",
+      "opponent_strength": {
+        "UCI_LimitStrength": true,
+        "UCI_Elo": 1320
+      }
+    },
+    {
+      "score": 0.0,
+      "result": "0-1",
+      "termination": "CHECKMATE",
+      "error": null,
+      "final_fen": "8/8/3P2p1/8/kp1q3P/P7/4Kq2/8 w - - 3 69",
+      "timing_ms": {
+        "candidate": {
+          "sum": 2832.57,
+          "mean": 43.58,
+          "max": 66.59,
+          "moves": 65
+        },
+        "opponent": {
+          "sum": 3877.48,
+          "mean": 59.65,
+          "max": 64.71,
+          "moves": 65
+        }
+      },
+      "mean_reported_depth": {
+        "candidate": 21.86,
+        "opponent": 27.77
+      },
+      "nodes": {
+        "candidate": 655169,
+        "opponent": 5724079
+      },
+      "game": 51,
+      "opening": 14,
+      "anchor": 1520,
+      "candidate_white": true,
+      "initial_fen": "rnbqkb1r/p1pp1ppp/1p2pn2/8/2P5/2N2N2/PP1PPPPP/R1BQKB1R w KQkq - 0 4",
+      "opponent_strength": {
+        "UCI_LimitStrength": true,
+        "UCI_Elo": 1520
+      }
+    },
+    {
+      "score": 0.0,
+      "result": "1-0",
+      "termination": "CHECKMATE",
+      "error": null,
+      "final_fen": "4R2k/1Q6/3p4/3P3p/1P4p1/5P1P/6p1/6K1 b - - 1 52",
+      "timing_ms": {
+        "opponent": {
+          "sum": 2895.16,
+          "mean": 59.08,
+          "max": 65.09,
+          "moves": 49
+        },
+        "candidate": {
+          "sum": 2396.06,
+          "mean": 49.92,
+          "max": 66.89,
+          "moves": 48
+        }
+      },
+      "mean_reported_depth": {
+        "opponent": 28.22,
+        "candidate": 11.31
+      },
+      "nodes": {
+        "opponent": 3479215,
+        "candidate": 411408
+      },
+      "game": 52,
+      "opening": 14,
+      "anchor": 1520,
+      "candidate_white": false,
+      "initial_fen": "rnbqkb1r/p1pp1ppp/1p2pn2/8/2P5/2N2N2/PP1PPPPP/R1BQKB1R w KQkq - 0 4",
+      "opponent_strength": {
+        "UCI_LimitStrength": true,
+        "UCI_Elo": 1520
+      }
+    },
+    {
+      "score": 1.0,
+      "result": "1-0",
+      "termination": "CHECKMATE",
+      "error": null,
+      "final_fen": "5Q2/7p/2B1k1p1/4Rp2/5P2/P1P3P1/1K3P2/8 b - - 4 44",
+      "timing_ms": {
+        "candidate": {
+          "sum": 2187.2,
+          "mean": 53.35,
+          "max": 66.53,
+          "moves": 41
+        },
+        "opponent": {
+          "sum": 2388.8,
+          "mean": 59.72,
+          "max": 65.64,
+          "moves": 40
+        }
+      },
+      "mean_reported_depth": {
+        "candidate": 13.2,
+        "opponent": 20.27
+      },
+      "nodes": {
+        "candidate": 394352,
+        "opponent": 2755882
+      },
+      "game": 53,
+      "opening": 14,
+      "anchor": 1720,
+      "candidate_white": true,
+      "initial_fen": "rnbqkb1r/p1pp1ppp/1p2pn2/8/2P5/2N2N2/PP1PPPPP/R1BQKB1R w KQkq - 0 4",
+      "opponent_strength": {
+        "UCI_LimitStrength": true,
+        "UCI_Elo": 1720
+      }
+    },
+    {
+      "score": 0.0,
+      "result": "1-0",
+      "termination": "CHECKMATE",
+      "error": null,
+      "final_fen": "r1q4k/p1p1R1Q1/Pp1P2p1/2b4p/3p2r1/P5P1/5P1P/2B1KR2 b - - 10 26",
+      "timing_ms": {
+        "opponent": {
+          "sum": 1406.49,
+          "mean": 61.15,
+          "max": 65.08,
+          "moves": 23
+        },
+        "candidate": {
+          "sum": 1120.15,
+          "mean": 50.92,
+          "max": 67.03,
+          "moves": 22
+        }
+      },
+      "mean_reported_depth": {
+        "opponent": 18.3,
+        "candidate": 8.45
+      },
+      "nodes": {
+        "opponent": 1614398,
+        "candidate": 157776
+      },
+      "game": 54,
+      "opening": 14,
+      "anchor": 1720,
+      "candidate_white": false,
+      "initial_fen": "rnbqkb1r/p1pp1ppp/1p2pn2/8/2P5/2N2N2/PP1PPPPP/R1BQKB1R w KQkq - 0 4",
+      "opponent_strength": {
+        "UCI_LimitStrength": true,
+        "UCI_Elo": 1720
+      }
+    },
+    {
+      "score": 0.0,
+      "result": "0-1",
+      "termination": "CHECKMATE",
+      "error": null,
+      "final_fen": "8/4k3/1p3n1p/p1P2P1P/1P3R2/3n4/P7/K2r4 w - - 0 54",
+      "timing_ms": {
+        "candidate": {
+          "sum": 2887.35,
+          "mean": 57.75,
+          "max": 67.12,
+          "moves": 50
+        },
+        "opponent": {
+          "sum": 3049.1,
+          "mean": 60.98,
+          "max": 64.89,
+          "moves": 50
+        }
+      },
+      "mean_reported_depth": {
+        "candidate": 15.5,
+        "opponent": 12.76
+      },
+      "nodes": {
+        "candidate": 518648,
+        "opponent": 3175401
+      },
+      "game": 55,
+      "opening": 14,
+      "anchor": 1920,
+      "candidate_white": true,
+      "initial_fen": "rnbqkb1r/p1pp1ppp/1p2pn2/8/2P5/2N2N2/PP1PPPPP/R1BQKB1R w KQkq - 0 4",
+      "opponent_strength": {
+        "UCI_LimitStrength": true,
+        "UCI_Elo": 1920
+      }
+    },
+    {
+      "score": 0.0,
+      "result": "1-0",
+      "termination": "CHECKMATE",
+      "error": null,
+      "final_fen": "8/6R1/7p/2P2Q1k/3p4/6P1/2r4P/6K1 b - - 0 45",
+      "timing_ms": {
+        "opponent": {
+          "sum": 2508.18,
+          "mean": 59.72,
+          "max": 64.41,
+          "moves": 42
+        },
+        "candidate": {
+          "sum": 2088.98,
+          "mean": 50.95,
+          "max": 67.34,
+          "moves": 41
+        }
+      },
+      "mean_reported_depth": {
+        "opponent": 18.6,
+        "candidate": 13.49
+      },
+      "nodes": {
+        "opponent": 2935254,
+        "candidate": 351350
+      },
+      "game": 56,
+      "opening": 14,
+      "anchor": 1920,
+      "candidate_white": false,
+      "initial_fen": "rnbqkb1r/p1pp1ppp/1p2pn2/8/2P5/2N2N2/PP1PPPPP/R1BQKB1R w KQkq - 0 4",
+      "opponent_strength": {
+        "UCI_LimitStrength": true,
+        "UCI_Elo": 1920
+      }
+    },
+    {
+      "score": 0.0,
+      "result": "0-1",
+      "termination": "CHECKMATE",
+      "error": null,
+      "final_fen": "8/8/1P4k1/8/6P1/P3r2p/3p3P/4r2K w - - 0 53",
+      "timing_ms": {
+        "candidate": {
+          "sum": 2372.99,
+          "mean": 48.43,
+          "max": 67.09,
+          "moves": 49
+        },
+        "opponent": {
+          "sum": 2878.09,
+          "mean": 58.74,
+          "max": 64.24,
+          "moves": 49
+        }
+      },
+      "mean_reported_depth": {
+        "candidate": 18.35,
+        "opponent": 23.04
+      },
+      "nodes": {
+        "candidate": 429808,
+        "opponent": 3357440
+      },
+      "game": 57,
+      "opening": 15,
+      "anchor": 1320,
+      "candidate_white": true,
+      "initial_fen": "rnbqkb1r/pp2pppp/5n2/2pp4/5P2/4PN2/PPPP2PP/RNBQKB1R w KQkq - 0 4",
+      "opponent_strength": {
+        "UCI_LimitStrength": true,
+        "UCI_Elo": 1320
+      }
+    },
+    {
+      "score": 0.5,
+      "result": "1/2-1/2",
+      "termination": "THREEFOLD_REPETITION",
+      "error": null,
+      "final_fen": "8/p1kn4/p6p/8/5PB1/6P1/1Q5P/7K w - - 13 62",
+      "timing_ms": {
+        "opponent": {
+          "sum": 3545.35,
+          "mean": 61.13,
+          "max": 67.27,
+          "moves": 58
+        },
+        "candidate": {
+          "sum": 2627.62,
+          "mean": 45.3,
+          "max": 66.23,
+          "moves": 58
+        }
+      },
+      "mean_reported_depth": {
+        "opponent": 12.34,
+        "candidate": 18.66
+      },
+      "nodes": {
+        "opponent": 3875219,
+        "candidate": 391493
+      },
+      "game": 58,
+      "opening": 15,
+      "anchor": 1320,
+      "candidate_white": false,
+      "initial_fen": "rnbqkb1r/pp2pppp/5n2/2pp4/5P2/4PN2/PPPP2PP/RNBQKB1R w KQkq - 0 4",
+      "opponent_strength": {
+        "UCI_LimitStrength": true,
+        "UCI_Elo": 1320
+      }
+    },
+    {
+      "score": 0.0,
+      "result": "0-1",
+      "termination": "CHECKMATE",
+      "error": null,
+      "final_fen": "2k2r2/8/8/1p2b3/3P4/p1P1P1pb/8/2r4K w - - 0 41",
+      "timing_ms": {
+        "candidate": {
+          "sum": 1879.37,
+          "mean": 50.79,
+          "max": 66.33,
+          "moves": 37
+        },
+        "opponent": {
+          "sum": 2129.06,
+          "mean": 57.54,
+          "max": 72.62,
+          "moves": 37
+        }
+      },
+      "mean_reported_depth": {
+        "candidate": 12.62,
+        "opponent": 36.78
+      },
+      "nodes": {
+        "candidate": 322101,
+        "opponent": 2373609
+      },
+      "game": 59,
+      "opening": 15,
+      "anchor": 1520,
+      "candidate_white": true,
+      "initial_fen": "rnbqkb1r/pp2pppp/5n2/2pp4/5P2/4PN2/PPPP2PP/RNBQKB1R w KQkq - 0 4",
+      "opponent_strength": {
+        "UCI_LimitStrength": true,
+        "UCI_Elo": 1520
+      }
+    },
+    {
+      "score": 0.0,
+      "result": "1-0",
+      "termination": "CHECKMATE",
+      "error": null,
+      "final_fen": "3k1R2/8/3KP3/1B6/8/8/8/8 b - - 0 72",
+      "timing_ms": {
+        "opponent": {
+          "sum": 4214.81,
+          "mean": 61.08,
+          "max": 83.7,
+          "moves": 69
+        },
+        "candidate": {
+          "sum": 3461.98,
+          "mean": 50.91,
+          "max": 66.29,
+          "moves": 68
+        }
+      },
+      "mean_reported_depth": {
+        "opponent": 13.64,
+        "candidate": 21.07
+      },
+      "nodes": {
+        "opponent": 5273606,
+        "candidate": 789718
+      },
+      "game": 60,
+      "opening": 15,
+      "anchor": 1520,
+      "candidate_white": false,
+      "initial_fen": "rnbqkb1r/pp2pppp/5n2/2pp4/5P2/4PN2/PPPP2PP/RNBQKB1R w KQkq - 0 4",
+      "opponent_strength": {
+        "UCI_LimitStrength": true,
+        "UCI_Elo": 1520
+      }
+    },
+    {
+      "score": 1.0,
+      "result": "1-0",
+      "termination": "CHECKMATE",
+      "error": null,
+      "final_fen": "k7/2Q5/1P2p2B/p3P3/1R2B3/2P3P1/2P4P/6K1 b - - 3 32",
+      "timing_ms": {
+        "candidate": {
+          "sum": 1495.62,
+          "mean": 51.57,
+          "max": 67.04,
+          "moves": 29
+        },
+        "opponent": {
+          "sum": 1593.06,
+          "mean": 56.89,
+          "max": 89.55,
+          "moves": 28
+        }
+      },
+      "mean_reported_depth": {
+        "candidate": 8.59,
+        "opponent": 41.5
+      },
+      "nodes": {
+        "candidate": 240915,
+        "opponent": 2025238
+      },
+      "game": 61,
+      "opening": 15,
+      "anchor": 1720,
+      "candidate_white": true,
+      "initial_fen": "rnbqkb1r/pp2pppp/5n2/2pp4/5P2/4PN2/PPPP2PP/RNBQKB1R w KQkq - 0 4",
+      "opponent_strength": {
+        "UCI_LimitStrength": true,
+        "UCI_Elo": 1720
+      }
+    },
+    {
+      "score": 0.0,
+      "result": "1-0",
+      "termination": "CHECKMATE",
+      "error": null,
+      "final_fen": "2Q2k2/R7/4p1pr/5p1p/2P2P2/3P4/4p1PP/6K1 b - - 1 40",
+      "timing_ms": {
+        "opponent": {
+          "sum": 2202.58,
+          "mean": 59.53,
+          "max": 64.59,
+          "moves": 37
+        },
+        "candidate": {
+          "sum": 1879.9,
+          "mean": 52.22,
+          "max": 66.51,
+          "moves": 36
+        }
+      },
+      "mean_reported_depth": {
+        "opponent": 25.62,
+        "candidate": 12.81
+      },
+      "nodes": {
+        "opponent": 2766607,
+        "candidate": 315950
+      },
+      "game": 62,
+      "opening": 15,
+      "anchor": 1720,
+      "candidate_white": false,
+      "initial_fen": "rnbqkb1r/pp2pppp/5n2/2pp4/5P2/4PN2/PPPP2PP/RNBQKB1R w KQkq - 0 4",
+      "opponent_strength": {
+        "UCI_LimitStrength": true,
+        "UCI_Elo": 1720
+      }
+    },
+    {
+      "score": 0.0,
+      "result": "0-1",
+      "termination": "CHECKMATE",
+      "error": null,
+      "final_fen": "6k1/8/4P2p/2P3q1/7K/5r2/8/7b w - - 1 50",
+      "timing_ms": {
+        "candidate": {
+          "sum": 2145.55,
+          "mean": 46.64,
+          "max": 66.34,
+          "moves": 46
+        },
+        "opponent": {
+          "sum": 2724.32,
+          "mean": 59.22,
+          "max": 64.71,
+          "moves": 46
+        }
+      },
+      "mean_reported_depth": {
+        "candidate": 10.72,
+        "opponent": 28.61
+      },
+      "nodes": {
+        "candidate": 408966,
+        "opponent": 3607451
+      },
+      "game": 63,
+      "opening": 15,
+      "anchor": 1920,
+      "candidate_white": true,
+      "initial_fen": "rnbqkb1r/pp2pppp/5n2/2pp4/5P2/4PN2/PPPP2PP/RNBQKB1R w KQkq - 0 4",
+      "opponent_strength": {
+        "UCI_LimitStrength": true,
+        "UCI_Elo": 1920
+      }
+    },
+    {
+      "score": 0.0,
+      "result": "1-0",
+      "termination": "CHECKMATE",
+      "error": null,
+      "final_fen": "7R/6R1/p3p2k/P2p4/3B1PB1/3P2n1/4r3/6K1 b - - 2 36",
+      "timing_ms": {
+        "opponent": {
+          "sum": 2011.84,
+          "mean": 60.96,
+          "max": 64.48,
+          "moves": 33
+        },
+        "candidate": {
+          "sum": 1815.2,
+          "mean": 56.73,
+          "max": 66.47,
+          "moves": 32
+        }
+      },
+      "mean_reported_depth": {
+        "opponent": 11.82,
+        "candidate": 10.97
+      },
+      "nodes": {
+        "opponent": 2110759,
+        "candidate": 275007
+      },
+      "game": 64,
+      "opening": 15,
+      "anchor": 1920,
+      "candidate_white": false,
+      "initial_fen": "rnbqkb1r/pp2pppp/5n2/2pp4/5P2/4PN2/PPPP2PP/RNBQKB1R w KQkq - 0 4",
+      "opponent_strength": {
+        "UCI_LimitStrength": true,
+        "UCI_Elo": 1920
+      }
+    }
+  ],
+  "candidate": {
+    "id": {
+      "name": "WaveChess 3.1 (wave mathematics)",
+      "author": "WaveChess"
+    },
+    "path": "/workspace/work/wavechess/target/release/wavechess",
+    "sha256": "bd38b3e0ee25cc73be3795c2e0a2c8a326fd84100dd6b037472b4586c27680ea",
+    "options": {
+      "Threads": 1,
+      "Hash": 16,
+      "Move Overhead": 0,
+      "Opening Variety": 0,
+      "Random Seed": 42,
+      "UCI_LimitStrength": false
+    }
+  },
+  "opponent": {
+    "id": {
+      "name": "Stockfish 19",
+      "author": "the Stockfish developers (see AUTHORS file)"
+    },
+    "path": "/workspace/work/toolchains/stockfish/stockfish-linux-x86-64-universal",
+    "sha256": "0f83d24cc46d2c66c60f16001af5444873bc112b7d028594513426894c12da19",
+    "options": {
+      "Threads": 1,
+      "Hash": 16,
+      "Move Overhead": 0,
+      "UCI_LimitStrength": false
+    }
+  },
+  "stockfish_elo_range": [
+    1320,
+    3190
+  ],
+  "summary": {
+    "levels": {
+      "1320": {
+        "wins": 9,
+        "draws": 2,
+        "losses": 5,
+        "unfinished": 0
+      },
+      "1520": {
+        "wins": 4,
+        "draws": 2,
+        "losses": 10,
+        "unfinished": 0
+      },
+      "1720": {
+        "wins": 3,
+        "draws": 1,
+        "losses": 12,
+        "unfinished": 0
+      },
+      "1920": {
+        "wins": 0,
+        "draws": 0,
+        "losses": 16,
+        "unfinished": 0
+      }
+    },
+    "rating": {
+      "estimate": 1406.9,
+      "rated_games": 64,
+      "excluded_games": 0,
+      "opening_clusters": 8,
+      "bootstrap_95": [
+        1343.6,
+        1473.3
+      ],
+      "conservative_95": [
+        "-inf",
+        1900.8
+      ],
+      "method": "logistic expected-score fit; paired opening-cluster bootstrap; weighted Hoeffding bounds",
+      "warning": "Conditional on nominal opponent ratings and independent opening clusters. Not FIDE/online Elo. Few openings, short time controls and excluded games limit inference."
+    }
+  }
+}

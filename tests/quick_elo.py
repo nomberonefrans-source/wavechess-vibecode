@@ -29,7 +29,10 @@ def expected(rating, anchor):
 
 def fit(samples, score=None):
     """Invert the logistic expected score; draws contribute half a point."""
-    count = sum(n for _, _, n in samples)
+    counts = defaultdict(int)
+    for anchor, _, n in samples:
+        counts[anchor] += n
+    count = sum(counts.values())
     score = sum(s for _, s, _ in samples) if score is None else score
     if score <= 0:
         return -math.inf
@@ -38,7 +41,7 @@ def fit(samples, score=None):
     lo, hi = -20000.0, 20000.0
     for _ in range(65):
         mid = (lo + hi) / 2
-        if sum(n * expected(mid, r) for r, _, n in samples) < score:
+        if sum(n * expected(mid, r) for r, n in counts.items()) < score:
             lo = mid
         else:
             hi = mid

@@ -10,6 +10,7 @@ class RatingTests(unittest.TestCase):
         self.assertAlmostEqual(fit([(1500, 5, 10)]), 1500)
         self.assertAlmostEqual(fit([(1500, 8, 10)]), 1500 + 400 * math.log10(4))
         self.assertAlmostEqual(fit([(1300, 8, 10), (1700, 2, 10)]), 1500)
+        self.assertAlmostEqual(fit([(1500, 2, 4), (1500, 3, 6)]), 1500)
 
     def test_extreme_scores_have_no_fabricated_finite_rating(self):
         self.assertEqual(fit([(1500, 10, 10)]), math.inf)

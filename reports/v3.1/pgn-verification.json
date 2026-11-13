@@ -1,0 +1,51 @@
+[
+  {
+    "file": "exploratory/baseline-sf1320.pgn",
+    "games": 8,
+    "legal_pgn": true,
+    "final_fen_matches": true,
+    "result_matches_rules": true
+  },
+  {
+    "file": "exploratory/duel-first.pgn",
+    "games": 16,
+    "legal_pgn": true,
+    "final_fen_matches": true,
+    "result_matches_rules": true
+  },
+  {
+    "file": "fwht-ablation-60ms.pgn",
+    "games": 32,
+    "legal_pgn": true,
+    "final_fen_matches": true,
+    "result_matches_rules": true
+  },
+  {
+    "file": "ladder-60ms-second.pgn",
+    "games": 64,
+    "legal_pgn": true,
+    "final_fen_matches": true,
+    "result_matches_rules": true
+  },
+  {
+    "file": "ladder-60ms.pgn",
+    "games": 64,
+    "legal_pgn": true,
+    "final_fen_matches": true,
+    "result_matches_rules": true
+  },
+  {
+    "file": "ladder-combined.pgn",
+    "games": 128,
+    "legal_pgn": true,
+    "final_fen_matches": true,
+    "result_matches_rules": true
+  },
+  {
+    "file": "validation-120ms.pgn",
+    "games": 32,
+    "legal_pgn": true,
+    "final_fen_matches": true,
+    "result_matches_rules": true
+  }
+]

@@ -1,0 +1,17 @@
+{
+  "source_base": "796d504289bdc3d0ab764b16338e73671bd7268d",
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+  "cpu_quota": "200000 100000",
+  "rust": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+  "stockfish_release": "https://github.com/official-stockfish/Stockfish/releases/tag/sf_19",
+  "stockfish_asset": "https://github.com/official-stockfish/Stockfish/releases/download/sf_19/stockfish-linux-x86-64-universal.tar.gz",
+  "sha256": {
+    "baseline": "5a3d591bf745ff5fe99e13c2478e4374583e520394e888ad95c5d934d2d426c3",
+    "candidate": "bd38b3e0ee25cc73be3795c2e0a2c8a326fd84100dd6b037472b4586c27680ea",
+    "stockfish": "0f83d24cc46d2c66c60f16001af5444873bc112b7d028594513426894c12da19",
+    "stockfish_archive": "9defc0d4e55d49c65a6d042f3e571a39fcea499ade6dbe741b53b8c65e03611f"
+  },
+  "strength_parameters_tuned_on_matches": false,
+  "tested_engine_source_commit": "3f803c930d099084c3a9b762d1f2b6ad9ad45d2e",
+  "ci_run": "https://github.com/nomberonefrans-source/wavechess-vibecode/actions/runs/43249411985"
+}

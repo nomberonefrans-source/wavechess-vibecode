@@ -1,0 +1,98 @@
+{
+  "ladder_60ms": {
+    "levels": {
+      "1320": {
+        "wins": 21,
+        "draws": 2,
+        "losses": 9,
+        "unfinished": 0
+      },
+      "1520": {
+        "wins": 10,
+        "draws": 2,
+        "losses": 20,
+        "unfinished": 0
+      },
+      "1720": {
+        "wins": 4,
+        "draws": 4,
+        "losses": 24,
+        "unfinished": 0
+      },
+      "1920": {
+        "wins": 2,
+        "draws": 0,
+        "losses": 30,
+        "unfinished": 0
+      }
+    },
+    "rating": {
+      "estimate": 1440.7,
+      "rated_games": 128,
+      "excluded_games": 0,
+      "opening_clusters": 16,
+      "bootstrap_95": [
+        1385.0,
+        1493.3
+      ],
+      "conservative_95": [
+        "-inf",
+        1778.5
+      ],
+      "method": "logistic expected-score fit; paired opening-cluster bootstrap; weighted Hoeffding bounds",
+      "warning": "Conditional on nominal opponent ratings and independent opening clusters. Not FIDE/online Elo. Few openings, short time controls and excluded games limit inference."
+    }
+  },
+  "fwht_ablation_60ms": {
+    "levels": {
+      "0": {
+        "wins": 17,
+        "draws": 3,
+        "losses": 12,
+        "unfinished": 0
+      }
+    },
+    "rating": {
+      "estimate": 54.7,
+      "rated_games": 32,
+      "excluded_games": 0,
+      "opening_clusters": 16,
+      "bootstrap_95": [
+        -77.2,
+        205.6
+      ],
+      "conservative_95": [
+        -201.6,
+        418.8
+      ],
+      "method": "logistic expected-score fit; paired opening-cluster bootstrap; weighted Hoeffding bounds",
+      "warning": "Conditional on nominal opponent ratings and independent opening clusters. Not FIDE/online Elo. Few openings, short time controls and excluded games limit inference."
+    }
+  },
+  "version_comparison_120ms": {
+    "levels": {
+      "0": {
+        "wins": 18,
+        "draws": 3,
+        "losses": 11,
+        "unfinished": 0
+      }
+    },
+    "rating": {
+      "estimate": 77.2,
+      "rated_games": 32,
+      "excluded_games": 0,
+      "opening_clusters": 16,
+      "bootstrap_95": [
+        -32.7,
+        221.1
+      ],
+      "conservative_95": [
+        -172.9,
+        507.5
+      ],
+      "method": "logistic expected-score fit; paired opening-cluster bootstrap; weighted Hoeffding bounds",
+      "warning": "Conditional on nominal opponent ratings and independent opening clusters. Not FIDE/online Elo. Few openings, short time controls and excluded games limit inference."
+    }
+  }
+}
