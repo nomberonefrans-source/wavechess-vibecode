@@ -149,15 +149,45 @@ fn check_pressure(b: &Board, replies: &MoveList) -> f32 {
     observed / (samples as f32 * (1 + escapes) as f32)
 }
 
+/// A capture can open a second exchange elsewhere (e.g. removal of a
+/// defender). Count only the increase over pressure already present, and
+/// exclude the contact square: the original local flow includes recaptures.
+fn capture_cost(before: &Board, after: &Board, contact: usize, gross: f32) -> f32 {
+    if gross < wave::MASS[0] {
+        return gross;
+    }
+    if gross >= wave::MASS[1] && mating_step(after).is_some() {
+        return 0.0;
+    }
+    let mut prior = *before;
+    prior.side = after.side;
+    prior.ep = -1;
+    let mut compensation = 0.0f32;
+    for (s, &piece) in after.sq.iter().enumerate() {
+        if s == contact
+            || piece.signum() != before.side
+            || piece.abs() == KING
+            || !after.attacked(s, after.side)
+        {
+            continue;
+        }
+        let exposed = wave::capture_flow_on(after, s);
+        if exposed > compensation {
+            compensation = compensation.max(exposed - wave::capture_flow_on(&prior, s));
+        }
+    }
+    (gross - compensation).max(0.0)
+}
+
 /// Как «осела» позиция `b` с точки зрения стороны, только что сделавшей ход (сотые пешки).
 /// Зависит только от позиции и веса угрозы, поэтому её безопасно хранить в кэше по хэшу.
 pub fn settle_value(b: &Board, threat_pct: i32) -> i32 {
     let mut pseudo = MoveList::new();
     b.gen_pseudo(&mut pseudo, false);
-    settle_with_moves(b, threat_pct, &pseudo)
+    settle_with_moves(b, threat_pct, &pseudo, false)
 }
 
-fn settle_with_moves(b: &Board, threat_pct: i32, pseudo: &MoveList) -> i32 {
+fn settle_with_moves(b: &Board, threat_pct: i32, pseudo: &MoveList, root_reply: bool) -> i32 {
     let ps = Ps::load();
     let (w, e) = wave::analyze_with(b, &ps);
     let mover = -b.side;
@@ -190,7 +220,14 @@ fn settle_with_moves(b: &Board, threat_pct: i32, pseudo: &MoveList) -> i32 {
             return MATED_NEXT;
         }
         if contact {
-            loss = loss.max(wave::exchange_after_capture(b, mv, nb));
+            let gross = wave::exchange_after_capture(b, mv, nb);
+            if gross > loss {
+                loss = if root_reply && threat_pct > 0 {
+                    loss.max(capture_cost(b, &nb, mv.to as usize, gross))
+                } else {
+                    gross
+                };
+            }
         }
     }
     let (mut g1, mut g2) = (0.0f32, 0.0f32);
@@ -253,13 +290,51 @@ fn has_legal_from(b: &Board, list: &MoveList) -> bool {
     false
 }
 
-/// Только один реальный ход: используется для полного показа матовой фазы.
+/// Test the king safety of a pseudo-legal checking move before certifying it.
+fn completes_mate(b: &Board, mv: Move) -> bool {
+    let after = b.make(mv);
+    after.in_check()
+        && !after.attacked(after.ksq[b.side_idx()] as usize, -b.side)
+        && !has_legal(&after)
+}
+
 fn mating_step(b: &Board) -> Option<Move> {
-    let legal = b.legal_moves();
-    legal.m[..legal.n].iter().copied().find(|&mv| {
-        let next = b.make(mv);
-        next.in_check() && !has_legal(&next)
+    let king = b.ksq[1 - b.side_idx()] as usize;
+    let mut moves = MoveList::new();
+    b.gen_pseudo(&mut moves, false);
+    moves.m[..moves.n].iter().copied().find(|&mv| {
+        (mv.flag == FLAG_EP || mv.promo != 0 || could_give_quiet_check(b, mv, king))
+            && completes_mate(b, mv)
     })
+}
+
+/// Measure how much freedom a specific mating threat removes. Replies
+/// are tested against the same move, including quiet interpositions.
+fn threat_information(b: &Board, game: &[u64]) -> f32 {
+    let mut projected = *b;
+    projected.side = -b.side;
+    projected.ep = -1;
+    projected.hash = projected.compute_hash();
+    let Some(threat) = mating_step(&projected) else {
+        return 0.0;
+    };
+    let replies = b.legal_moves();
+    let mut defences = 0;
+    for &reply in &replies.m[..replies.n] {
+        let after = b.make(reply);
+        if after.halfmove >= 100 || game.iter().filter(|&&h| h == after.hash).count() >= 2 {
+            defences += 1;
+            continue;
+        }
+        let mut available = MoveList::new();
+        after.gen_pseudo(&mut available, false);
+        if available.m[..available.n].contains(&threat) && completes_mate(&after, threat) {
+            continue;
+        }
+        defences += 1;
+    }
+    let bits = ((replies.n + 1) as f32 / (defences + 1) as f32).log2();
+    (0.5 * wave::MASS[0] * bits).min(2.0 * wave::MASS[0])
 }
 
 /// Параллельное «отобразить»: результат i-го элемента лежит на i-м месте,
@@ -408,9 +483,15 @@ impl Searcher {
 
     /// Осевшая волна позиции (через кэш).
     fn settle(&self, b: &Board) -> i32 {
+        self.settle_position(b, false)
+    }
+
+    fn settle_position(&self, b: &Board, root_reply: bool) -> i32 {
         self.counter.add(0);
-        if let Some(v) = self.cache.get(b.hash) {
-            return v;
+        if !root_reply {
+            if let Some(v) = self.cache.get(b.hash) {
+                return v;
+            }
         }
         // Only board-local facts belong in the hash. Halfmove clocks and real
         // repetition history are checked by score_moves even on cache hits.
@@ -425,9 +506,11 @@ impl Searcher {
         } else if b.insufficient() {
             LOCAL_DRAW
         } else {
-            settle_with_moves(b, self.cfg.threat_pct, &pseudo)
+            settle_with_moves(b, self.cfg.threat_pct, &pseudo, root_reply)
         };
-        self.cache.put(b.hash, v);
+        if !root_reply {
+            self.cache.put(b.hash, v);
+        }
         v
     }
 
@@ -515,7 +598,7 @@ impl Searcher {
             }
             let mv = legal.m[i];
             let nb = b.make(mv);
-            let local = self.settle(&nb);
+            let local = self.settle_position(&nb, chain.is_empty());
             Some(match self.rule_outcome(&nb, local, game, chain) {
                 Some(v) => Cand {
                     mv,
@@ -528,6 +611,14 @@ impl Searcher {
                     } else {
                         local
                     };
+                    if self.cfg.threat_pct > 0
+                        && chain.is_empty()
+                        && !nb.in_check()
+                        && local.abs() < MATE_BOUND
+                    {
+                        val = (val + threat_information(&nb, game).round() as i32)
+                            .clamp(-20000, 20000);
+                    }
                     // Повторный визит уменьшает положительный поток энергии:
                     // движение по замкнутому контуру не приближает выигрыш.
                     // Это не объявление ничьей до третьего повторения.
@@ -1298,6 +1389,61 @@ mod tests {
                     m,
                     b.ksq[1 - b.side_idx()] as usize
                 ));
+            }
+        }
+    }
+
+    #[test]
+    fn taking_a_queen_can_expose_immediate_mate() {
+        let pos = Board::from_fen("5rQk/6pp/7N/8/8/8/8/6K1 b - - 0 1").unwrap();
+        for b in [pos, pos.mirrored()] {
+            let replies = b.legal_moves();
+            assert_eq!(replies.n, 1);
+            let m = replies.m[0];
+            let after = b.make(m);
+            let gross = wave::exchange_after_capture(&b, m, after);
+            assert!(gross >= wave::MASS[1]);
+            assert_eq!(capture_cost(&b, &after, m.to as usize, gross), 0.0);
+        }
+    }
+
+    #[test]
+    fn quiet_mate_threat_restricts_the_defender() {
+        let b = Board::from_fen("6k1/5ppp/8/8/8/8/8/R5K1 b - - 0 1").unwrap();
+        let value = threat_information(&b, &[]);
+        assert!(value > 0.0 && value <= 200.0);
+        assert_eq!(value, threat_information(&b.mirrored(), &[]));
+        assert_eq!(threat_information(&Board::startpos(), &[]), 0.0);
+    }
+
+    #[test]
+    fn capture_can_abandon_a_second_target() {
+        for (fen, expected) in [
+            ("k2q4/8/8/3b4/4R3/8/8/3R2K1 b - - 0 1", 0.0),
+            ("k7/8/8/3b4/4R3/8/8/3R2K1 b - - 0 1", 500.0),
+            ("k2q4/8/8/3b2B1/4R3/8/8/3R2K1 b - - 0 1", 500.0),
+        ] {
+            let pos = Board::from_fen(fen).unwrap();
+            let mv = crate::notation::parse_move(&pos, "d5e4").unwrap();
+            for (b, m) in [
+                (pos, mv),
+                (
+                    pos.mirrored(),
+                    Move {
+                        from: mv.from ^ 56,
+                        to: mv.to ^ 56,
+                        ..mv
+                    },
+                ),
+            ] {
+                let after = b.make(m);
+                let gross = wave::exchange_after_capture(&b, m, after);
+                assert_eq!(gross, 500.0);
+                assert_eq!(
+                    capture_cost(&b, &after, m.to as usize, gross),
+                    expected,
+                    "{fen}"
+                );
             }
         }
     }
