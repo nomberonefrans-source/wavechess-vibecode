@@ -4,8 +4,8 @@
 //! Волна распространяется по тем же векторам, что и ходы фигуры:
 //!   * лучевая волна затухает с расстоянием (коэффициент DAMP),
 //!   * первая фигура на пути поглощает прямую волну, но сквозь неё проходит слабая
-//!     «рентгеновская» компонента: через свою дальнобойную фигуру (батарея) — XRAY_OWN,
-//!     через чужую фигуру (связка, сквозной удар) — XRAY_ENEMY.
+//!     «рентгеновская» компонента: через свою сонаправленную батарею — XRAY_OWN,
+//!     за чужой дальнобойной фигурой — XRAY_ENEMY, если следующая фигура тоже чужая.
 //! Суперпозиция всех волн даёт поле — полное знание о доске:
 //!   charge — поле масс,
 //!   amp[цвет][клетка] — давление волн каждого цвета,
@@ -224,56 +224,48 @@ impl WaveField {
                     let allowed = pn == 0 || line_id(df, dr) == pn;
                     let mut nf = f + df;
                     let mut nr = r + dr;
-                    let mut atten = 1.0f32;
-                    let mut direct = true;
                     let mut d = 0usize;
                     while inside(nf, nr) {
                         let to = sq_of(nf, nr);
                         let q = b.sq[to];
-                        let dd = if d > 7 { 7 } else { d };
+                        w.raw_hits[c][to] += 1;
                         if allowed {
-                            if direct {
-                                w.amp[c][to] += a * DAMP[dd];
-                            } else {
-                                w.latent[c][to] += a * atten * DAMP[dd];
-                            }
-                        }
-                        if direct {
-                            w.raw_hits[c][to] += 1;
-                        }
-                        if allowed {
-                            if direct {
-                                w.hits[c][to] += 1;
-                                if q.signum() != sg {
-                                    w.mobility[c] += mw;
-                                }
-                            }
-                        }
-                        if direct && q == -sg * KING {
-                            let (mut x, mut y, mut distance) = (nf + df, nr + dr, d + 1);
-                            while inside(x, y) {
-                                let shadow = sq_of(x, y);
-                                w.king_shadow[c][shadow] += a * DAMP[distance.min(7)];
-                                if b.sq[shadow] != 0 {
-                                    break;
-                                }
-                                x += df;
-                                y += dr;
-                                distance += 1;
+                            w.amp[c][to] += a * DAMP[d];
+                            w.hits[c][to] += 1;
+                            if q.signum() != sg {
+                                w.mobility[c] += mw;
                             }
                         }
                         if q != 0 {
-                            direct = false;
-                            if q.signum() == sg {
-                                let qt = q.abs();
-                                if qt == BISHOP || qt == ROOK || qt == QUEEN {
-                                    atten *= ps.xray_own;
-                                } else {
-                                    break;
+                            let king = q == -sg * KING;
+                            let front_pin = w.pin[to];
+                            let battery = q.signum() == sg
+                                && slider_rays(q.abs()).contains(&(df, dr))
+                                && (front_pin == 0 || front_pin == line_id(df, dr));
+                            let enemy_slider =
+                                q.signum() == -sg && !slider_rays(q.abs()).is_empty();
+                            if king || (allowed && (battery || enemy_slider)) {
+                                let (mut x, mut y) = (nf + df, nr + dr);
+                                while inside(x, y) {
+                                    d += 1;
+                                    let rear = sq_of(x, y);
+                                    let target = b.sq[rear];
+                                    let pressure = a * DAMP[d];
+                                    if king {
+                                        w.king_shadow[c][rear] += pressure;
+                                    } else if battery {
+                                        w.latent[c][rear] += ps.xray_own * pressure;
+                                    } else if target.signum() == -sg {
+                                        w.latent[c][rear] += ps.xray_enemy * pressure;
+                                    }
+                                    if target != 0 {
+                                        break;
+                                    }
+                                    x += df;
+                                    y += dr;
                                 }
-                            } else {
-                                atten *= ps.xray_enemy;
                             }
+                            break;
                         }
                         nf += df;
                         nr += dr;
@@ -800,11 +792,49 @@ mod tests {
         let w = WaveField::compute(&b);
         assert_eq!(w.hits[0][44], 0);
         assert_eq!(w.amp[0][44], 0.0);
-        assert!(w.latent[0][44] > 0.0);
+        assert_eq!(w.latent[0][44], 0.0);
         let mirrored = WaveField::compute(&b.mirrored());
         for s in 0..64 {
             assert!((w.amp[0][s] - mirrored.amp[1][s ^ 56]).abs() < 1e-6);
             assert!((w.latent[0][s] - mirrored.latent[1][s ^ 56]).abs() < 1e-6);
+        }
+    }
+
+    #[test]
+    fn latent_pressure_needs_a_battery_or_a_rear_target() {
+        // White rook e1, one blocker on e4, queen on e6. e5 is in between.
+        for (front, gap, target) in [
+            ('R', true, true),
+            ('Q', true, true),
+            ('B', false, false),
+            ('P', false, false),
+            ('p', false, false),
+            ('n', false, false),
+            ('b', false, true),
+            ('q', false, true),
+        ] {
+            let fen = format!("7k/8/4q3/8/4{front}3/8/8/K3R3 w - - 0 1");
+            let pos = Board::from_fen(&fen).unwrap();
+            for (board, colour, flip) in [(pos, 0, 0), (pos.mirrored(), 1, 56)] {
+                let w = WaveField::compute(&board);
+                assert_eq!(w.latent[colour][36 ^ flip] > 0.0, gap, "{fen}");
+                assert_eq!(w.latent[colour][44 ^ flip] > 0.0, target, "{fen}");
+            }
+        }
+    }
+
+    #[test]
+    fn diagonal_battery_requires_a_free_diagonal_front_piece() {
+        for (back_rank, front, battery) in
+            [("8", 'B', true), ("8", 'R', false), ("3r4", 'B', false)]
+        {
+            let fen = format!("{back_rank}/7k/5n2/8/3{front}4/8/8/B2K4 w - - 0 1");
+            let b = Board::from_fen(&fen).unwrap();
+            for (board, c, flip) in [(b, 0, 0), (b.mirrored(), 1, 56)] {
+                let w = WaveField::compute(&board);
+                assert_eq!(w.latent[c][45 ^ flip] > 0.0, battery);
+                assert_eq!(w.latent[c][54 ^ flip], 0.0);
+            }
         }
     }
 
@@ -901,6 +931,7 @@ mod tests {
                 let s = parse_square(square).unwrap() ^ flip;
                 assert_eq!(w.raw_hits[attacker][s], 0);
                 assert!(w.king_shadow[attacker][s] > 0.0);
+                assert_eq!(w.latent[attacker][s], 0.0);
             }
             assert_eq!(
                 w.king_shadow[attacker][parse_square("g5").unwrap() ^ flip],
