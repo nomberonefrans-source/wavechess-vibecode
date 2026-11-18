@@ -399,7 +399,7 @@ pub fn run() -> bool {
     );
     all_ok &= cfg_ok;
 
-    let cache = WaveCache::new(1);
+    let mut cache = WaveCache::new(1);
     cache.put(123456789, -77);
     cache.put(42, 31000);
     let mut cache_ok = cache.get(123456789) == Some(-77) && cache.get(42) == Some(31000);

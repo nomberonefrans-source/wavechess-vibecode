@@ -5,6 +5,7 @@ use crate::notation;
 use crate::search::*;
 use crate::settings::EngineConfig;
 use crate::wave;
+use std::collections::{HashSet, VecDeque};
 use std::sync::atomic::AtomicBool;
 use std::sync::Arc;
 use std::time::{SystemTime, UNIX_EPOCH};
@@ -38,9 +39,25 @@ pub struct Engine {
     plans: Vec<Vec<Move>>,
     session_seed: u64,
     game_number: u64,
+    previous_openings: VecDeque<HashSet<u64>>,
+    current_opening: HashSet<u64>,
     pub searcher: Searcher,
     pub predicted_hits: u32,
     pub predicted_total: u32,
+}
+
+fn forcing_opening(board: &Board, mv: Move) -> bool {
+    if board.sq[mv.to as usize] != 0 || mv.promo != 0 || mv.flag == FLAG_EP {
+        return true;
+    }
+    let mut next = board.make(mv);
+    if next.in_check() {
+        return true;
+    }
+    // Would passing allow an immediate mate?
+    next.side = -next.side;
+    next.ep = -1;
+    mating_step(&next).is_some()
 }
 
 impl Engine {
@@ -58,6 +75,8 @@ impl Engine {
                 .unwrap_or_default()
                 .as_nanos() as u64,
             game_number: 0,
+            previous_openings: VecDeque::new(),
+            current_opening: HashSet::new(),
             searcher: Searcher::new(&EngineConfig::default(), stop),
             predicted_hits: 0,
             predicted_total: 0,
@@ -65,6 +84,15 @@ impl Engine {
     }
 
     pub fn new_game(&mut self) {
+        self.current_opening
+            .retain(|hash| self.hashes.contains(hash));
+        if !self.current_opening.is_empty() {
+            if self.previous_openings.len() == 64 {
+                self.previous_openings.pop_front();
+            }
+            self.previous_openings
+                .push_back(std::mem::take(&mut self.current_opening));
+        }
         self.game_number = self.game_number.wrapping_add(1);
         self.set_board(Board::startpos());
         self.searcher.clear();
@@ -82,6 +110,7 @@ impl Engine {
     }
 
     pub fn set_board(&mut self, b: Board) {
+        self.current_opening.clear();
         self.board = b;
         self.boards.clear();
         self.hashes.clear();
@@ -116,7 +145,11 @@ impl Engine {
         self.plan = self.plans.first().cloned().unwrap_or_default();
         let by = self.board.side;
         self.boards.push(self.board);
+        let opening_move = by_engine && self.board.fullmove <= 8;
         self.board = self.board.make(mv);
+        if opening_move {
+            self.current_opening.insert(self.board.hash);
+        }
         self.hashes.push(self.board.hash);
         self.history.push(MoveRecord {
             mv,
@@ -162,7 +195,7 @@ impl Engine {
         };
         let variety = store_plan
             && self.config().opening_variety > 0
-            && self.board.fullmove <= 6
+            && self.board.fullmove <= 8
             && !self.board.in_check();
         let expanded = SearchLimits {
             max_depth: limits.max_depth,
@@ -173,7 +206,12 @@ impl Engine {
         let mut res = self
             .searcher
             .think(&self.board, &self.hashes, &expanded, hint, report);
-        if variety && res.depth > 0 && res.score.abs() < MATE_BOUND && !res.lines.is_empty() {
+        if variety
+            && res.depth > 0
+            && res.score.abs() <= 150
+            && !res.lines.is_empty()
+            && !forcing_opening(&self.board, res.best)
+        {
             let cfg = self.config();
             let seed = if cfg.random_seed == 0 {
                 self.session_seed
@@ -182,24 +220,60 @@ impl Engine {
             };
             let key = mix(seed ^ self.board.hash ^ mix(self.game_number));
             let peak = res.lines[0].score;
-            let candidates: Vec<usize> = res
-                .lines
-                .iter()
-                .enumerate()
-                .filter(|(_, l)| {
-                    l.score >= peak - cfg.opening_variety && l.score.abs() < MATE_BOUND
-                })
-                .map(|(i, _)| i)
-                .collect();
-            // Нормированные амплитуды только внутри узкого энергетического окна.
-            let tau = (cfg.opening_variety as f64 / 2.0).max(1.0);
-            let amplitudes: Vec<f64> = candidates
-                .iter()
-                .map(|&i| ((res.lines[i].score - peak) as f64 / tau).exp())
-                .collect();
+            let window = if self.board.fullmove <= 4 {
+                cfg.opening_variety
+            } else {
+                (3 * cfg.opening_variety + 4) / 5
+            };
+            let tau = (window as f64 / 2.0).max(1.0);
+            let profile = mix(seed ^ mix(self.game_number));
+            let mut weights = crate::params::Ps::load();
+            let tilt = |offset: u32| 0.75 + ((profile >> offset) & 255) as f32 / 510.0;
+            weights.k_control *= tilt(0);
+            weights.k_king *= tilt(8);
+            weights.k_mob *= tilt(16);
+            weights.relief *= tilt(24);
+            let mut candidates = Vec::new();
+            let mut amplitudes = Vec::new();
+            for (i, line) in res.lines.iter().enumerate() {
+                let mv = line.pv[0];
+                if line.score < peak - window
+                    || line.local_energy.abs() >= MATE_BOUND
+                    || forcing_opening(&self.board, mv)
+                {
+                    continue;
+                }
+                let next = self.board.make(mv);
+                let replies = next.legal_moves();
+                if replies.m[..replies.n]
+                    .iter()
+                    .any(|&reply| wave::exchange_capture(&next, reply) > 0.0)
+                {
+                    continue;
+                }
+                let repeats = self
+                    .previous_openings
+                    .iter()
+                    .filter(|game| game.contains(&next.hash))
+                    .count();
+                let penalty = if repeats == 0 {
+                    0.0
+                } else {
+                    25.0 - 15.0 / repeats as f64
+                };
+                let (_, field) = wave::analyze_with(&next, &weights);
+                let shift = (field.total - wave::analyze(&next).1.total) * self.board.side as f32;
+                candidates.push(i);
+                amplitudes.push(
+                    ((f64::from(line.score - peak) + f64::from(shift.clamp(-25.0, 25.0))
+                        - penalty)
+                        / tau)
+                        .exp(),
+                );
+            }
             let mut ticket =
                 ((key >> 11) as f64 / (1u64 << 53) as f64) * amplitudes.iter().sum::<f64>();
-            let mut selected = candidates[0];
+            let mut selected = 0;
             for (&i, a) in candidates.iter().zip(amplitudes) {
                 selected = i;
                 ticket -= a;
@@ -402,6 +476,7 @@ impl Engine {
             }
         }
         // До этой точки текущая партия не меняется даже при повреждённом файле.
+        self.current_opening.clear();
         self.board = next.board;
         self.boards = next.boards;
         self.hashes = next.hashes;

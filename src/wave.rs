@@ -42,6 +42,8 @@ pub struct WaveField {
     /// Связка: 0 — нет; 1 — по вертикали, 2 — по горизонтали, 3 — по диагонали «/», 4 — по диагонали «\».
     pub pin: [u8; 64],
     /// Удары без учёта связок (связанная фигура всё равно «бьёт» поле рядом с королём).
+    /// Additional sliding pressure exposed when the opposing king vacates its square.
+    king_shadow: [[f32; 64]; 2],
     pub raw_hits: [[u8; 64]; 2],
 }
 
@@ -163,6 +165,7 @@ impl WaveField {
             mobility: [0.0; 2],
             board: *b,
             pin: [0; 64],
+            king_shadow: [[0.0; 64]; 2],
             raw_hits: [[0; 64]; 2],
         };
         find_pins(b, &mut w.pin);
@@ -244,6 +247,19 @@ impl WaveField {
                                 if q.signum() != sg {
                                     w.mobility[c] += mw;
                                 }
+                            }
+                        }
+                        if direct && q == -sg * KING {
+                            let (mut x, mut y, mut distance) = (nf + df, nr + dr, d + 1);
+                            while inside(x, y) {
+                                let shadow = sq_of(x, y);
+                                w.king_shadow[c][shadow] += a * DAMP[distance.min(7)];
+                                if b.sq[shadow] != 0 {
+                                    break;
+                                }
+                                x += df;
+                                y += dr;
+                                distance += 1;
                             }
                         }
                         if q != 0 {
@@ -376,40 +392,45 @@ fn incident(b: &Board, to: usize, side: i8) -> Option<Transfer> {
     None
 }
 
-/// Последовательный локальный поток массы: сторона принимает захват, когда
-/// его ближайшая компенсация неотрицательна. Компенсация — масса цели минус
-/// масса источника, если есть ответ, плюс масса отвечающего при наличии своего
-/// следующего источника. Это локальное приближение: не оптимизация дерева,
-/// не обратная свёртка и не гарантия исхода сложной комбинации.
+/// Forward material transport. A costly source participates only if the
+/// projected balance across recapture horizons covers its exposed mass.
+/// Each horizon has equal weight; no player optimizes a continuation value.
 fn flow(
-    b: Board,
+    mut b: Board,
     to: usize,
     mut target: f32,
     mut side: i8,
     initiator: i8,
     mut balance: f32,
 ) -> f32 {
-    let mut next_wave = incident(&b, to, side);
-    // Каждый перенос убирает одну фигуру; даже некорректный плотный FEN ограничен 64 клетками.
-    for _ in 0..64 {
-        let Some(t) = next_wave else { break };
-        let reward = target + t.promotion;
-        let response = incident(&t.board, to, -side);
-        if let Some(answer) = response {
-            if t.mass > reward {
-                let refund = if incident(&answer.board, to, side).is_some() {
-                    answer.mass
-                } else {
-                    0.0
-                };
-                if reward - t.mass + refund < 0.0 {
-                    break;
-                }
+    let first_side = side;
+    let mut gains = [0.0; 64];
+    let mut count = 0;
+    while let Some(t) = incident(&b, to, side) {
+        gains[count] = target + t.promotion;
+        count += 1;
+        target = t.mass;
+        side = -side;
+        b = t.board;
+    }
+    side = first_side;
+    for i in 0..count {
+        if i + 1 < count && gains[i] < gains[i + 1] {
+            let mut projected = 0.0;
+            let mut total = 0.0;
+            for pair in gains[i..count].chunks(2) {
+                projected += pair[0] - pair.get(1).copied().unwrap_or(0.0);
+                total += projected;
+            }
+            if total < 0.0 {
+                break;
             }
         }
-        balance += if side == initiator { reward } else { -reward };
-        target = t.mass;
-        next_wave = response;
+        balance += if side == initiator {
+            gains[i]
+        } else {
+            -gains[i]
+        };
         side = -side;
     }
     balance.max(0.0)
@@ -514,7 +535,10 @@ fn king_region(b: &Board, w: &WaveField, k: usize, loser: usize) -> i32 {
                 continue;
             }
             let to = sq_of(nf, nr);
-            if seen[to] || b.sq[to].signum() == own || w.raw_hits[winner][to] > 0 {
+            if seen[to]
+                || b.sq[to].signum() == own
+                || (w.raw_hits[winner][to] > 0 || w.king_shadow[winner][to] > 0.0)
+            {
                 continue;
             }
             seen[to] = true;
@@ -583,8 +607,8 @@ pub fn analyze_with(b: &Board, ps: &Ps) -> (WaveField, Energy) {
                 continue;
             }
             let to = sq_of(nf, nr);
-            expo += sat(w.amp[en][to]);
-            if b.sq[to].signum() != own && w.raw_hits[en][to] == 0 {
+            expo += sat(w.amp[en][to] + w.king_shadow[en][to]);
+            if b.sq[to].signum() != own && w.raw_hits[en][to] == 0 && w.king_shadow[en][to] == 0.0 {
                 free += 1;
             }
         }
@@ -862,6 +886,23 @@ mod tests {
     }
 
     #[test]
+    fn king_shadow_stops_at_next_blocker_in_both_colours() {
+        let b = Board::from_fen("7k/8/8/r2K1P2/8/8/8/8 w - - 0 1").unwrap();
+        for (board, attacker, flip) in [(b, 1, 0), (b.mirrored(), 0, 56)] {
+            let w = WaveField::compute(&board);
+            for square in ["e5", "f5"] {
+                let s = parse_square(square).unwrap() ^ flip;
+                assert_eq!(w.raw_hits[attacker][s], 0);
+                assert!(w.king_shadow[attacker][s] > 0.0);
+            }
+            assert_eq!(
+                w.king_shadow[attacker][parse_square("g5").unwrap() ^ flip],
+                0.0
+            );
+        }
+    }
+
+    #[test]
     fn undefended_piece_has_full_mass_flux() {
         assert_eq!(threat("k7/8/8/8/4q3/8/8/4R1K1 w - - 0 1", 0, "e4"), 900.0);
     }
@@ -882,6 +923,14 @@ mod tests {
     fn pinned_defender_does_not_protect_pawn() {
         assert_eq!(
             threat("3k4/8/3p4/4p3/8/5N2/8/3R2K1 w - - 0 1", 0, "e5"),
+            100.0
+        );
+    }
+
+    #[test]
+    fn two_knights_against_a_bishop_queen_battery() {
+        assert_eq!(
+            threat("q6k/1b6/8/8/4p3/2N3N1/8/4R2K w - - 0 1", 0, "e4"),
             100.0
         );
     }

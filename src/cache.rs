@@ -7,11 +7,11 @@
 //! SeqCst; статистика и выбор места для вытеснения не участвуют в снимке.
 
 use crate::counters::Counters;
+use rayon::prelude::*;
 use std::mem::size_of;
 use std::sync::atomic::{AtomicU64, Ordering};
 
 const WAYS: usize = 4;
-const VALID_BIT: u64 = 1 << 32;
 const MAX_MB: usize = 2048;
 
 struct Entry {
@@ -67,6 +67,7 @@ impl Entry {
     }
 }
 
+#[repr(align(64))]
 struct Bucket {
     entries: [Entry; WAYS],
     next: AtomicU64,
@@ -83,24 +84,28 @@ impl Bucket {
 
 pub struct WaveCache {
     buckets: Vec<Bucket>,
-    mask: usize,
+    generation: u32,
     counters: Counters,
 }
 
 impl WaveCache {
     pub fn new(mb: usize) -> Self {
-        let target = mb.min(MAX_MB) * 1024 * 1024 / size_of::<Bucket>();
-        let count = if target == 0 {
-            0
+        let count = mb.min(MAX_MB) * (1024 * 1024 / size_of::<Bucket>());
+        let buckets = if mb >= 64 {
+            (0..count).into_par_iter().map(|_| Bucket::new()).collect()
         } else {
-            1usize << (usize::BITS - 1 - target.leading_zeros())
+            (0..count).map(|_| Bucket::new()).collect()
         };
-        let buckets = (0..count).map(|_| Bucket::new()).collect();
         Self {
             buckets,
-            mask: count.saturating_sub(1),
-            counters: Counters::new(),
+            generation: 1,
+            counters: Counters::new(rayon::current_num_threads()),
         }
+    }
+
+    fn bucket(&self, key: u64) -> &Bucket {
+        let index = (key as u128 * self.buckets.len() as u128) >> 64;
+        &self.buckets[index as usize]
     }
 
     pub fn get(&self, key: u64) -> Option<i32> {
@@ -108,9 +113,9 @@ impl WaveCache {
             return None;
         }
         self.counters.add(0);
-        for entry in &self.buckets[(key as usize) & self.mask].entries {
+        for entry in &self.bucket(key).entries {
             if let Some((stored_key, data)) = entry.snapshot() {
-                if stored_key == key && data & VALID_BIT != 0 {
+                if stored_key == key && data >> 32 == self.generation as u64 {
                     self.counters.add(1);
                     return Some(data as u32 as i32);
                 }
@@ -123,12 +128,12 @@ impl WaveCache {
         if !self.is_enabled() {
             return;
         }
-        let bucket = &self.buckets[(key as usize) & self.mask];
-        let data = VALID_BIT | value as u32 as u64;
+        let bucket = self.bucket(key);
+        let data = ((self.generation as u64) << 32) | value as u32 as u64;
         let mut empty = None;
         for (i, entry) in bucket.entries.iter().enumerate() {
             if let Some((stored_key, old_data)) = entry.snapshot() {
-                if old_data & VALID_BIT == 0 {
+                if old_data >> 32 != self.generation as u64 {
                     empty.get_or_insert(i);
                 } else if stored_key == key {
                     // При гонке допустим промах: значение можно вычислить повторно.
@@ -147,16 +152,14 @@ impl WaveCache {
     }
 
     /// Вызывать между расчётами, после присоединения рабочих потоков.
-    /// Версии сохраняют монотонность даже при очистке; обнуление версий
-    /// позволило бы читателю принять запись после очистки за старую.
-    pub fn clear(&self) {
-        for bucket in &self.buckets {
-            for entry in &bucket.entries {
-                while !entry.write(0, 0) {
-                    std::thread::yield_now();
-                }
+    pub fn clear(&mut self) {
+        if self.generation == u32::MAX {
+            for bucket in &mut self.buckets {
+                *bucket = Bucket::new();
             }
-            bucket.next.store(0, Ordering::Relaxed);
+            self.generation = 1;
+        } else {
+            self.generation += 1;
         }
         self.counters.clear();
     }
@@ -172,6 +175,10 @@ impl WaveCache {
     /// Выделенный массив, включая версии записей и указатели вытеснения.
     pub fn bytes(&self) -> usize {
         self.buckets.len() * size_of::<Bucket>()
+    }
+
+    pub fn resize_counters(&mut self, workers: usize) {
+        self.counters = Counters::new(workers);
     }
 
     pub fn stats(&self) -> (u64, u64) {
@@ -196,13 +203,13 @@ mod tests {
             let cache = WaveCache::new(mb);
             assert!(cache.is_enabled());
             assert!(cache.bytes() <= mb * 1024 * 1024);
-            assert!(cache.bytes() > mb * 1024 * 1024 / 2);
+            assert_eq!(cache.bytes(), mb * 1024 * 1024);
         }
     }
 
     #[test]
     fn full_keys_signed_scores_and_clear() {
-        let cache = WaveCache::new(1);
+        let mut cache = WaveCache::new(1);
         for (key, score) in [(0, 0), (u64::MAX, i32::MIN), (1, i32::MAX), (2, -30000)] {
             assert_eq!(cache.get(key), None);
             cache.put(key, score);
@@ -220,26 +227,35 @@ mod tests {
     }
 
     #[test]
+    fn generation_wrap_drops_old_entries() {
+        let mut cache = WaveCache::new(1);
+        cache.put(0, 17);
+        cache.generation = u32::MAX;
+        cache.put(u64::MAX, 23);
+        cache.clear();
+        assert_eq!(cache.get(0), None);
+        assert_eq!(cache.get(u64::MAX), None);
+    }
+
+    #[test]
     fn four_colliding_positions_coexist() {
         let cache = WaveCache::new(1);
-        let step = cache.buckets.len() as u64;
         for i in 0..WAYS {
-            cache.put(i as u64 * step, i as i32 - 19);
+            cache.put(i as u64, i as i32 - 19);
         }
         for i in 0..WAYS {
-            assert_eq!(cache.get(i as u64 * step), Some(i as i32 - 19));
+            assert_eq!(cache.get(i as u64), Some(i as i32 - 19));
         }
-        cache.put(WAYS as u64 * step, 91);
-        assert_eq!(cache.get(WAYS as u64 * step), Some(91));
+        cache.put(WAYS as u64, 91);
+        assert_eq!(cache.get(WAYS as u64), Some(91));
         assert_eq!(cache.get(0), None);
-        assert_eq!(cache.get(step), Some(-18));
+        assert_eq!(cache.get(1), Some(-18));
     }
 
     #[test]
     fn concurrent_collisions_never_return_another_positions_score() {
         let cache = Arc::new(WaveCache::new(1));
         let barrier = Arc::new(Barrier::new(8));
-        let step = cache.buckets.len() as u64;
         std::thread::scope(|scope| {
             for worker in 0..8u64 {
                 let cache = Arc::clone(&cache);
@@ -248,14 +264,14 @@ mod tests {
                     barrier.wait();
                     for iteration in 0..20000u64 {
                         let id = (iteration * 13 + worker * 7) % 64;
-                        let key = id * step;
+                        let key = id;
                         let value = id as i32 * 997 - 31000;
                         cache.put(key, value);
                         if let Some(actual) = cache.get(key) {
                             assert_eq!(actual, value, "mixed cache entry for key {key}");
                         }
                         let other = (id + 29) % 64;
-                        if let Some(actual) = cache.get(other * step) {
+                        if let Some(actual) = cache.get(other) {
                             assert_eq!(actual, other as i32 * 997 - 31000);
                         }
                     }

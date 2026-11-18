@@ -6,18 +6,22 @@ use std::sync::atomic::{AtomicU64, Ordering};
 #[repr(align(64))]
 struct Shard([AtomicU64; 2]);
 
-pub struct Counters([Shard; 64]);
+pub struct Counters(Vec<Shard>);
 
 impl Counters {
-    pub fn new() -> Self {
-        Self(std::array::from_fn(|_| {
-            Shard(std::array::from_fn(|_| AtomicU64::new(0)))
-        }))
+    pub fn new(workers: usize) -> Self {
+        Self(
+            (0..=workers)
+                .map(|_| Shard(std::array::from_fn(|_| AtomicU64::new(0))))
+                .collect(),
+        )
     }
 
     #[inline]
     pub fn add(&self, index: usize) {
-        let worker = rayon::current_thread_index().unwrap_or(0) % self.0.len();
+        let worker = rayon::current_thread_index()
+            .filter(|&i| i < self.0.len() - 1)
+            .unwrap_or(self.0.len() - 1);
         self.0[worker].0[index].fetch_add(1, Ordering::Relaxed);
     }
 
@@ -46,7 +50,7 @@ mod tests {
 
     #[test]
     fn parallel_totals_and_clear() {
-        let counters = Counters::new();
+        let counters = Counters::new(8);
         rayon::ThreadPoolBuilder::new()
             .num_threads(8)
             .build()

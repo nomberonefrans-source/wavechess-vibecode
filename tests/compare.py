@@ -65,11 +65,19 @@ def inspect(board, info, expected, safety):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--engine", action="append", required=True, help="LABEL=/absolute/path/to/executable")
+    parser.add_argument("--epd", type=Path, help="Additional tactical positions with EPD bm moves")
     parser.add_argument("--depth", type=int, default=5)
     parser.add_argument("--movetime-ms", type=int, default=250)
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
     results = {"depth": args.depth, "movetime_ms": args.movetime_ms, "threads": 1, "cache_mb": 16, "engines": {}}
+    cases = list(CASES)
+    if args.epd:
+        for index, line in enumerate(args.epd.read_text().splitlines(), 1):
+            if line.strip():
+                board, ops = chess.Board.from_epd(line)
+                cases.append((ops.get("id", f"EPD-{index}"), board.fen(),
+                              {move.uci() for move in ops["bm"]}, False))
     for entry in args.engine:
         label, executable = entry.split("=", 1)
         print(label, flush=True)
@@ -78,7 +86,7 @@ def main():
         rows = []
         try:
             for mode in ("fixed_depth", "equal_time"):
-                for name, fen, expected, safety in CASES:
+                for name, fen, expected, safety in cases:
                     board = chess.Board(fen)
                     assert board.is_valid(), (name, board.status())
                     engine.configure({"Clear Hash": None})

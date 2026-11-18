@@ -1,8 +1,7 @@
 //! Волновые траектории: прямое распространение локальной энергии без обратного
 //! сворачивания дерева. Несколько первых ответов образуют суперпозицию; следующие
 //! фазы следуют градиенту поля. Неопределённость ослабляет дальний прогноз.
-//! Мат достоверен только в текущей позиции или после одного легального хода.
-//! Мат в предсказанной траектории остаётся прогнозом, а не доказательством.
+//! Для полного бонуса матовая траектория проходит проверку фиксированного плана.
 
 use crate::board::*;
 pub use crate::cache::WaveCache;
@@ -12,7 +11,7 @@ use crate::params::Ps;
 use crate::settings::EngineConfig;
 use crate::wave;
 use rayon::prelude::*;
-use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
 use std::sync::Arc;
 use std::time::Instant;
 
@@ -129,7 +128,7 @@ fn has_legal(b: &Board) -> bool {
 }
 
 /// Только один реальный ход: используется для полного показа матовой фазы.
-fn mating_step(b: &Board) -> Option<Move> {
+pub(crate) fn mating_step(b: &Board) -> Option<Move> {
     let legal = b.legal_moves();
     legal.m[..legal.n].iter().copied().find(|&mv| {
         let next = b.make(mv);
@@ -175,6 +174,7 @@ struct Chain {
     grp: usize,
     w: f64,
     confidence: f32,
+    confirmed: bool,
     active: bool,
 }
 
@@ -191,21 +191,26 @@ pub struct Searcher {
     pub node_limit: u64, // 0 — без ограничения по числу осевших позиций
     report: Report,
     pub report_variants: usize,
+    budget_nodes: AtomicU64,
+    root: Board,
     parameter_revision: u64,
 }
 
 impl Searcher {
     pub fn new(cfg: &EngineConfig, stop: Arc<AtomicBool>) -> Searcher {
+        let pool = Arc::new(
+            rayon::ThreadPoolBuilder::new()
+                .num_threads(cfg.threads.max(1))
+                .build()
+                .expect("wave workers"),
+        );
         Searcher {
-            pool: Arc::new(
-                rayon::ThreadPoolBuilder::new()
-                    .num_threads(cfg.threads.max(1))
-                    .build()
-                    .expect("wave workers"),
-            ),
-            cache: WaveCache::new(cfg.cache_mb),
+            cache: pool.install(|| WaveCache::new(cfg.cache_mb)),
+            pool,
             cfg: *cfg,
-            counter: Counters::new(),
+            counter: Counters::new(cfg.threads),
+            budget_nodes: AtomicU64::new(0),
+            root: Board::startpos(),
             start: Instant::now(),
             time_limit_ms: 0,
             stop,
@@ -224,6 +229,8 @@ impl Searcher {
     /// и очищается при смене веса угрозы (старые значения стали бы неверными).
     pub fn apply_config(&mut self, cfg: &EngineConfig) {
         if cfg.threads != self.cfg.threads {
+            self.counter = Counters::new(cfg.threads);
+            self.cache.resize_counters(cfg.threads);
             self.pool = Arc::new(
                 rayon::ThreadPoolBuilder::new()
                     .num_threads(cfg.threads.max(1))
@@ -235,7 +242,7 @@ impl Searcher {
         let stale = cfg.threat_pct != self.cfg.threat_pct;
         self.cfg = *cfg;
         if resize {
-            self.cache = WaveCache::new(cfg.cache_mb);
+            self.cache = self.pool.install(|| WaveCache::new(cfg.cache_mb));
         } else if stale {
             self.cache.clear();
         }
@@ -269,7 +276,7 @@ impl Searcher {
         if self.stop.load(Ordering::Relaxed) {
             return true;
         }
-        if self.node_limit > 0 && self.counter.values().0 >= self.node_limit {
+        if self.node_limit > 0 && self.budget_nodes.load(Ordering::Relaxed) >= self.node_limit {
             return true;
         }
         if self.time_limit_ms > 0 {
@@ -283,6 +290,9 @@ impl Searcher {
 
     /// Осевшая волна позиции (через кэш).
     fn settle(&self, b: &Board) -> i32 {
+        if self.node_limit > 0 {
+            self.budget_nodes.fetch_add(1, Ordering::Relaxed);
+        }
         self.counter.add(0);
         if let Some(v) = self.cache.get(b.hash) {
             return v;
@@ -372,7 +382,46 @@ impl Searcher {
         })
     }
 
-    fn apply_pick(&self, c: &Chain, cand: &Cand, certainty: f32) -> Chain {
+    /// Replay one fixed attacking script against every legal defence.
+    /// A missing move, draw, interruption or exhausted work budget invalidates the certificate.
+    fn confirms(
+        &self,
+        b: &Board,
+        script: &[Move],
+        attacker: i8,
+        history: &mut Vec<u64>,
+        fuel: &mut usize,
+    ) -> bool {
+        if *fuel == 0 || self.stop_now() {
+            return false;
+        }
+        *fuel -= 1;
+        let legal = b.legal_moves();
+        if legal.n == 0 {
+            return b.side != attacker && b.in_check();
+        }
+        if script.is_empty()
+            || b.halfmove >= 100
+            || b.insufficient()
+            || history.iter().filter(|&&h| h == b.hash).count() >= 2
+        {
+            return false;
+        }
+        history.push(b.hash);
+        let moves = &legal.m[..legal.n];
+        let ok = if b.side == attacker {
+            moves.contains(&script[0])
+                && self.confirms(&b.make(script[0]), &script[1..], attacker, history, fuel)
+        } else {
+            moves
+                .iter()
+                .all(|&m| self.confirms(&b.make(m), &script[1..], attacker, history, fuel))
+        };
+        history.pop();
+        ok
+    }
+
+    fn apply_pick(&self, c: &Chain, cand: &Cand, certainty: f32, game: &[u64]) -> Chain {
         let mut n = c.clone();
         let ply = c.moves.len() + 1;
         let sign = if ply % 2 == 1 { 1 } else { -1 };
@@ -401,6 +450,17 @@ impl Searcher {
         } else {
             n.vals.push(sign * cand.val);
             n.phase_confidence.push(n.confidence);
+        }
+        if let Some(End::Mate { sign, ply }) = n.done {
+            if ply <= 9 && n.moves.len() == ply {
+                n.confirmed = self.confirms(
+                    &self.root.make(n.mv),
+                    &n.moves[1..],
+                    self.root.side * sign as i8,
+                    &mut game.to_vec(),
+                    &mut 256,
+                );
+            }
         }
         n.active = n.done.is_none();
         n
@@ -434,7 +494,7 @@ impl Searcher {
         let mut cs: Vec<Cand> = scored.into_iter().flatten().collect();
         cs.sort_by(|a, b| b.val.cmp(&a.val));
         let best = cs.first()?;
-        Some(self.apply_pick(c, best, Self::concentration(&cs, tau)))
+        Some(self.apply_pick(c, best, Self::concentration(&cs, tau), game))
     }
 
     /// Первые ответы — ограниченная суперпозиция локальных волн. Амплитуды
@@ -460,7 +520,7 @@ impl Searcher {
             if !out.is_empty() && amplitude < 0.02 {
                 break;
             }
-            let mut n = self.apply_pick(c, cand, certainty);
+            let mut n = self.apply_pick(c, cand, certainty, game);
             n.w = (c.w * amplitude as f64).max(f64::MIN_POSITIVE);
             out.push(n);
         }
@@ -566,7 +626,8 @@ impl Searcher {
                 Ps::load().mate_bonus * c.confidence / (1.0 + 0.15 * (ply as f32).powf(1.3));
             // Терминальное событие несёт больше информации, чем колебание
             // статического поля. Нулевая настройка по-прежнему выключает прогноз.
-            score += weight.sqrt() * sign as f32 * bonus;
+            score +=
+                weight.sqrt() * sign as f32 * if c.confirmed { bonus } else { bonus.min(75.0) };
         }
         if c.mv == hint {
             score += PLAN_BONUS as f32;
@@ -727,6 +788,8 @@ impl Searcher {
         }
         self.start = Instant::now();
         self.time_limit_ms = limits.time_ms;
+        self.root = *root;
+        self.budget_nodes.store(0, Ordering::Relaxed);
         self.counter.clear();
         self.report = report;
         let cache_before = self.cache.stats();
@@ -824,6 +887,7 @@ impl Searcher {
                 grp: chains.len(),
                 w: 1.0,
                 confidence: 1.0,
+                confirmed: false,
                 active: done.is_none(),
             });
         }
@@ -996,6 +1060,7 @@ mod tests {
             grp,
             w,
             confidence: 1.0,
+            confirmed: false,
             active: true,
         }
     }
@@ -1143,6 +1208,7 @@ mod tests {
             grp: 0,
             w: 1.0,
             confidence: 0.3,
+            confirmed: false,
             active: false,
         };
         let cfg = EngineConfig {
@@ -1155,6 +1221,28 @@ mod tests {
         let mut terminal = c.clone();
         terminal.moves.truncate(1);
         assert_eq!(s.chain_score(&terminal, Move::NONE), 0);
+    }
+
+    #[test]
+    fn fixed_mate_script_must_survive_every_defence() {
+        let cfg = EngineConfig {
+            threads: 1,
+            cache_mb: 0,
+            ..EngineConfig::default()
+        };
+        let s = Searcher::new(&cfg, Arc::new(AtomicBool::new(false)));
+        for (fen, reply, attack, valid) in [
+            ("8/8/6Q1/8/8/6K1/8/7k b - - 0 1", "h1g1", "g6b1", true),
+            ("8/8/8/8/2K5/k7/8/2Q5 b - - 0 1", "a3a4", "c1a1", false),
+        ] {
+            let b = Board::from_fen(fen).unwrap();
+            let m = crate::notation::parse_move(&b, reply).unwrap();
+            let n = crate::notation::parse_move(&b.make(m), attack).unwrap();
+            assert!(!has_legal(&b.make(m).make(n)));
+            assert_eq!(s.confirms(&b, &[m, n], 1, &mut vec![], &mut 256), valid);
+            assert!(!s.confirms(&b, &[m, n], 1, &mut vec![b.hash; 2], &mut 256));
+            assert!(!s.confirms(&b, &[m, n], 1, &mut vec![], &mut 1));
+        }
     }
 
     #[test]

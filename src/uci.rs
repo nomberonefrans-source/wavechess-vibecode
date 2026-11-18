@@ -104,7 +104,7 @@ fn print_options() {
     ));
     out("option name Clear Hash type button");
     out("option name Wave Width type spin default 8 min 1 max 32");
-    out("option name Opening Variety type spin default 20 min 0 max 100");
+    out("option name Opening Variety type spin default 50 min 0 max 100");
     out("option name Random Seed type spin default 0 min 0 max 2147483647");
     out(&format!(
         "option name MultiPV type spin default 1 min 1 max {}",
@@ -208,9 +208,7 @@ fn apply_option(name: &str, value: &str, st: &mut Settings, eng: &mut Engine) {
         n if n.starts_with("w:") => {
             // подбор весов волновой модели (см. params.rs); кэш осевших позиций при этом устаревает
             if let Ok(v) = value.trim().parse::<f32>() {
-                if crate::params::set(&n[2..], v) {
-                    eng.searcher.clear();
-                }
+                crate::params::set(&n[2..], v);
             }
         }
         // неизвестные опции игнорируются молча
@@ -539,7 +537,7 @@ pub fn run() {
                 if cancelled.load(Ordering::SeqCst) >= search_id {
                     stop.store(true, Ordering::SeqCst);
                 }
-                let res = eng.think(&limits, Report::Uci, !st.analyse);
+                let res = eng.think(&limits, Report::Uci, !st.analyse && !infinite);
 
                 // По протоколу `go infinite` отвечает bestmove только после `stop`
                 if infinite {

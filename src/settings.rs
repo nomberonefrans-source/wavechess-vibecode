@@ -50,7 +50,7 @@ impl Default for EngineConfig {
             threat_pct: THREAT_DEFAULT,
             chain_pct: CHAIN_DEFAULT,
             wave_width: 8,
-            opening_variety: 20,
+            opening_variety: 50,
             random_seed: 0,
         };
         c.set_threads(available_cores() as i64);
