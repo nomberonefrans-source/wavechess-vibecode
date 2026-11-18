@@ -7,6 +7,7 @@
 const MIX: [f32; 6] = [0.25, 0.125, 0.0625, 0.25, 0.125, 0.0625];
 
 /// Unnormalised Walsh–Hadamard transform: H(H(x)) = 64 x.
+#[cfg(test)]
 pub fn fwht(values: &mut [f32; 64]) {
     let mut half = 1;
     while half < 64 {
@@ -25,17 +26,19 @@ pub fn fwht(values: &mut [f32; 64]) {
 /// H^-1 diag(lambda) H x, equivalent to convolution by a positive,
 /// unit-sum XOR kernel. Thus bounded input remains bounded after diffusion.
 pub fn diffuse(mut field: [f32; 64]) -> [f32; 64] {
-    fwht(&mut field);
-    for (mode, value) in field.iter_mut().enumerate() {
-        let mut multiplier = 1.0 / 64.0;
-        for (bit, mix) in MIX.iter().enumerate() {
-            if mode & (1 << bit) != 0 {
-                multiplier *= 1.0 - 2.0 * mix;
+    // Each two-point mixing matrix has Walsh eigenvalues 1 and 1-2p.
+    // Applying the six factors directly avoids both full transforms.
+    for (bit, &mix) in MIX.iter().enumerate() {
+        let stride = 1 << bit;
+        for block in field.chunks_exact_mut(2 * stride) {
+            let (lo, hi) = block.split_at_mut(stride);
+            for (a, b) in lo.iter_mut().zip(hi) {
+                let flux = mix * (*b - *a);
+                *a += flux;
+                *b -= flux;
             }
         }
-        *value *= multiplier;
     }
-    fwht(&mut field);
     field
 }
 

@@ -284,8 +284,8 @@ pub fn run() {
                     }
                 }
                 "wave" | "волна" | "eval" | "оценка" => {
-                    println!("{}", wave::wave_map(&eng.board));
-                    let (_, e) = wave::analyze(&eng.board);
+                    let (field, e) = wave::analyze(&eng.board);
+                    println!("{}", wave::wave_map(&field));
                     println!("Энергия поля (в пешках, с точки зрения белых):");
                     println!("{}", e.describe());
                 }

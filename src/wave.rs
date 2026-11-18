@@ -42,6 +42,8 @@ pub struct WaveField {
     /// Связка: 0 — нет; 1 — по вертикали, 2 — по горизонтали, 3 — по диагонали «/», 4 — по диагонали «\».
     pub pin: [u8; 64],
     /// Удары без учёта связок (связанная фигура всё равно «бьёт» поле рядом с королём).
+    /// Additional sliding pressure exposed when the opposing king vacates its square.
+    king_shadow: [[f32; 64]; 2],
     pub raw_hits: [[u8; 64]; 2],
 }
 
@@ -150,6 +152,7 @@ fn find_pins(b: &Board, pin: &mut [u8; 64]) {
 }
 
 impl WaveField {
+    #[cfg(test)]
     pub fn compute(b: &Board) -> WaveField {
         Self::compute_with(b, &Ps::load())
     }
@@ -163,6 +166,7 @@ impl WaveField {
             mobility: [0.0; 2],
             board: *b,
             pin: [0; 64],
+            king_shadow: [[0.0; 64]; 2],
             raw_hits: [[0; 64]; 2],
         };
         find_pins(b, &mut w.pin);
@@ -244,6 +248,19 @@ impl WaveField {
                                 if q.signum() != sg {
                                     w.mobility[c] += mw;
                                 }
+                            }
+                        }
+                        if direct && q == -sg * KING {
+                            let (mut x, mut y, mut distance) = (nf + df, nr + dr, d + 1);
+                            while inside(x, y) {
+                                let shadow = sq_of(x, y);
+                                w.king_shadow[c][shadow] += a * DAMP[distance.min(7)];
+                                if b.sq[shadow] != 0 {
+                                    break;
+                                }
+                                x += df;
+                                y += dr;
+                                distance += 1;
                             }
                         }
                         if q != 0 {
@@ -538,7 +555,10 @@ fn king_region(b: &Board, w: &WaveField, k: usize, loser: usize) -> i32 {
                 continue;
             }
             let to = sq_of(nf, nr);
-            if seen[to] || b.sq[to].signum() == own || w.raw_hits[winner][to] > 0 {
+            if seen[to]
+                || b.sq[to].signum() == own
+                || (w.raw_hits[winner][to] > 0 || w.king_shadow[winner][to] > 0.0)
+            {
                 continue;
             }
             seen[to] = true;
@@ -575,6 +595,7 @@ pub fn analyze_with(b: &Board, ps: &Ps) -> (WaveField, Energy) {
     let wk = b.ksq[0] as usize;
     let bk = b.ksq[1] as usize;
 
+    let mut direct_control = [0.0; 64];
     // 1) масса + контроль пространства + давление вокруг королей
     for s in 0..64usize {
         e.mass += w.charge[s];
@@ -586,6 +607,7 @@ pub fn analyze_with(b: &Board, ps: &Ps) -> (WaveField, Energy) {
         // вид центру притягивать короля за счёт собственных активных фигур.
         let white = sat(w.amp[0][s]);
         let black = sat(w.amp[1][s]);
+        direct_control[s] = white - black;
         e.king += ps.k_king
             * (white / (1.0 + black) * t.zone[bk][s] - black / (1.0 + white) * t.zone[wk][s]);
     }
@@ -607,8 +629,8 @@ pub fn analyze_with(b: &Board, ps: &Ps) -> (WaveField, Energy) {
                 continue;
             }
             let to = sq_of(nf, nr);
-            expo += sat(w.amp[en][to]);
-            if b.sq[to].signum() != own && w.raw_hits[en][to] == 0 {
+            expo += sat(w.amp[en][to] + w.king_shadow[en][to]);
+            if b.sq[to].signum() != own && w.raw_hits[en][to] == 0 && w.king_shadow[en][to] == 0.0 {
                 free += 1;
             }
         }
@@ -680,7 +702,7 @@ pub fn analyze_with(b: &Board, ps: &Ps) -> (WaveField, Energy) {
 
     // 4) эндшпиль: сильнейший гонит короля слабейшего к краю и подтягивает своего
     let lead = mat[0] - mat[1];
-    if lead.abs() >= 250.0 {
+    if lead.abs() > 250.0 && mat[0].min(mat[1]) < 700.0 {
         let sign = if lead > 0.0 { 1.0f32 } else { -1.0f32 };
         let (wi, li) = if lead > 0.0 {
             (0usize, 1usize)
@@ -706,8 +728,7 @@ pub fn analyze_with(b: &Board, ps: &Ps) -> (WaveField, Energy) {
 
     e.mobility = ps.k_mob * (w.mobility[0] - w.mobility[1]);
     if ps.spectral > 0.0 {
-        let control = std::array::from_fn(|s| sat(w.amp[0][s]) - sat(w.amp[1][s]));
-        e.spectral = ps.spectral * crate::spectral::support(control, &w.charge);
+        e.spectral = ps.spectral * crate::spectral::support(direct_control, &w.charge);
     }
     e.total = e.mass + e.control + e.king + e.placement + e.structure + e.mobility + e.spectral;
     (w, e)
@@ -763,22 +784,32 @@ impl Energy {
     }
 }
 
-/// Карта поля: на каждой клетке фигура и чистое давление волн (белые минус чёрные, x10).
-pub fn wave_map(b: &Board) -> String {
-    let w = WaveField::compute(b);
+/// Две карты поля: прямое давление и скрытое давление за заслонами.
+pub fn wave_map(w: &WaveField) -> String {
+    let b = &w.board;
     let mut s = String::new();
-    s.push_str("      a     b     c     d     e     f     g     h\n");
-    for r in (0..8usize).rev() {
-        s.push_str(&format!(" {} ", r + 1));
-        for f in 0..8usize {
-            let sq = r * 8 + f;
-            let net = ((w.amp[0][sq] - w.amp[1][sq]) * 10.0).round() as i32;
-            let net = net.max(-99).min(99);
-            s.push_str(&format!(" {}{:+03} ", piece_char(b.sq[sq]), net));
+    for (label, field) in [
+        ("Прямое давление", &w.amp),
+        ("Рентген за заслоном", &w.latent),
+    ] {
+        s.push_str(label);
+        s.push_str(
+            " (белые минус чёрные, ×10)\n      a     b     c     d     e     f     g     h\n",
+        );
+        for r in (0..8usize).rev() {
+            s.push_str(&format!(" {} ", r + 1));
+            for f in 0..8usize {
+                let sq = r * 8 + f;
+                let net = ((field[0][sq] - field[1][sq]) * 10.0).round() as i32;
+                s.push_str(&format!(
+                    " {}{:+03} ",
+                    piece_char(b.sq[sq]),
+                    net.clamp(-99, 99)
+                ));
+            }
+            s.push('\n');
         }
-        s.push('\n');
     }
-    s.push_str("  (+ давит белая волна, - давит чёрная; число = разность амплитуд x10)\n");
     s
 }
 
@@ -883,6 +914,23 @@ mod tests {
         };
         assert_eq!(result, exchange_capture(&mirrored, reflected));
         result
+    }
+
+    #[test]
+    fn king_shadow_stops_at_next_blocker_in_both_colours() {
+        let b = Board::from_fen("7k/8/8/r2K1P2/8/8/8/8 w - - 0 1").unwrap();
+        for (board, attacker, flip) in [(b, 1, 0), (b.mirrored(), 0, 56)] {
+            let w = WaveField::compute(&board);
+            for square in ["e5", "f5"] {
+                let s = parse_square(square).unwrap() ^ flip;
+                assert_eq!(w.raw_hits[attacker][s], 0);
+                assert!(w.king_shadow[attacker][s] > 0.0);
+            }
+            assert_eq!(
+                w.king_shadow[attacker][parse_square("g5").unwrap() ^ flip],
+                0.0
+            );
+        }
     }
 
     #[test]

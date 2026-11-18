@@ -152,6 +152,12 @@ fn check_pressure(b: &Board, replies: &MoveList) -> f32 {
 /// Как «осела» позиция `b` с точки зрения стороны, только что сделавшей ход (сотые пешки).
 /// Зависит только от позиции и веса угрозы, поэтому её безопасно хранить в кэше по хэшу.
 pub fn settle_value(b: &Board, threat_pct: i32) -> i32 {
+    let mut pseudo = MoveList::new();
+    b.gen_pseudo(&mut pseudo, false);
+    settle_with_moves(b, threat_pct, &pseudo)
+}
+
+fn settle_with_moves(b: &Board, threat_pct: i32, pseudo: &MoveList) -> i32 {
     let ps = Ps::load();
     let (w, e) = wave::analyze_with(b, &ps);
     let mover = -b.side;
@@ -159,15 +165,13 @@ pub fn settle_value(b: &Board, threat_pct: i32) -> i32 {
     let oi = 1 - mi;
     let base = e.total * mover as f32;
     let mut loss = 0.0f32;
-    let mut legal = MoveList::new();
-    b.gen_pseudo(&mut legal, false);
     // Только осуществимые захваты: при шахе возможны и взятие шахующей фигуры,
     // и перекрытие луча с захватом другой фигуры. Псевдоударов недостаточно.
     let own_king = b.ksq[oi] as usize;
     let enemy_king = b.ksq[mi] as usize;
     let in_check = w.raw_hits[mi][own_king] != 0;
     let enemy_in_check = w.raw_hits[oi][enemy_king] != 0;
-    for &mv in &legal.m[..legal.n] {
+    for &mv in &pseudo.m[..pseudo.n] {
         let contact = b.sq[mv.to as usize] != 0 || mv.flag == FLAG_EP || mv.promo != 0;
         if !contact && !enemy_in_check && !could_give_quiet_check(b, mv, enemy_king) {
             continue;
@@ -220,7 +224,7 @@ pub fn settle_value(b: &Board, threat_pct: i32) -> i32 {
         ps.counter2 * g2
     };
     let pressure = if in_check && threat_pct > 0 {
-        check_pressure(b, &legal)
+        check_pressure(b, pseudo)
     } else {
         ps.counter1 * g1 + second
     };
@@ -235,6 +239,10 @@ pub fn settle_value(b: &Board, threat_pct: i32) -> i32 {
 fn has_legal(b: &Board) -> bool {
     let mut list = MoveList::new();
     b.gen_pseudo(&mut list, false);
+    has_legal_from(b, &list)
+}
+
+fn has_legal_from(b: &Board, list: &MoveList) -> bool {
     let ui = b.side_idx();
     for i in 0..list.n {
         let nb = b.make(list.m[i]);
@@ -406,7 +414,9 @@ impl Searcher {
         }
         // Only board-local facts belong in the hash. Halfmove clocks and real
         // repetition history are checked by score_moves even on cache hits.
-        let v = if !has_legal(b) {
+        let mut pseudo = MoveList::new();
+        b.gen_pseudo(&mut pseudo, false);
+        let v = if !has_legal_from(b, &pseudo) {
             if b.in_check() {
                 MATE
             } else {
@@ -415,7 +425,7 @@ impl Searcher {
         } else if b.insufficient() {
             LOCAL_DRAW
         } else {
-            settle_value(b, self.cfg.threat_pct)
+            settle_with_moves(b, self.cfg.threat_pct, &pseudo)
         };
         self.cache.put(b.hash, v);
         v
@@ -825,8 +835,8 @@ impl Searcher {
             let rank = ranked
                 .iter()
                 .position(|l| l.pv[0] == c.mv)
-                .unwrap_or(usize::MAX);
-            if rank >= keep && self.chain_score(c, hint) < peak - 250 {
+                .expect("root line");
+            if rank >= keep && (rank >= 2 * keep || ranked[rank].score < peak - 60) {
                 c.active = false;
             }
         }
@@ -1010,6 +1020,13 @@ impl Searcher {
                 }
             }
         }
+        // Begin each budget-limited pass with the most energetic root front.
+        let peak = chains.iter().map(|c| c.s0).max().unwrap();
+        chains.sort_by_key(|c| std::cmp::Reverse(c.s0));
+        let mut priority = vec![0; legal.n];
+        for (rank, c) in chains.iter().enumerate() {
+            priority[c.grp] = rank;
+        }
         let mut depth = 1;
         let mut best_lines = self.make_lines(&chains, nvar, depth, hint);
         if self.report == Report::Uci {
@@ -1037,7 +1054,13 @@ impl Searcher {
             let particles = (ps.particles as usize).clamp(1, 64);
             if depth % 2 == 1 && rk > 1 && (depth == 1 || particles > rk) {
                 let br: Vec<Option<Vec<Chain>>> = par_map(chains.len(), threads, |i| {
-                    self.branch(&chains[i], &game, rk, tau)
+                    let c = &chains[i];
+                    // Amplitude falls with the root energy gap and the mass
+                    // already assigned to this trajectory. Keep one carrier
+                    // even for a low-amplitude front.
+                    let amp = ((c.s0 - peak) as f64 / (2.0 * tau as f64)).exp() * c.w.sqrt();
+                    let width = 1 + ((rk - 1) as f64 * amp).round() as usize;
+                    self.branch(c, &game, width.min(rk), tau)
                 });
                 let complete = br.iter().all(|x| x.is_some());
                 // Завершённые ответы одного корня публикуются вместе.
@@ -1060,6 +1083,7 @@ impl Searcher {
                     })
                     .collect();
                 chains = Self::compress(chains, particles.max(rk));
+                chains.sort_by_key(|c| priority[c.grp]);
                 if !complete {
                     best_lines = self.make_lines(&chains, nvar, depth + 1, hint);
                     break;
