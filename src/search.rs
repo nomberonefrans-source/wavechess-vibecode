@@ -64,6 +64,32 @@ pub const MATED_NEXT: i32 = -(MATE - 2);
 // Position-local draw marker, distinct from an equal but live position.
 const LOCAL_DRAW: i32 = 31000;
 
+/// Conservative geometry filter for a quiet move on a board where the
+/// opponent is not already in check. Blockers are deliberately ignored.
+fn could_give_quiet_check(b: &Board, mv: Move, king: usize) -> bool {
+    if mv.flag == FLAG_CASTLE_K || mv.flag == FLAG_CASTLE_Q {
+        return true; // the rook moves too
+    }
+    let from = mv.from as usize;
+    let kf = file_of(king);
+    let kr = rank_of(king);
+    let xf = (file_of(from) - kf).abs();
+    let xr = (rank_of(from) - kr).abs();
+    if xf == 0 || xr == 0 || xf == xr {
+        return true; // vacating a ray might uncover another piece
+    }
+    let df = (file_of(mv.to as usize) - kf).abs();
+    let dr = kr - rank_of(mv.to as usize);
+    match b.sq[from].abs() {
+        PAWN => df == 1 && dr == b.side,
+        KNIGHT => df * dr.abs() == 2,
+        BISHOP => df == dr.abs(),
+        ROOK => df == 0 || dr == 0,
+        QUEEN => df == 0 || dr == 0 || df == dr.abs(),
+        _ => df <= 1 && dr.abs() <= 1,
+    }
+}
+
 /// Как «осела» позиция `b` с точки зрения стороны, только что сделавшей ход (сотые пешки).
 /// Зависит только от позиции и веса угрозы, поэтому её безопасно хранить в кэше по хэшу.
 pub fn settle_value(b: &Board, threat_pct: i32) -> i32 {
@@ -78,16 +104,30 @@ pub fn settle_value(b: &Board, threat_pct: i32) -> i32 {
     b.gen_pseudo(&mut legal, false);
     // Только осуществимые захваты: при шахе возможны и взятие шахующей фигуры,
     // и перекрытие луча с захватом другой фигуры. Псевдоударов недостаточно.
-    for &mv in legal.m[..legal.n].iter() {
+    let own_king = b.ksq[oi] as usize;
+    let enemy_king = b.ksq[mi] as usize;
+    let in_check = w.raw_hits[mi][own_king] != 0;
+    let enemy_in_check = w.raw_hits[oi][enemy_king] != 0;
+    for &mv in &legal.m[..legal.n] {
+        let contact = b.sq[mv.to as usize] != 0 || mv.flag == FLAG_EP || mv.promo != 0;
+        if !contact && !enemy_in_check && !could_give_quiet_check(b, mv, enemy_king) {
+            continue;
+        }
         let nb = b.make(mv);
-        if nb.attacked(nb.ksq[b.side_idx()] as usize, -b.side) {
+        // Only these moves can leave our king attacked on the resulting board.
+        if (in_check
+            || mv.from as usize == own_king
+            || w.pin[mv.from as usize] != 0
+            || mv.flag == FLAG_EP)
+            && nb.attacked(nb.ksq[oi] as usize, -b.side)
+        {
             continue;
         }
         if nb.in_check() && !has_legal(&nb) {
             return MATED_NEXT;
         }
-        if b.sq[mv.to as usize] != 0 || mv.flag == FLAG_EP || mv.promo != 0 {
-            loss = loss.max(wave::exchange_capture(b, mv));
+        if contact {
+            loss = loss.max(wave::exchange_after_capture(b, mv, nb));
         }
     }
     let (mut g1, mut g2) = (0.0f32, 0.0f32);
@@ -1123,6 +1163,37 @@ mod tests {
             s.make_lines(&[particle(0, 1.0, 123)], 1, 1, Move::NONE)[0].score,
             123
         );
+    }
+
+    #[test]
+    fn quiet_check_filter_keeps_special_and_discovered_checks() {
+        for (fen, text) in [
+            ("5k2/8/8/8/8/8/8/4K2R w K - 0 1", "e1g1"),
+            ("4k3/8/8/8/4B3/8/8/K3R3 w - - 0 1", "e4d3"),
+            ("7k/8/8/6N1/8/8/8/K7 w - - 0 1", "g5f7"),
+            ("8/7k/8/6P1/8/8/8/K7 w - - 0 1", "g5g6"),
+        ] {
+            let original = Board::from_fen(fen).unwrap();
+            let mv = crate::notation::parse_move(&original, text).unwrap();
+            for (b, m) in [
+                (original, mv),
+                (
+                    original.mirrored(),
+                    Move {
+                        from: mv.from ^ 56,
+                        to: mv.to ^ 56,
+                        ..mv
+                    },
+                ),
+            ] {
+                assert!(b.make(m).in_check());
+                assert!(could_give_quiet_check(
+                    &b,
+                    m,
+                    b.ksq[1 - b.side_idx()] as usize
+                ));
+            }
+        }
     }
 
     #[test]

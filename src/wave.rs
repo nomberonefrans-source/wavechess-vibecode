@@ -452,6 +452,14 @@ pub fn exchange(w: &WaveField, att: usize, def: usize, s: usize, m: f32) -> f32 
 /// Учитывает снятие пешки при взятии на проходе и фактическую новую массу.
 /// Вызывающий передаёт только ход из Board::legal_moves().
 pub fn exchange_capture(b: &Board, mv: Move) -> f32 {
+    if b.sq[mv.to as usize] == 0 && mv.flag != FLAG_EP && mv.promo == 0 {
+        return 0.0;
+    }
+    exchange_after_capture(b, mv, b.make(mv))
+}
+
+/// The caller already constructed the legal child for this capture or promotion.
+pub(crate) fn exchange_after_capture(b: &Board, mv: Move, next: Board) -> f32 {
     let victim = if mv.flag == FLAG_EP {
         (mv.to as i16 - 8 * b.side as i16) as usize
     } else {
@@ -461,7 +469,6 @@ pub fn exchange_capture(b: &Board, mv: Move) -> f32 {
     if (p == 0 && mv.promo == 0) || p == KING {
         return 0.0;
     }
-    let next = b.make(mv);
     let placed = next.sq[mv.to as usize].abs();
     let target = if placed == KING {
         KING_ATTACK_MASS
