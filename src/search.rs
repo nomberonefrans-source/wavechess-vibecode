@@ -106,6 +106,49 @@ fn persistent_fork(b: &Board, targets: [usize; 2], floor: f32) -> bool {
         })
 }
 
+/// Follow the material exposed by a check. Each legal evasion contributes
+/// one observation. A safe evasion reduces the credibility of the forecast.
+fn check_pressure(b: &Board, replies: &MoveList) -> f32 {
+    let mut targets = [0usize; 64];
+    let mut count = 0;
+    for (square, &piece) in b.sq.iter().enumerate() {
+        if piece.signum() == b.side && (KNIGHT..=QUEEN).contains(&piece.abs()) {
+            targets[count] = square;
+            count += 1;
+        }
+    }
+    let mut observed = 0.0;
+    let mut escapes = 0;
+    let mut samples = 0;
+    for &mv in &replies.m[..replies.n] {
+        let after = b.make(mv);
+        if after.attacked(after.ksq[b.side_idx()] as usize, -b.side) {
+            continue;
+        }
+        // The evading piece can itself become exposed by an interposition.
+        let mut exposed = wave::capture_flow_on(&after, mv.to as usize);
+        for &square in &targets[..count] {
+            let piece = after.sq[square];
+            if piece.signum() == b.side
+                && square != mv.to as usize
+                && wave::MASS[(piece.abs() - 1) as usize] > exposed
+                && after.attacked(square, after.side)
+            {
+                exposed = exposed.max(wave::capture_flow_on(&after, square));
+            }
+        }
+        samples += 1;
+        observed += exposed;
+        if exposed < wave::MASS[0] {
+            escapes += 1;
+        }
+    }
+    if samples == 0 {
+        return 0.0;
+    }
+    observed / (samples as f32 * (1 + escapes) as f32)
+}
+
 /// Как «осела» позиция `b` с точки зрения стороны, только что сделавшей ход (сотые пешки).
 /// Зависит только от позиции и веса угрозы, поэтому её безопасно хранить в кэше по хэшу.
 pub fn settle_value(b: &Board, threat_pct: i32) -> i32 {
@@ -166,7 +209,7 @@ pub fn settle_value(b: &Board, threat_pct: i32) -> i32 {
     }
     // Reserve a pawn for the cost of the follow-up capture. Only raise
     // the fork credit if each legal reply still leaves that much local flow.
-    let second = if g2 >= wave::MASS[1] && threat_pct > 0 && ps.counter2 > 0.0 {
+    let second = if !in_check && g2 >= wave::MASS[1] && threat_pct > 0 && ps.counter2 > 0.0 {
         let floor = g2 - wave::MASS[0];
         if persistent_fork(b, targets, floor) {
             (ps.counter2 * g2).max(floor)
@@ -176,7 +219,12 @@ pub fn settle_value(b: &Board, threat_pct: i32) -> i32 {
     } else {
         ps.counter2 * g2
     };
-    let gain = (ps.counter1 * g1 + second) / (1.0 + loss / 100.0);
+    let pressure = if in_check && threat_pct > 0 {
+        check_pressure(b, &legal)
+    } else {
+        ps.counter1 * g1 + second
+    };
+    let gain = pressure / (1.0 + loss / 100.0);
     let tw = threat_pct.clamp(0, 300) as f32 / 100.0;
     (base - tw * loss + tw * gain)
         .round()
@@ -398,6 +446,48 @@ impl Searcher {
         None
     }
 
+    /// A checked side with a single legal evasion cannot choose another
+    /// trajectory. Transport the field to the end of that forced segment.
+    fn forced_field(
+        &self,
+        start: &Board,
+        initial: i32,
+        game: &[u64],
+        chain: &[u64],
+    ) -> Option<i32> {
+        let mut board = *start;
+        let mut traversed = Vec::new();
+        let mut energy = initial;
+        for _ in 0..6 {
+            if !board.in_check() {
+                break;
+            }
+            let escapes = board.legal_moves();
+            if escapes.n != 1 {
+                break;
+            }
+            if self.stop_now() {
+                return None;
+            }
+            if traversed.is_empty() {
+                traversed.extend_from_slice(chain);
+            }
+            traversed.push(board.hash);
+            board = board.make(escapes.m[0]);
+            let value = self.settle(&board);
+            let sign = if board.side == start.side { 1 } else { -1 };
+            if let Some(outcome) = self.rule_outcome(&board, value, game, &traversed) {
+                return Some(sign * outcome.clamp(-20000, 20000));
+            }
+            // Keep the mate-distance encoding reserved for the actual PV.
+            energy = sign * value.clamp(-20000, 20000);
+            if value.abs() >= MATE_BOUND {
+                break;
+            }
+        }
+        Some(energy)
+    }
+
     /// Внутри траектории незавершённый набор не используется. В корне можно
     /// вернуть лучший из полностью проверенных ходов при совсем малом лимите.
     fn score_moves(
@@ -423,7 +513,11 @@ impl Searcher {
                     term: true,
                 },
                 None => {
-                    let mut val = local;
+                    let mut val = if local.abs() < MATE_BOUND && nb.in_check() {
+                        self.forced_field(&nb, local, game, chain)?
+                    } else {
+                        local
+                    };
                     // Повторный визит уменьшает положительный поток энергии:
                     // движение по замкнутому контуру не приближает выигрыш.
                     // Это не объявление ничьей до третьего повторения.
@@ -1028,6 +1122,30 @@ impl Searcher {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn forced_check_uses_the_evasion_and_real_draw_history() {
+        let b = Board::from_fen("7k/8/5K2/8/7Q/8/8/8 b - - 0 1").unwrap();
+        let cfg = EngineConfig {
+            threads: 1,
+            cache_mb: 1,
+            ..EngineConfig::default()
+        };
+        let s = Searcher::new(&cfg, Arc::new(AtomicBool::new(false)));
+        for b in [b, b.mirrored()] {
+            let replies = b.legal_moves();
+            assert!(b.in_check());
+            assert_eq!(replies.n, 1);
+            let next = b.make(replies.m[0]);
+            let expected = -s.settle(&next).clamp(-20000, 20000);
+            assert!(expected > 0);
+            assert_eq!(s.forced_field(&b, 0, &[], &[]), Some(expected));
+            assert_eq!(s.forced_field(&b, 0, &[next.hash], &[next.hash]), Some(0));
+            let mut late = b;
+            late.halfmove = 99;
+            assert_eq!(s.forced_field(&late, 0, &[], &[]), Some(0));
+        }
+    }
 
     #[test]
     fn cached_local_facts_do_not_cache_draw_history_or_clock() {
