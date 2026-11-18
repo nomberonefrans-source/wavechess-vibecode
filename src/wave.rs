@@ -427,10 +427,35 @@ pub fn exchange(w: &WaveField, att: usize, def: usize, s: usize, m: f32) -> f32 
     flow(w.board, s, m, side, side, 0.0)
 }
 
+/// Material flow available to the side to move on an occupied enemy square.
+pub(crate) fn capture_flow_on(b: &Board, square: usize) -> f32 {
+    let victim = b.sq[square];
+    if victim.signum() != -b.side || victim.abs() == KING {
+        return 0.0;
+    }
+    flow(
+        *b,
+        square,
+        MASS[(victim.abs() - 1) as usize],
+        b.side,
+        b.side,
+        0.0,
+    )
+}
+
 /// Поток для допустимого взятия или превращения, включая тихое превращение.
 /// Учитывает снятие пешки при взятии на проходе и фактическую новую массу.
 /// Вызывающий передаёт только ход из Board::legal_moves().
+#[cfg(test)]
 pub fn exchange_capture(b: &Board, mv: Move) -> f32 {
+    if b.sq[mv.to as usize] == 0 && mv.flag != FLAG_EP && mv.promo == 0 {
+        return 0.0;
+    }
+    exchange_after_capture(b, mv, b.make(mv))
+}
+
+/// The caller already constructed the legal child for this capture or promotion.
+pub(crate) fn exchange_after_capture(b: &Board, mv: Move, next: Board) -> f32 {
     let victim = if mv.flag == FLAG_EP {
         (mv.to as i16 - 8 * b.side as i16) as usize
     } else {
@@ -440,7 +465,6 @@ pub fn exchange_capture(b: &Board, mv: Move) -> f32 {
     if (p == 0 && mv.promo == 0) || p == KING {
         return 0.0;
     }
-    let next = b.make(mv);
     let placed = next.sq[mv.to as usize].abs();
     let target = if placed == KING {
         KING_ATTACK_MASS
