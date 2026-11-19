@@ -1,11 +1,10 @@
 //! A forward-wave prior. All coordinates are relative to the mover.
-//! Direct contacts and a slider's first screened target are kept separate.
+//! One linear score per move, sampled from the shared pressure field.
 use crate::board::{Board, Move, MoveList, FLAG_CASTLE_K, FLAG_CASTLE_Q, FLAG_EP};
 use crate::geometry::*;
 use crate::params::Ps;
 use crate::wave::{WaveField, MASS};
 
-const FEATURES: usize = 43;
 include!("policy_weights.rs");
 
 fn distance(a: usize, b: usize) -> f32 {
@@ -26,150 +25,82 @@ fn value(piece: i8) -> f32 {
     }
 }
 
-#[derive(Clone, Copy, Default)]
-pub(crate) struct Contacts {
-    threat: f32,
-    second: f32,
-    support: f32,
-    screened: f32,
-    reach: f32,
-}
-
-impl Contacts {
-    fn visit(&mut self, b: &Board, s: usize, side: i8, screened: bool) {
-        let piece = b.sq[s];
-        if screened {
-            if piece.signum() == -side {
-                self.screened = self.screened.max(value(piece));
-            }
-        } else if piece.signum() == side {
-            self.support += value(piece);
-        } else {
-            self.reach += 1.0;
-            let mass = value(piece);
-            if mass >= self.threat {
-                self.second = self.threat;
-                self.threat = mass;
-            } else {
-                self.second = self.second.max(mass);
-            }
-        }
-    }
-}
-
-pub(crate) fn contacts(b: &Board, square: usize) -> Contacts {
-    let p = b.sq[square];
-    let side = p.signum();
-    let mut result = Contacts::default();
-    let pawn_directions = [(-1, side), (1, side)];
-    let leaps = if p.abs() == PAWN {
-        &pawn_directions[..]
-    } else {
-        leaper_steps(p.abs())
-    };
-    let f = file_of(square);
-    let r = rank_of(square);
-    for &(df, dr) in leaps {
-        if inside(f + df, r + dr) {
-            result.visit(b, sq_of(f + df, r + dr), side, false);
-        }
-    }
-    for &(df, dr) in slider_rays(p.abs()) {
-        let (mut nf, mut nr) = (f + df, r + dr);
-        let mut screened = false;
-        while inside(nf, nr) {
-            let s = sq_of(nf, nr);
-            result.visit(b, s, side, screened);
-            if b.sq[s] != 0 {
-                if screened {
-                    break;
-                }
-                screened = true;
-            }
-            nf += df;
-            nr += dr;
-        }
-    }
-    result
-}
-
-pub(crate) fn features(
-    b: &Board,
-    w: &WaveField,
-    mv: Move,
-    next: &Board,
-    origin: Contacts,
-    check: bool,
-) -> [f32; FEATURES] {
+/// Conditional log-odds from geometry and pressure on the two affected squares.
+/// The same field serves every legal move and every term is scalar.
+fn preference(b: &Board, w: &WaveField, mv: Move, check: bool) -> f32 {
     let from = mv.from as usize;
     let to = mv.to as usize;
-    let piece = b.sq[from];
+    let piece = b.sq[from].abs();
     let own = b.side_idx();
     let opp = 1 - own;
-    let their_king = b.ksq[opp] as usize;
-    let our_king = b.ksq[own] as usize;
-    let target = contacts(next, to);
-    let advance = |s| if b.side > 0 { rank_of(s) } else { 7 - rank_of(s) } as f32;
+    let mass = if piece == KING { 4.0 } else { value(piece) };
     let captured = if mv.flag == FLAG_EP {
         1.0
     } else {
         value(b.sq[to])
     };
-    [
-        (piece.abs() == PAWN) as u8 as f32,
-        (piece.abs() == KNIGHT) as u8 as f32,
-        (piece.abs() == BISHOP) as u8 as f32,
-        (piece.abs() == ROOK) as u8 as f32,
-        (piece.abs() == QUEEN) as u8 as f32,
-        (piece.abs() == KING) as u8 as f32,
+    let capture = (captured > 0.0) as u8 as f32;
+    let pawn = (piece == PAWN) as u8 as f32;
+    let minor = (piece == KNIGHT || piece == BISHOP) as u8 as f32;
+    let a = w.amp[opp][from];
+    let d = w.amp[own][from];
+    let t = w.amp[opp][to];
+    let u = w.amp[own][to];
+    let advance = if b.side > 0 {
+        rank_of(to)
+    } else {
+        7 - rank_of(to)
+    } as f32;
+    let centre_gain = centre(to) - centre(from);
+    let their_king = b.ksq[opp] as usize;
+    let step = distance(from, to);
+    let check = check as u8 as f32;
+    let free = (t == 0.0) as u8 as f32;
+    // Each piece has an intercept and 35 coefficients. Selecting a row is
+    // sufficient; there are no hidden layers or evaluations of other pieces.
+    let terms = [
+        1.0,
         captured,
         value(mv.promo as i8),
         matches!(mv.flag, FLAG_CASTLE_K | FLAG_CASTLE_Q) as u8 as f32,
-        check as u8 as f32,
-        advance(to),
-        advance(to) - advance(from),
+        check,
+        advance,
+        ((rank_of(to) - rank_of(from)) * b.side) as f32,
         centre(to),
-        centre(to) - centre(from),
+        centre_gain,
         distance(to, their_king),
         distance(from, their_king) - distance(to, their_king),
-        distance(to, our_king),
-        distance(from, to),
-        w.amp[opp][from],
-        w.amp[own][from],
-        w.amp[opp][to],
-        w.amp[own][to],
-        w.latent[opp][from],
-        w.latent[own][from],
+        distance(to, b.ksq[own] as usize),
+        step,
+        a,
+        d,
+        t,
+        u,
         w.latent[opp][to],
         w.latent[own][to],
         w.hits[opp][to] as f32,
         w.hits[own][to] as f32,
         (w.pin[from] != 0) as u8 as f32,
         (w.pin[to] != 0) as u8 as f32,
-        target.threat,
-        target.second,
-        target.support,
-        target.screened,
-        target.reach,
-        target.threat - origin.threat,
-        target.second - origin.second,
-        target.support - origin.support,
-        target.screened - origin.screened,
-        target.reach - origin.reach,
-        value(piece) * w.amp[opp][from],
-        value(piece) * w.amp[opp][to],
-        captured - value(piece) * w.hits[opp][to].min(1) as f32,
-    ]
-}
-
-pub(crate) fn logit(x: &[f32; FEATURES]) -> f32 {
-    let mut layer = BIAS;
-    for (input, weights) in x.iter().zip(WEIGHTS.iter()) {
-        for (sum, weight) in layer.iter_mut().zip(weights) {
-            *sum += input * weight;
-        }
-    }
-    layer.iter().zip(OUTPUT).map(|(&v, w)| v.max(0.0) * w).sum()
+        mass * a / (1.0 + d),
+        mass * t / (1.0 + u),
+        capture,
+        captured * free,
+        (captured - mass).min(0.0) * (1.0 - free),
+        mass * ((a > 0.0 && d == 0.0) as u8 as f32),
+        capture * free,
+        pawn * advance * advance / 8.0,
+        minor * centre_gain,
+        (piece == KING) as u8 as f32 * centre(to),
+        (piece == QUEEN) as u8 as f32 * step,
+        (piece == ROOK) as u8 as f32 * advance,
+        check * free,
+    ];
+    terms
+        .iter()
+        .zip(&WEIGHTS[(piece - 1) as usize])
+        .map(|(x, w)| x * w)
+        .sum()
 }
 
 pub(crate) struct Transition {
@@ -185,19 +116,20 @@ pub(crate) fn transitions(b: &Board, game: &[u64], chain: &[u64]) -> Vec<Transit
     let mut pseudo = MoveList::new();
     b.gen_pseudo(&mut pseudo, false);
     let field = WaveField::compute_with(b, &Ps::load());
-    let mut origins = [None; 64];
     let mut moves = Vec::with_capacity(pseudo.n);
     let own = b.side_idx();
+    let checks = crate::checks::CheckMap::new(b, field.raw_hits[own][b.ksq[1 - own] as usize] != 0);
     let in_check = field.raw_hits[1 - own][b.ksq[own] as usize] != 0;
     for &mv in &pseudo.m[..pseudo.n] {
         let from = mv.from as usize;
         let after = b.make(mv);
-        if after.attacked(after.ksq[own] as usize, -b.side) {
+        if (in_check || from == b.ksq[own] as usize || field.pin[from] != 0 || mv.flag == FLAG_EP)
+            && after.attacked(after.ksq[own] as usize, -b.side)
+        {
             continue;
         }
-        let origin = *origins[from].get_or_insert_with(|| contacts(b, from));
-        let check = after.in_check();
-        let preference = logit(&features(b, &field, mv, &after, origin, check));
+        let check = checks.possible(b, mv) && after.in_check();
+        let preference = preference(b, &field, mv, check);
         let protected = check
             || mv.promo != 0
             || mv.flag == FLAG_EP

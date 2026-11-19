@@ -6,6 +6,7 @@
 
 use crate::board::*;
 pub use crate::cache::WaveCache;
+use crate::checks::CheckMap;
 use crate::counters::Counters;
 use crate::geometry::*;
 use crate::params::Ps;
@@ -64,32 +65,6 @@ pub struct SearchResult {
 pub const MATED_NEXT: i32 = -(MATE - 2);
 // Position-local draw marker, distinct from an equal but live position.
 const LOCAL_DRAW: i32 = 31000;
-
-/// Conservative geometry filter for a quiet move on a board where the
-/// opponent is not already in check. Blockers are deliberately ignored.
-fn could_give_quiet_check(b: &Board, mv: Move, king: usize) -> bool {
-    if mv.flag == FLAG_CASTLE_K || mv.flag == FLAG_CASTLE_Q {
-        return true; // the rook moves too
-    }
-    let from = mv.from as usize;
-    let kf = file_of(king);
-    let kr = rank_of(king);
-    let xf = (file_of(from) - kf).abs();
-    let xr = (rank_of(from) - kr).abs();
-    if xf == 0 || xr == 0 || xf == xr {
-        return true; // vacating a ray might uncover another piece
-    }
-    let df = (file_of(mv.to as usize) - kf).abs();
-    let dr = kr - rank_of(mv.to as usize);
-    match b.sq[from].abs() {
-        PAWN => df == 1 && dr == b.side,
-        KNIGHT => df * dr.abs() == 2,
-        BISHOP => df == dr.abs(),
-        ROOK => df == 0 || dr == 0,
-        QUEEN => df == 0 || dr == 0 || df == dr.abs(),
-        _ => df <= 1 && dr.abs() <= 1,
-    }
-}
 
 /// Check whether the two existing material threats survive a single defensive
 /// move. Track only the original squares; a relocated victim gets away.
@@ -179,15 +154,102 @@ fn capture_cost(before: &Board, after: &Board, contact: usize, gross: f32) -> f3
     (gross - compensation).max(0.0)
 }
 
+/// Gross material taken by a move, including the change in mass on promotion.
+fn collected(b: &Board, mv: Move) -> f32 {
+    let victim = if mv.flag == FLAG_EP {
+        PAWN
+    } else {
+        b.sq[mv.to as usize].abs()
+    };
+    let capture = if victim == 0 {
+        0.0
+    } else {
+        wave::MASS[(victim - 1) as usize]
+    };
+    let promotion = if mv.promo == 0 {
+        0.0
+    } else {
+        wave::MASS[(mv.promo - 1) as usize] - wave::MASS[0]
+    };
+    capture + promotion
+}
+
+/// A short-range checker can fork a heavy piece. A loss tier survives only
+/// when the same target remains collectible after *every* legal evasion.
+fn fork_exposure(before: &Board, checking_move: Move, checked: &Board, history: &[u64]) -> f32 {
+    let from = checking_move.to as usize;
+    let pawn_steps = [(-1, before.side), (1, before.side)];
+    let steps: &[(i8, i8)] = match checked.sq[from].abs() {
+        KNIGHT => &KNIGHT_JUMPS,
+        PAWN => &pawn_steps,
+        _ => return 0.0,
+    };
+    if checked.halfmove >= 100 || history.iter().filter(|&&h| h == checked.hash).count() >= 2 {
+        return 0.0;
+    }
+    let mut evasions = None;
+    let mut loss = 0.0f32;
+    for &(df, dr) in steps {
+        let (f, r) = (file_of(from) + df, rank_of(from) + dr);
+        if !inside(f, r) {
+            continue;
+        }
+        let target = sq_of(f, r);
+        let victim = checked.sq[target];
+        if victim != checked.side * ROOK && victim != checked.side * QUEEN {
+            continue;
+        }
+        let moves = evasions.get_or_insert_with(|| checked.legal_moves());
+        if moves.n == 0 {
+            return 0.0;
+        }
+        let mut tiers = 0b11u8;
+        for &reply in &moves.m[..moves.n] {
+            let after = checked.make(reply);
+            let visits = history.iter().filter(|&&h| h == after.hash).count()
+                + usize::from(before.hash == after.hash);
+            if after.sq[target] != victim || after.halfmove >= 100 || visits >= 2 {
+                tiers = 0;
+                break;
+            }
+            let net = wave::capture_flow_on(&after, target) - collected(checked, reply);
+            tiers &= u8::from(net >= 200.0) | (u8::from(net >= 500.0) << 1);
+            if tiers == 0 {
+                break;
+            }
+        }
+        let floor = if tiers & 2 != 0 {
+            500.0
+        } else if tiers & 1 != 0 {
+            200.0
+        } else {
+            0.0
+        };
+        loss = loss.max(floor);
+    }
+    loss
+}
+
+#[derive(Default)]
+struct LocalScore {
+    value: i32,
+    exposure: f32,
+}
+
 /// Как «осела» позиция `b` с точки зрения стороны, только что сделавшей ход (сотые пешки).
 /// Зависит только от позиции и веса угрозы, поэтому её безопасно хранить в кэше по хэшу.
 pub fn settle_value(b: &Board, threat_pct: i32) -> i32 {
     let mut pseudo = MoveList::new();
     b.gen_pseudo(&mut pseudo, false);
-    settle_with_moves(b, threat_pct, &pseudo, false)
+    settle_with_moves(b, threat_pct, &pseudo, None).value
 }
 
-fn settle_with_moves(b: &Board, threat_pct: i32, pseudo: &MoveList, root_reply: bool) -> i32 {
+fn settle_with_moves(
+    b: &Board,
+    threat_pct: i32,
+    pseudo: &MoveList,
+    history: Option<&[u64]>,
+) -> LocalScore {
     let ps = Ps::load();
     let (w, e) = wave::analyze_with(b, &ps);
     let mover = -b.side;
@@ -200,10 +262,11 @@ fn settle_with_moves(b: &Board, threat_pct: i32, pseudo: &MoveList, root_reply: 
     let own_king = b.ksq[oi] as usize;
     let enemy_king = b.ksq[mi] as usize;
     let in_check = w.raw_hits[mi][own_king] != 0;
-    let enemy_in_check = w.raw_hits[oi][enemy_king] != 0;
+    let checks = CheckMap::new(b, w.raw_hits[oi][enemy_king] != 0);
     for &mv in &pseudo.m[..pseudo.n] {
         let contact = b.sq[mv.to as usize] != 0 || mv.flag == FLAG_EP || mv.promo != 0;
-        if !contact && !enemy_in_check && !could_give_quiet_check(b, mv, enemy_king) {
+        let may_check = checks.possible(b, mv);
+        if !contact && !may_check {
             continue;
         }
         let nb = b.make(mv);
@@ -216,13 +279,21 @@ fn settle_with_moves(b: &Board, threat_pct: i32, pseudo: &MoveList, root_reply: 
         {
             continue;
         }
-        if nb.in_check() && !has_legal(&nb) {
-            return MATED_NEXT;
+        if may_check && nb.in_check() {
+            if !has_legal(&nb) {
+                return LocalScore {
+                    value: MATED_NEXT,
+                    exposure: 0.0,
+                };
+            }
+            if let Some(game) = history.filter(|_| threat_pct > 0) {
+                loss = loss.max(fork_exposure(b, mv, &nb, game));
+            }
         }
         if contact {
             let gross = wave::exchange_after_capture(b, mv, nb);
             if gross > loss {
-                loss = if root_reply && threat_pct > 0 {
+                loss = if history.is_some() && threat_pct > 0 {
                     loss.max(capture_cost(b, &nb, mv.to as usize, gross))
                 } else {
                     gross
@@ -267,9 +338,12 @@ fn settle_with_moves(b: &Board, threat_pct: i32, pseudo: &MoveList, root_reply: 
     };
     let gain = pressure / (1.0 + loss / 100.0);
     let tw = threat_pct.clamp(0, 300) as f32 / 100.0;
-    (base - tw * loss + tw * gain)
-        .round()
-        .clamp(-20000.0, 20000.0) as i32
+    LocalScore {
+        value: (base - tw * loss + tw * gain)
+            .round()
+            .clamp(-20000.0, 20000.0) as i32,
+        exposure: loss,
+    }
 }
 
 /// Есть ли в позиции хотя бы один допустимый ход (с ранним выходом).
@@ -300,12 +374,13 @@ fn completes_mate(b: &Board, mv: Move) -> bool {
 
 fn mating_step(b: &Board) -> Option<Move> {
     let king = b.ksq[1 - b.side_idx()] as usize;
+    let checks = CheckMap::new(b, b.attacked(king, b.side));
     let mut moves = MoveList::new();
     b.gen_pseudo(&mut moves, false);
-    moves.m[..moves.n].iter().copied().find(|&mv| {
-        (mv.flag == FLAG_EP || mv.promo != 0 || could_give_quiet_check(b, mv, king))
-            && completes_mate(b, mv)
-    })
+    moves.m[..moves.n]
+        .iter()
+        .copied()
+        .find(|&mv| checks.possible(b, mv) && completes_mate(b, mv))
 }
 
 /// Measure how much freedom a specific mating threat removes. Replies
@@ -352,6 +427,7 @@ fn par_map<T: Send, F: Fn(usize) -> T + Sync>(n: usize, threads: usize, f: F) ->
 struct Cand {
     mv: Move,
     val: i32,
+    optimism: f32,
     term: bool, // исход решён правилами: мат, пат, ничья
 }
 
@@ -361,16 +437,79 @@ enum End {
     Mate { sign: i32, ply: usize },
 }
 
+/// The same low-pass update formerly obtained by walking the complete history.
+#[derive(Clone, Copy)]
+struct Moments {
+    smooth: f32,
+    drawdown: f32,
+    mass: f32,
+}
+
+impl Moments {
+    fn add(&mut self, base: i32, value: f32, confidence: f32) {
+        self.drawdown += confidence * (base as f32 - value).max(0.0).powi(2);
+        self.mass += confidence;
+        self.smooth += 0.35 * confidence * (value - self.smooth);
+    }
+}
+
+#[derive(Clone, Copy)]
+struct Phases {
+    complete: Moments,
+    pending: Option<(i32, f32)>,
+    minimum: i32,
+    early_loss: Option<(f32, f32)>,
+}
+
+impl Phases {
+    fn new(base: i32) -> Self {
+        Self {
+            complete: Moments {
+                smooth: base as f32,
+                drawdown: 0.0,
+                mass: 0.0,
+            },
+            pending: None,
+            minimum: base,
+            early_loss: None,
+        }
+    }
+
+    fn push(&mut self, base: i32, value: i32, confidence: f32) {
+        self.minimum = self.minimum.min(value);
+        if let Some((reply, previous)) = self.pending.take() {
+            let mean = 0.5 * (reply + value) as f32;
+            if self.complete.mass == 0.0 {
+                let margin = wave::MASS[0];
+                if reply as f32 + margin < base as f32 && value as f32 + margin < base as f32 {
+                    self.early_loss = Some((mean + margin, confidence));
+                }
+            }
+            self.complete.add(base, mean, 0.5 * (previous + confidence));
+        } else {
+            self.pending = Some((value, confidence));
+        }
+    }
+
+    fn current(&self, base: i32) -> Moments {
+        let mut moments = self.complete;
+        if let Some((value, confidence)) = self.pending {
+            moments.add(base, value as f32, confidence);
+        }
+        moments
+    }
+}
+
 /// Вектор состояния одной прямой траектории. Никаких оценок границ дерева.
 #[derive(Clone)]
 struct Chain {
     mv: Move,
     s0: i32,
+    optimism: f32,
     moves: Vec<Move>,
     board: Board,
     hashes: Vec<u64>,
-    vals: Vec<i32>,
-    phase_confidence: Vec<f32>,
+    phases: Phases,
     done: Option<End>,
     grp: usize,
     w: f64,
@@ -483,14 +622,17 @@ impl Searcher {
 
     /// Осевшая волна позиции (через кэш).
     fn settle(&self, b: &Board) -> i32 {
-        self.settle_position(b, false)
+        self.settle_position(b, None).value
     }
 
-    fn settle_position(&self, b: &Board, root_reply: bool) -> i32 {
+    fn settle_position(&self, b: &Board, history: Option<&[u64]>) -> LocalScore {
         self.counter.add(0);
-        if !root_reply {
+        if history.is_none() {
             if let Some(v) = self.cache.get(b.hash) {
-                return v;
+                return LocalScore {
+                    value: v,
+                    exposure: 0.0,
+                };
             }
         }
         // Only board-local facts belong in the hash. Halfmove clocks and real
@@ -498,18 +640,20 @@ impl Searcher {
         let mut pseudo = MoveList::new();
         b.gen_pseudo(&mut pseudo, false);
         let v = if !has_legal_from(b, &pseudo) {
-            if b.in_check() {
-                MATE
-            } else {
-                LOCAL_DRAW
+            LocalScore {
+                value: if b.in_check() { MATE } else { LOCAL_DRAW },
+                exposure: 0.0,
             }
         } else if b.insufficient() {
-            LOCAL_DRAW
+            LocalScore {
+                value: LOCAL_DRAW,
+                exposure: 0.0,
+            }
         } else {
-            settle_with_moves(b, self.cfg.threat_pct, &pseudo, root_reply)
+            settle_with_moves(b, self.cfg.threat_pct, &pseudo, history)
         };
-        if !root_reply {
-            self.cache.put(b.hash, v);
+        if history.is_none() {
+            self.cache.put(b.hash, v.value);
         }
         v
     }
@@ -602,11 +746,13 @@ impl Searcher {
             let transition = &candidates[i];
             let mv = transition.mv;
             let nb = &transition.board;
-            let local = self.settle_position(nb, chain.is_empty());
+            let observation = self.settle_position(nb, chain.is_empty().then_some(game));
+            let local = observation.value;
             Some(match self.rule_outcome(nb, local, game, chain) {
                 Some(v) => Cand {
                     mv,
                     val: v,
+                    optimism: 1.0,
                     term: true,
                 },
                 None => {
@@ -636,9 +782,17 @@ impl Searcher {
                     if val > 0 && val < MATE_BOUND && visits > 0 {
                         val = (val as f32 / (1.0 + 0.65 * visits as f32)).round() as i32;
                     }
+                    let optimism = if chain.is_empty() && self.cfg.threat_pct > 0 {
+                        let uncovered =
+                            (observation.exposure - collected(b, mv) - wave::MASS[0]).max(0.0);
+                        wave::MASS[0] / (wave::MASS[0] + uncovered)
+                    } else {
+                        1.0
+                    };
                     Cand {
                         mv,
                         val,
+                        optimism,
                         term: false,
                     }
                 }
@@ -679,8 +833,7 @@ impl Searcher {
                 n.hashes.push(n.board.hash);
             }
         } else {
-            n.vals.push(sign * cand.val);
-            n.phase_confidence.push(n.confidence);
+            n.phases.push(n.s0, sign * cand.val, n.confidence);
         }
         n.active = n.done.is_none();
         n
@@ -776,7 +929,7 @@ impl Searcher {
             let slots = if limit > 1 {
                 let hazard = |c: &Chain| match c.done {
                     Some(End::Mate { sign: -1, .. }) => -MATE,
-                    _ => c.vals.iter().copied().min().unwrap_or(c.s0),
+                    _ => c.phases.minimum,
                 };
                 let tail = (0..group.len()).min_by_key(|&i| hazard(&group[i])).unwrap();
                 result.push(group.remove(tail));
@@ -817,16 +970,11 @@ impl Searcher {
         let weight = self.cfg.chain_pct.clamp(0, 100) as f32 / 100.0;
         // Низкочастотная часть всех наблюдённых фаз. Один далёкий скачок
         // не заменяет собой всё предшествующее развитие поля.
-        let mut smooth = c.s0 as f32;
-        let mut drawdown = 0.0f32;
-        let mut phase_mass = 0.0f32;
-        for (pair, confidence) in c.vals[1..].chunks(2).zip(c.phase_confidence[1..].chunks(2)) {
-            let reliability = confidence.iter().sum::<f32>() / confidence.len() as f32;
-            let phase = pair.iter().map(|&v| v as f32).sum::<f32>() / pair.len() as f32;
-            drawdown += reliability * (c.s0 as f32 - phase).max(0.0).powi(2);
-            phase_mass += reliability;
-            smooth += 0.35 * reliability * (phase - smooth);
-        }
+        let Moments {
+            mut smooth,
+            drawdown,
+            mass: phase_mass,
+        } = c.phases.current(c.s0);
         if matches!(c.done, Some(End::Draw)) {
             // Ничья в дальнем прогнозе не отменяет близкую потерю материала.
             smooth *= 1.0 - c.confidence;
@@ -848,6 +996,18 @@ impl Searcher {
             // статического поля. Нулевая настройка по-прежнему выключает прогноз.
             score += weight.sqrt() * sign as f32 * bonus;
         }
+        // The local score already charges the loss. Only discount later, speculative
+        // recovery, once per trajectory; keep adverse forecasts and rule outcomes.
+        if score > c.s0 as f32 {
+            score = c.s0 as f32 + (score - c.s0 as f32) * c.optimism;
+        }
+        // Two consecutive observations, after the opponent's reply and our
+        // continuation, must agree on the drop. Charge only the part of the
+        // final forecast still above that early evidence.
+        if let Some((observed, confidence)) = c.phases.early_loss {
+            let excess = (score - observed).clamp(0.0, wave::MASS[3]);
+            score -= weight.sqrt() * confidence * excess;
+        }
         if c.mv == hint {
             score += PLAN_BONUS as f32;
         }
@@ -857,58 +1017,61 @@ impl Searcher {
     fn make_lines(&self, chains: &[Chain], nvar: usize, _depth: i32, hint: Move) -> Vec<Line> {
         let scores: Vec<i32> = chains.iter().map(|c| self.chain_score(c, hint)).collect();
         let ng = chains.iter().map(|c| c.grp).max().unwrap_or(0) + 1;
-        let mut sum = vec![0.0f64; ng];
-        let mut weights = vec![0.0f64; ng];
-        let mut rep = vec![usize::MAX; ng];
+        #[derive(Default)]
+        struct Group {
+            weighted: f64,
+            mass: f64,
+            confidence: f64,
+            risk: f64,
+            floor: i32,
+            rep: usize,
+            count: usize,
+        }
+        let mut groups: Vec<Group> = (0..ng).map(|_| Group::default()).collect();
+        let tau = Ps::load().risk_tau as f64;
         for (i, c) in chains.iter().enumerate() {
-            let g = c.grp;
-            sum[g] += c.w as f64 * scores[i] as f64;
-            weights[g] += c.w as f64;
-            if rep[g] == usize::MAX || c.w > chains[rep[g]].w {
-                rep[g] = i;
+            let group = &mut groups[c.grp];
+            if group.count == 0 || c.w > chains[group.rep].w {
+                group.rep = i;
+            }
+            if group.count == 0 || scores[i] < group.floor {
+                group.floor = scores[i];
+            }
+            group.weighted += c.w * scores[i] as f64;
+            group.mass += c.w;
+            group.confidence += c.w * c.confidence as f64;
+            group.count += 1;
+        }
+        for (i, c) in chains.iter().enumerate() {
+            let group = &mut groups[c.grp];
+            if tau > 0.0 && c.s0.abs() < MATE_BOUND {
+                // Shift the exponent by a common reference to avoid overflow.
+                group.risk += c.w * (((group.floor - scores[i]) as f64) / tau).exp();
+            } else {
+                let deficit = (group.weighted / group.mass - scores[i] as f64).max(0.0);
+                group.risk += c.w * deficit * deficit;
             }
         }
-        let mut downside = vec![0.0f64; ng];
-        for (i, c) in chains.iter().enumerate() {
-            let mean = sum[c.grp] / weights[c.grp];
-            let d = (mean - scores[i] as f64).max(0.0);
-            downside[c.grp] += c.w as f64 * d * d;
-        }
-        let mut ranked = Vec::new();
-        let risk_tau = Ps::load().risk_tau;
-        for g in 0..ng {
-            if rep[g] != usize::MAX {
-                // Риск нижней части спектра: опасный ответ не растворяется
-                // бесследно в среднем, но никакого выбора минимума нет.
-                let score = if risk_tau > 0.0 && chains[rep[g]].s0.abs() < MATE_BOUND {
-                    // Certainty equivalent of exponential utility. A finite
-                    // temperature keeps every sampled response in the sum;
-                    // this is not a recursive minimax or a proof of safety.
-                    let mean = sum[g] / weights[g];
-                    let log_terms: Vec<f64> = chains
-                        .iter()
-                        .enumerate()
-                        .filter(|(_, c)| c.grp == g)
-                        .map(|(i, c)| {
-                            (c.w as f64 / weights[g]).ln()
-                                + (mean - scores[i] as f64) / risk_tau as f64
-                        })
-                        .collect();
-                    let shift = log_terms.iter().copied().fold(f64::NEG_INFINITY, f64::max);
-                    mean - risk_tau as f64
-                        * (shift
-                            + log_terms
-                                .iter()
-                                .map(|x| (x - shift).exp())
-                                .sum::<f64>()
-                                .ln())
-                } else {
-                    sum[g] / weights[g] - 0.5 * (downside[g] / weights[g]).sqrt()
-                };
-                ranked.push((score.round() as i32, rep[g]));
+        let mut ranked = Vec::with_capacity(ng);
+        for group in &groups {
+            if group.count == 0 {
+                continue;
             }
+            let score = if tau > 0.0 && chains[group.rep].s0.abs() < MATE_BOUND {
+                group.floor as f64 - tau * (group.risk.ln() - group.mass.ln())
+            } else {
+                group.weighted / group.mass - 0.5 * (group.risk / group.mass).sqrt()
+            };
+            ranked.push((score.round() as i32, group.rep));
         }
-        ranked.sort_by(|a, b| b.0.cmp(&a.0).then(chains[a.1].grp.cmp(&chains[b.1].grp)));
+        let order = |a: &(i32, usize), b: &(i32, usize)| {
+            b.0.cmp(&a.0).then(chains[a.1].grp.cmp(&chains[b.1].grp))
+        };
+        if nvar < ranked.len() {
+            ranked.select_nth_unstable_by(nvar, order);
+            ranked.truncate(nvar);
+        }
+        ranked.sort_unstable_by(order);
         ranked
             .iter()
             .take(nvar)
@@ -917,13 +1080,8 @@ impl Searcher {
                 depth: chains[i].moves.len() as i32,
                 pv: chains[i].moves.clone(),
                 local_energy: chains[i].s0,
-                confidence: (chains
-                    .iter()
-                    .filter(|c| c.grp == chains[i].grp)
-                    .map(|c| c.confidence as f64 * c.w)
-                    .sum::<f64>()
-                    / weights[chains[i].grp]) as f32,
-                replies: chains.iter().filter(|c| c.grp == chains[i].grp).count(),
+                confidence: (groups[chains[i].grp].confidence / groups[chains[i].grp].mass) as f32,
+                replies: groups[chains[i].grp].count,
             })
             .collect()
     }
@@ -1095,11 +1253,11 @@ impl Searcher {
             chains.push(Chain {
                 mv: c.mv,
                 s0,
+                optimism: c.optimism,
                 moves: vec![c.mv],
                 board: nb,
                 hashes: vec![nb.hash],
-                vals: vec![s0],
-                phase_confidence: vec![1.0],
+                phases: Phases::new(s0),
                 done,
                 grp: chains.len(),
                 w: 1.0,
@@ -1244,6 +1402,29 @@ mod tests {
     use super::*;
 
     #[test]
+    fn checking_fork_requires_loss_after_every_evasion() {
+        let make = |fen| {
+            let b = Board::from_fen(fen).unwrap();
+            let mv = crate::notation::parse_move(&b, "b4c2").unwrap();
+            (b, mv, b.make(mv))
+        };
+        let (b, mv, after) = make("4k3/8/8/8/1n6/8/8/R3K3 b - - 0 1");
+        assert!(after.in_check());
+        assert_eq!(fork_exposure(&b, mv, &after, &[]), 500.0);
+        assert_eq!(
+            fork_exposure(&b, mv, &after, &[after.hash, after.hash]),
+            0.0
+        );
+        let evasion = after.make(after.legal_moves().m[0]);
+        assert_eq!(
+            fork_exposure(&b, mv, &after, &[evasion.hash, evasion.hash]),
+            0.0
+        );
+        let (defended, mv, after) = make("4k3/8/8/8/1n6/3B4/8/R3K3 b - - 0 1");
+        assert_eq!(fork_exposure(&defended, mv, &after, &[]), 0.0);
+    }
+
+    #[test]
     fn forced_check_uses_the_evasion_and_real_draw_history() {
         let b = Board::from_fen("7k/8/5K2/8/7Q/8/8/8 b - - 0 1").unwrap();
         let cfg = EngineConfig {
@@ -1288,17 +1469,48 @@ mod tests {
         assert_eq!(s.rule_outcome(&mate, s.settle(&mate), &[], &[]), Some(MATE));
     }
 
+    fn phases_with(base: i32, values: &[i32]) -> Phases {
+        let mut phases = Phases::new(base);
+        for &v in values {
+            phases.push(base, v, 1.0);
+        }
+        phases
+    }
+
+    #[test]
+    fn streaming_phases_match_batch_at_odd_and_even_depths() {
+        let base = 55;
+        let samples = [(-345, 0.9), (-250, 0.8), (72, 0.6), (122, 0.5), (-201, 0.3)];
+        let mut phases = Phases::new(base);
+        for (i, &(v, w)) in samples.iter().enumerate() {
+            phases.push(base, v, w);
+            let mut expected = Phases::new(base).complete;
+            for chunk in samples[..=i].chunks(2) {
+                let value = chunk.iter().map(|x| x.0 as f32).sum::<f32>() / chunk.len() as f32;
+                let weight = chunk.iter().map(|x| x.1).sum::<f32>() / chunk.len() as f32;
+                expected.add(base, value, weight);
+            }
+            let actual = phases.current(base);
+            assert_eq!(
+                (actual.smooth, actual.drawdown, actual.mass),
+                (expected.smooth, expected.drawdown, expected.mass)
+            );
+        }
+        assert_eq!(phases.minimum, -345);
+        assert!(phases.early_loss.is_some());
+    }
+
     fn particle(grp: usize, w: f64, value: i32) -> Chain {
         let b = Board::startpos();
         let mv = b.legal_moves().m[0];
         Chain {
             mv,
             s0: value,
+            optimism: 1.0,
             moves: vec![mv],
             board: b,
             hashes: vec![b.hash],
-            vals: vec![value],
-            phase_confidence: vec![1.0],
+            phases: Phases::new(value),
             done: None,
             grp,
             w,
@@ -1341,6 +1553,20 @@ mod tests {
             let lines = s.make_lines(&children, 1, 2, Move::NONE);
             assert!(lines[0].confidence.is_finite());
         }
+    }
+
+    #[test]
+    fn exposed_material_limits_only_an_upward_forecast() {
+        let s = Searcher::new(&EngineConfig::default(), Arc::new(AtomicBool::new(false)));
+        let mut c = particle(0, 1.0, 0);
+        c.phases = phases_with(0, &[400; 4]);
+        let full = s.chain_score(&c, Move::NONE);
+        c.optimism = 0.2;
+        assert!(s.chain_score(&c, Move::NONE) < full / 2);
+        c.phases = phases_with(0, &[-400; 4]);
+        let bad = s.chain_score(&c, Move::NONE);
+        c.optimism = 1.0;
+        assert_eq!(s.chain_score(&c, Move::NONE), bad);
     }
 
     #[test]
@@ -1389,11 +1615,7 @@ mod tests {
                 ),
             ] {
                 assert!(b.make(m).in_check());
-                assert!(could_give_quiet_check(
-                    &b,
-                    m,
-                    b.ksq[1 - b.side_idx()] as usize
-                ));
+                assert!(CheckMap::new(&b, false).possible(&b, m));
             }
         }
     }
@@ -1547,11 +1769,11 @@ mod tests {
         let c = Chain {
             mv,
             s0: -900,
+            optimism: 1.0,
             moves: vec![mv; 8],
             board: b,
             hashes: vec![],
-            vals: vec![-900, -900, -900, -900],
-            phase_confidence: vec![1.0; 4],
+            phases: phases_with(-900, &[-900; 3]),
             done: Some(End::Draw),
             grp: 0,
             w: 1.0,

@@ -3,6 +3,7 @@
 
 mod board;
 mod cache;
+mod checks;
 mod console;
 mod counters;
 mod engine;
