@@ -591,33 +591,43 @@ impl Searcher {
         threads: usize,
         interruptible: bool,
     ) -> Vec<Option<Cand>> {
-        let legal = b.legal_moves();
-        par_map(legal.n, threads, |i| {
+        if interruptible && self.stop_now() {
+            return vec![None];
+        }
+        let candidates = crate::policy::transitions(b, game, chain);
+        par_map(candidates.len(), threads, |i| {
             if interruptible && self.stop_now() {
                 return None;
             }
-            let mv = legal.m[i];
-            let nb = b.make(mv);
-            let local = self.settle_position(&nb, chain.is_empty());
-            Some(match self.rule_outcome(&nb, local, game, chain) {
+            let transition = &candidates[i];
+            let mv = transition.mv;
+            let nb = &transition.board;
+            let local = self.settle_position(nb, chain.is_empty());
+            Some(match self.rule_outcome(nb, local, game, chain) {
                 Some(v) => Cand {
                     mv,
                     val: v,
                     term: true,
                 },
                 None => {
-                    let mut val = if local.abs() < MATE_BOUND && nb.in_check() {
-                        self.forced_field(&nb, local, game, chain)?
+                    let mut val = if local.abs() < MATE_BOUND && transition.check {
+                        self.forced_field(nb, local, game, chain)?
                     } else {
                         local
                     };
                     if self.cfg.threat_pct > 0
                         && chain.is_empty()
-                        && !nb.in_check()
+                        && !transition.check
                         && local.abs() < MATE_BOUND
                     {
-                        val = (val + threat_information(&nb, game).round() as i32)
+                        val = (val + threat_information(nb, game).round() as i32)
                             .clamp(-20000, 20000);
+                    }
+                    if val.abs() < MATE_BOUND {
+                        // Only relative preferences are identifiable for a softmax model.
+                        // Keep this local correction below a minor piece.
+                        let scale = if chain.is_empty() { 32.0 } else { 16.0 };
+                        val += (scale * transition.preference).round() as i32;
                     }
                     // Повторный визит уменьшает положительный поток энергии:
                     // движение по замкнутому контуру не приближает выигрыш.
@@ -645,7 +655,13 @@ impl Searcher {
         n.hashes.push(n.board.hash);
         // Доверие затухает при неоднозначных продолжениях. Это вес
         // наблюдаемой фазы, а не условие преждевременного обрыва расчёта.
-        n.confidence *= 0.94 + 0.06 * certainty;
+        n.confidence *= if sign < 0 {
+            // A forecast which depends on an ambiguous opposing reply carries
+            // less evidence into the next phase, even if one carrier survives.
+            certainty.sqrt().max(0.55)
+        } else {
+            0.94 + 0.06 * certainty
+        };
         if cand.term {
             n.done = Some(if cand.val >= MATE_BOUND {
                 End::Mate { sign, ply }
@@ -1098,18 +1114,7 @@ impl Searcher {
         }
         let root_complete = cands.iter().all(|c| c.is_some());
         if root_complete && !root.in_check() {
-            let ranked = self.make_lines(&chains, usize::MAX, 1, hint);
-            let peak = ranked[0].score;
-            for c in &mut chains {
-                let rank = ranked.iter().position(|l| l.pv[0] == c.mv).unwrap();
-                let forcing = c.board.in_check()
-                    || c.mv.promo != 0
-                    || root.sq[c.mv.to as usize] != 0
-                    || c.mv.flag == FLAG_EP;
-                if !forcing && rank >= self.cfg.wave_width && c.s0 < peak - 250 {
-                    c.active = false;
-                }
-            }
+            self.focus(&mut chains, hint);
         }
         // Begin each budget-limited pass with the most energetic root front.
         let peak = chains.iter().map(|c| c.s0).max().unwrap();

@@ -9,6 +9,7 @@ mod engine;
 mod geometry;
 mod notation;
 mod params;
+mod policy;
 mod search;
 mod selftest;
 mod settings;
